@@ -1,0 +1,292 @@
+{% load static %}
+
+{% block title %}Kurslar - KursPlatforma{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="hero-section mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-5 fw-bold mb-3">Kelajak kasblarini o'rganing</h1>
+                <p class="lead mb-4">Dunyoning eng yaxshi mutaxassislari tomonidan tayyorlangan kurslar. 
+                O'zingizning tezligingizda o'rganing va sertifikat oling.</p>
+                <div class="d-flex gap-2">
+                    <a href="#courses" class="btn btn-primary btn-lg">
+                        <i class="fas fa-play-circle me-2"></i> Kurslarni boshlash
+                    </a>
+                    <a href="#" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-info-circle me-2"></i> Batafsil ma'lumot
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://via.placeholder.com/600x400" alt="Learning" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="categories-section mb-5">
+        <h2 class="text-center mb-4">Kurs Kategoriyalari</h2>
+        <div class="row g-4">
+            {% for category in categories %}
+            <div class="col-md-3 col-sm-6">
+                <a href="{% url 'course_list_by_category' category.slug %}" 
+                   class="text-decoration-none">
+                    <div class="card h-100 text-center hover-shadow">
+                        <div class="card-body">
+                            <div class="category-icon mb-3">
+                                <i class="fas fa-{{ category.icon|default:'folder' }} fa-3x text-primary"></i>
+                            </div>
+                            <h5 class="card-title">{{ category.name }}</h5>
+                            <p class="card-text text-muted small">
+                                {{ category.courses.count }} ta kurs
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    Hozircha kategoriyalar mavjud emas.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div id="courses" class="courses-section">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Barcha Kurslar</h2>
+            
+            <!-- Filters -->
+            <div class="d-flex gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="fas fa-filter me-1"></i> Filtr
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="?level=beginner">Boshlang'ich</a>
+                        <a class="dropdown-item" href="?level=intermediate">O'rta</a>
+                        <a class="dropdown-item" href="?level=advanced">Yuqori</a>
+                    </div>
+                </div>
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown">
+                        <i class="fas fa-sort me-1"></i> Saralash
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="?sort=popular">Mashhur</a>
+                        <a class="dropdown-item" href="?sort=newest">Yangi</a>
+                        <a class="dropdown-item" href="?sort=rating">Reyting</a>
+                        <a class="dropdown-item" href="?sort=price_low">Arzon</a>
+                        <a class="dropdown-item" href="?sort=price_high">Qimmat</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <form method="get" class="d-flex">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control" 
+                               placeholder="Kurs nomi bo'yicha qidirish..."
+                               value="{{ search_query|default:'' }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Filters -->
+        {% if selected_level %}
+        <div class="mb-3">
+            <span class="badge bg-info me-2">
+                Daraja: {{ selected_level }}
+                <a href="?" class="text-white ms-2">
+                    <i class="fas fa-times"></i>
+                </a>
+            </span>
+        </div>
+        {% endif %}
+
+        <!-- Courses -->
+        <div class="row g-4">
+            {% for course in courses %}
+            <div class="col-lg-4 col-md-6">
+                <div class="course-card card h-100">
+                    <div class="course-image position-relative">
+                        {% if course.image %}
+                            <img src="{{ course.image.url }}" class="card-img-top" 
+                                 alt="{{ course.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/400x200" class="card-img-top" 
+                                 alt="{{ course.title }}">
+                        {% endif %}
+                        <span class="position-absolute top-0 end-0 m-2 badge {{ course.badge_class }}">
+                            {{ course.get_level_display }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="course-category mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-tag me-1"></i>{{ course.category.name }}
+                            </small>
+                        </div>
+                        <h5 class="card-title course-title">{{ course.title }}</h5>
+                        <p class="card-text course-description">{{ course.short_description }}</p>
+                        
+                        <div class="course-meta d-flex justify-content-between text-muted mb-3">
+                            <small>
+                                <i class="fas fa-clock me-1"></i>{{ course.total_hours }} soat
+                            </small>
+                            <small>
+                                <i class="fas fa-book me-1"></i>{{ course.total_lessons }} dars
+                            </small>
+                        </div>
+                        
+                        <div class="course-rating mb-3">
+                            <div class="stars text-warning">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= course.average_rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <small class="ms-2">
+                                    {{ course.average_rating|floatformat:1 }} ({{ course.total_reviews }})
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="course-price">
+                                {% if course.discount_price %}
+                                    <span class="text-muted text-decoration-line-through">
+                                        {{ course.price }} so'm
+                                    </span>
+                                    <span class="h5 text-primary ms-2">
+                                        {{ course.discount_price }} so'm
+                                    </span>
+                                {% else %}
+                                    <span class="h5 text-primary">{{ course.price }} so'm</span>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'course_detail' course.slug %}" 
+                               class="btn btn-primary btn-sm">
+                                Batafsil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>Kurs topilmadi</h4>
+                    <p class="text-muted">Sizning qidiruvingizga mos kurslar mavjud emas</p>
+                    <a href="{% url 'course_list' %}" class="btn btn-primary">
+                        Barcha kurslarni ko'rish
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+
+    <!-- Stats Section -->
+    <div class="stats-section mt-5 pt-5">
+        <div class="row text-center">
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <h3 class="display-6 text-primary">150+</h3>
+                    <p class="text-muted">Kurslar</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <h3 class="display-6 text-primary">5,000+</h3>
+                    <p class="text-muted">O'quvchilar</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <h3 class="display-6 text-primary">50+</h3>
+                    <p class="text-muted">Mentorlar</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="stat-item">
+                    <h3 class="display-6 text-primary">98%</h3>
+                    <p class="text-muted">Mamnun mijozlar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Category cards hover effect
+document.querySelectorAll('.hover-shadow').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+        card.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+        card.style.transform = 'translateY(-5px)';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.boxShadow = '';
+        card.style.transform = '';
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jamoa - NetAdmin Academy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                </div>
+                <span>NetAdmin Academy</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Bosh sahifa</a>
+                <a href="courses.html" class="nav-link">Kurslar</a>
+                <a href="paths.html" class="nav-link">O'quv Yo'llari</a>
+                <a href="community.html" class="nav-link active">Jamoa</a>
+                <a href="contact.html" class="nav-link">Aloqa</a>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-ghost">Kirish</a>
+                <a href="signup.html" class="btn btn-primary">Ro'yxatdan o'tish</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html" class="mobile-nav-link">Bosh sahifa</a>
+            <a href="courses.html" class="mobile-nav-link">Kurslar</a>
+            <a href="paths.html" class="mobile-nav-link">O'quv Yo'llari</a>
+            <a href="community.html" class="mobile-nav-link active">Jamoa</a>
+            <a href="contact.html" class="mobile-nav-link">Aloqa</a>
+            <div class="mobile-actions">
+                <a href="login.html" class="btn btn-ghost btn-block">Kirish</a>
+                <a href="signup.html" class="btn btn-primary btn-block">Ro'yxatdan o'tish</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Jamoa <span class="text-primary">Forumi</span></h1>
+            <p class="page-description">Mutaxassislar bilan bog'laning, savollar bering va tajriba almashing</p>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="community-section">
+        <div class="container">
+            <div class="community-grid">
+                <!-- Main Content -->
+                <div class="community-main">
+                    <!-- Search -->
+                    <div class="search-box">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" placeholder="Mavzularni qidirish...">
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab(this, 'all')">Barchasi</button>
+                        <button class="tab-btn" onclick="switchTab(this, 'popular')">Mashhur</button>
+                        <button class="tab-btn" onclick="switchTab(this, 'recent')">Yangi</button>
+                        <button class="tab-btn" onclick="switchTab(this, 'unanswered')">Javobsiz</button>
+                    </div>
+
+                    <!-- Discussions -->
+                    <div class="discussions">
+                        <!-- Discussion 1 -->
+                        <div class="discussion-card">
+                            <div class="discussion-header">
+                                <img src="/placeholder.svg?height=40&width=40" alt="User" class="discussion-avatar">
+                                <div>
+                                    <div class="discussion-author">Alisher Karimov</div>
+                                    <div class="discussion-time">2 soat oldin</div>
+                                </div>
+                            </div>
+                            <h3 class="discussion-title"><a href="#">VLAN konfiguratsiyasida muammo - Cisco switch</a></h3>
+                            <p class="discussion-preview">Salom hammaga! Men Cisco 2960 switchda VLAN sozlashda muammoga duch keldim. Inter-VLAN routing ishlamayapti...</p>
+                            <div class="discussion-tags">
+                                <span class="tag">Cisco</span>
+                                <span class="tag">VLAN</span>
+                                <span class="tag">Tarmoq</span>
+                            </div>
+                            <div class="discussion-stats">
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    12 javob
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    156 ko'rilgan
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                    24 like
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Discussion 2 -->
+                        <div class="discussion-card">
+                            <div class="discussion-header">
+                                <img src="/placeholder.svg?height=40&width=40" alt="User" class="discussion-avatar">
+                                <div>
+                                    <div class="discussion-author">Nilufar Sodiqova</div>
+                                    <div class="discussion-time">5 soat oldin</div>
+                                </div>
+                            </div>
+                            <h3 class="discussion-title"><a href="#">Linux serverda Nginx reverse proxy sozlash</a></h3>
+                            <p class="discussion-preview">Ubuntu 22.04 da Nginx reverse proxy sozlamoqchiman. Backend sifatida Node.js ilovam bor. Qanday qilsam to'g'ri bo'ladi?</p>
+                            <div class="discussion-tags">
+                                <span class="tag">Linux</span>
+                                <span class="tag">Nginx</span>
+                                <span class="tag">Reverse Proxy</span>
+                            </div>
+                            <div class="discussion-stats">
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    8 javob
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    98 ko'rilgan
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                    18 like
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Discussion 3 -->
+                        <div class="discussion-card">
+                            <div class="discussion-header">
+                                <img src="/placeholder.svg?height=40&width=40" alt="User" class="discussion-avatar">
+                                <div>
+                                    <div class="discussion-author">Bobur Rahmonov</div>
+                                    <div class="discussion-time">1 kun oldin</div>
+                                </div>
+                            </div>
+                            <h3 class="discussion-title"><a href="#">Docker containerlarni production muhitida ishlatish</a></h3>
+                            <p class="discussion-preview">Docker containerlarni production serverda ishlatish uchun qanday best practice'lar bor? Security va performance haqida maslahat kerak.</p>
+                            <div class="discussion-tags">
+                                <span class="tag">Docker</span>
+                                <span class="tag">DevOps</span>
+                                <span class="tag">Production</span>
+                            </div>
+                            <div class="discussion-stats">
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    23 javob
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    342 ko'rilgan
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                    56 like
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Discussion 4 -->
+                        <div class="discussion-card">
+                            <div class="discussion-header">
+                                <img src="/placeholder.svg?height=40&width=40" alt="User" class="discussion-avatar">
+                                <div>
+                                    <div class="discussion-author">Sardor Toshmatov</div>
+                                    <div class="discussion-time">2 kun oldin</div>
+                                </div>
+                            </div>
+                            <h3 class="discussion-title"><a href="#">AWS yoki Azure - qaysi birini tanlash kerak?</a></h3>
+                            <p class="discussion-preview">Kompaniyamiz uchun cloud platformani tanlash kerak. AWS va Azure orasida qaysi biri yaxshiroq? Tajribangizni baham ko'ring.</p>
+                            <div class="discussion-tags">
+                                <span class="tag">AWS</span>
+                                <span class="tag">Azure</span>
+                                <span class="tag">Cloud</span>
+                            </div>
+                            <div class="discussion-stats">
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    31 javob
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                    512 ko'rilgan
+                                </span>
+                                <span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                                    89 like
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="#" class="btn btn-outline">Ko'proq yuklash</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Categories -->
+                    <div class="sidebar-card">
+                        <h4 class="sidebar-title">Kategoriyalar</h4>
+                        <div class="category-list">
+                            <a href="#" class="category-item">
+                                <span>Tarmoq</span>
+                                <span class="category-count">156</span>
+                            </a>
+                            <a href="#" class="category-item">
+                                <span>Linux</span>
+                                <span class="category-count">234</span>
+                            </a>
+                            <a href="#" class="category-item">
+                                <span>Windows</span>
+                                <span class="category-count">89</span>
+                            </a>
+                            <a href="#" class="category-item">
+                                <span>Xavfsizlik</span>
+                                <span class="category-count">178</span>
+                            </a>
+                            <a href="#" class="category-item">
+                                <span>Cloud</span>
+                                <span class="category-count">145</span>
+                            </a>
+                            <a href="#" class="category-item">
+                                <span>DevOps</span>
+                                <span class="category-count">112</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Top Contributors -->
+                    <div class="sidebar-card">
+                        <h4 class="sidebar-title">Top Ishtirokchilar</h4>
+                        <div class="top-contributors">
+                            <div class="contributor">
+                                <img src="/placeholder.svg?height=36&width=36" alt="User">
+                                <div>
+                                    <div class="contributor-name">Jamshid Umarov</div>
+                                    <div class="contributor-posts">523 javob</div>
+                                </div>
+                            </div>
+                            <div class="contributor">
+                                <img src="/placeholder.svg?height=36&width=36" alt="User">
+                                <div>
+                                    <div class="contributor-name">Malika Azizova</div>
+                                    <div class="contributor-posts">412 javob</div>
+                                </div>
+                            </div>
+                            <div class="contributor">
+                                <img src="/placeholder.svg?height=36&width=36" alt="User">
+                                <div>
+                                    <div class="contributor-name">Rustam Normatov</div>
+                                    <div class="contributor-posts">389 javob</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- New Topic Button -->
+                    <a href="login.html" class="btn btn-primary btn-block">Yangi Mavzu Yaratish</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 NetAdmin Academy. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+
+        function switchTab(btn, tab) {
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>

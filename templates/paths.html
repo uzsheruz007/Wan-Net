@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'quv Yo'llari - NetAdmin Academy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                </div>
+                <span>NetAdmin Academy</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Bosh sahifa</a>
+                <a href="courses.html" class="nav-link">Kurslar</a>
+                <a href="paths.html" class="nav-link active">O'quv Yo'llari</a>
+                <a href="community.html" class="nav-link">Jamoa</a>
+                <a href="contact.html" class="nav-link">Aloqa</a>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-ghost">Kirish</a>
+                <a href="signup.html" class="btn btn-primary">Ro'yxatdan o'tish</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html" class="mobile-nav-link">Bosh sahifa</a>
+            <a href="courses.html" class="mobile-nav-link">Kurslar</a>
+            <a href="paths.html" class="mobile-nav-link active">O'quv Yo'llari</a>
+            <a href="community.html" class="mobile-nav-link">Jamoa</a>
+            <a href="contact.html" class="mobile-nav-link">Aloqa</a>
+            <div class="mobile-actions">
+                <a href="login.html" class="btn btn-ghost btn-block">Kirish</a>
+                <a href="signup.html" class="btn btn-primary btn-block">Ro'yxatdan o'tish</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">O'quv <span class="text-primary">Yo'llari</span></h1>
+            <p class="page-description">Karyera maqsadlaringizga mos tuzilgan o'quv dasturlarini tanlang</p>
+        </div>
+    </section>
+
+    <!-- Paths Section -->
+    <section class="paths-section">
+        <div class="container">
+            <div class="paths-grid">
+                <!-- Path 1 -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                            </svg>
+                        </div>
+                        <div class="path-info">
+                            <h3>Tarmoq Administratori</h3>
+                            <p>Korxona tarmoqlarini loyihalash, o'rnatish va boshqarish</p>
+                        </div>
+                    </div>
+                    <div class="path-stats">
+                        <div class="path-stat">
+                            <span class="path-stat-value">6</span>
+                            <span class="path-stat-label">Kurslar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">85</span>
+                            <span class="path-stat-label">Soatlar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">4-6 oy</span>
+                            <span class="path-stat-label">Davomiyligi</span>
+                        </div>
+                    </div>
+                    <div class="path-courses">
+                        <div class="path-course">
+                            <span class="path-course-number">1</span>
+                            <span>Tarmoq Asoslari va Protokollar</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">2</span>
+                            <span>Cisco CCNA Tayyorgarlik</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">3</span>
+                            <span>Tarmoq Xavfsizligi</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">4</span>
+                            <span>Firewall Konfiguratsiyasi</span>
+                        </div>
+                    </div>
+                    <a href="courses.html" class="btn btn-primary btn-block">Yo'lni Boshlash</a>
+                </div>
+
+                <!-- Path 2 -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                                <rect x="9" y="9" width="6" height="6"></rect>
+                                <line x1="9" y1="1" x2="9" y2="4"></line>
+                                <line x1="15" y1="1" x2="15" y2="4"></line>
+                                <line x1="9" y1="20" x2="9" y2="23"></line>
+                                <line x1="15" y1="20" x2="15" y2="23"></line>
+                            </svg>
+                        </div>
+                        <div class="path-info">
+                            <h3>Linux Tizim Administratori</h3>
+                            <p>Linux serverlarini professional darajada boshqarish</p>
+                        </div>
+                    </div>
+                    <div class="path-stats">
+                        <div class="path-stat">
+                            <span class="path-stat-value">7</span>
+                            <span class="path-stat-label">Kurslar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">95</span>
+                            <span class="path-stat-label">Soatlar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">5-7 oy</span>
+                            <span class="path-stat-label">Davomiyligi</span>
+                        </div>
+                    </div>
+                    <div class="path-courses">
+                        <div class="path-course">
+                            <span class="path-course-number">1</span>
+                            <span>Linux Asoslari</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">2</span>
+                            <span>Linux Server Administratsiyasi</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">3</span>
+                            <span>Bash Scripting</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">4</span>
+                            <span>LPIC-1 Tayyorgarlik</span>
+                        </div>
+                    </div>
+                    <a href="courses.html" class="btn btn-primary btn-block">Yo'lni Boshlash</a>
+                </div>
+
+                <!-- Path 3 -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <div class="path-info">
+                            <h3>Kiberxavfsizlik Mutaxassisi</h3>
+                            <p>Tarmoq va tizimlar xavfsizligini ta'minlash</p>
+                        </div>
+                    </div>
+                    <div class="path-stats">
+                        <div class="path-stat">
+                            <span class="path-stat-value">8</span>
+                            <span class="path-stat-label">Kurslar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">120</span>
+                            <span class="path-stat-label">Soatlar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">6-8 oy</span>
+                            <span class="path-stat-label">Davomiyligi</span>
+                        </div>
+                    </div>
+                    <div class="path-courses">
+                        <div class="path-course">
+                            <span class="path-course-number">1</span>
+                            <span>Kiberxavfsizlik Asoslari</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">2</span>
+                            <span>Penetration Testing</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">3</span>
+                            <span>Firewall va IDS/IPS</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">4</span>
+                            <span>CompTIA Security+</span>
+                        </div>
+                    </div>
+                    <a href="courses.html" class="btn btn-primary btn-block">Yo'lni Boshlash</a>
+                </div>
+
+                <!-- Path 4 -->
+                <div class="path-card">
+                    <div class="path-header">
+                        <div class="path-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                            </svg>
+                        </div>
+                        <div class="path-info">
+                            <h3>Cloud Arxitektori</h3>
+                            <p>Bulutli infratuzilmalarni loyihalash va boshqarish</p>
+                        </div>
+                    </div>
+                    <div class="path-stats">
+                        <div class="path-stat">
+                            <span class="path-stat-value">6</span>
+                            <span class="path-stat-label">Kurslar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">90</span>
+                            <span class="path-stat-label">Soatlar</span>
+                        </div>
+                        <div class="path-stat">
+                            <span class="path-stat-value">5-6 oy</span>
+                            <span class="path-stat-label">Davomiyligi</span>
+                        </div>
+                    </div>
+                    <div class="path-courses">
+                        <div class="path-course">
+                            <span class="path-course-number">1</span>
+                            <span>Cloud Computing Asoslari</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">2</span>
+                            <span>AWS Solutions Architect</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">3</span>
+                            <span>Azure Administrator</span>
+                        </div>
+                        <div class="path-course">
+                            <span class="path-course-number">4</span>
+                            <span>Terraform va IaC</span>
+                        </div>
+                    </div>
+                    <a href="courses.html" class="btn btn-primary btn-block">Yo'lni Boshlash</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                            </svg>
+                        </div>
+                        <span>NetAdmin Academy</span>
+                    </a>
+                    <p class="footer-description">Professional tarmoq va tizim administratsiyasi ta'lim platformasi.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platforma</h4>
+                    <ul>
+                        <li><a href="courses.html">Kurslar</a></li>
+                        <li><a href="paths.html">O'quv Yo'llari</a></li>
+                        <li><a href="community.html">Jamoa</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Yordam</h4>
+                    <ul>
+                        <li><a href="contact.html">Bog'lanish</a></li>
+                        <li><a href="privacy.html">Maxfiylik</a></li>
+                        <li><a href="terms.html">Shartlar</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 NetAdmin Academy. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+    </script>
+
+    <style>
+        .paths-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .paths-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</body>
+</html>

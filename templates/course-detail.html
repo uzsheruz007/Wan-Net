@@ -1,0 +1,17 @@
+<h1>{{ course.title }}</h1>
+<p>{{ course.description|safe }}</p>
+
+<a href="#lessons" class="btn btn-primary">Boshlash</a>
+
+<hr>
+
+<h3>Mavzular</h3>
+<ul>
+    {% for lesson in lessons %}
+        <li>
+            <a href="{% url 'lesson_detail' lesson.id %}">
+                {{ lesson.order }}. {{ lesson.title }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>

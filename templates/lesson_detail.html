@@ -1,0 +1,18 @@
+<h2>{{ lesson.title }}</h2>
+<div>
+    {{ lesson.description|safe }}
+</div>
+
+{% if lesson.video %}
+    <h4>Video dars</h4>
+    <video controls width="100%">
+        <source src="{{ lesson.video.url }}">
+    </video>
+{% endif %}
+
+{% if lesson.slide %}
+    <h4>Slayd</h4>
+    <a href="{{ lesson.slide.url }}" target="_blank" class="btn btn-secondary">
+        Slaydni yuklab olish
+    </a>
+{% endif %}

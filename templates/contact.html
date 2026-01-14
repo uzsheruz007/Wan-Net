@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aloqa - NetAdmin Academy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                </div>
+                <span>NetAdmin Academy</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Bosh sahifa</a>
+                <a href="courses.html" class="nav-link">Kurslar</a>
+                <a href="paths.html" class="nav-link">O'quv Yo'llari</a>
+                <a href="community.html" class="nav-link">Jamoa</a>
+                <a href="contact.html" class="nav-link active">Aloqa</a>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-ghost">Kirish</a>
+                <a href="signup.html" class="btn btn-primary">Ro'yxatdan o'tish</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html" class="mobile-nav-link">Bosh sahifa</a>
+            <a href="courses.html" class="mobile-nav-link">Kurslar</a>
+            <a href="paths.html" class="mobile-nav-link">O'quv Yo'llari</a>
+            <a href="community.html" class="mobile-nav-link">Jamoa</a>
+            <a href="contact.html" class="mobile-nav-link active">Aloqa</a>
+            <div class="mobile-actions">
+                <a href="login.html" class="btn btn-ghost btn-block">Kirish</a>
+                <a href="signup.html" class="btn btn-primary btn-block">Ro'yxatdan o'tish</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Biz bilan <span class="text-primary">Bog'laning</span></h1>
+            <p class="page-description">Savollaringiz bormi? Biz sizga yordam berishdan mamnunmiz</p>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <div class="contact-grid">
+                <!-- Contact Info -->
+                <div class="contact-info">
+                    <h2>Bog'lanish Ma'lumotlari</h2>
+                    <p class="text-muted mb-4">Quyidagi usullardan birini tanlab biz bilan bog'laning</p>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value">info@netadmin.uz</div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Telefon</div>
+                            <div class="contact-value">+998 90 123 45 67</div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Manzil</div>
+                            <div class="contact-value">Toshkent, Chilonzor tumani, IT Park</div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="contact-label">Ish vaqti</div>
+                            <div class="contact-value">Dush-Juma: 9:00 - 18:00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Xabar Yuborish</h3>
+                        <p class="card-description">Formani to'ldiring, biz tez orada javob beramiz</p>
+                    </div>
+                    <form id="contactForm" onsubmit="handleSubmit(event)">
+                        <div class="form-group">
+                            <label class="form-label">Ismingiz</label>
+                            <input type="text" class="form-input" placeholder="Ismingizni kiriting" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" placeholder="email@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mavzu</label>
+                            <select class="form-select" required>
+                                <option value="">Mavzuni tanlang</option>
+                                <option value="general">Umumiy savol</option>
+                                <option value="courses">Kurslar haqida</option>
+                                <option value="technical">Texnik yordam</option>
+                                <option value="billing">To'lov masalalari</option>
+                                <option value="partnership">Hamkorlik</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Xabar</label>
+                            <textarea class="form-textarea" placeholder="Xabaringizni yozing..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Yuborish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Ko'p So'raladigan Savollar</h2>
+            </div>
+            <div class="accordion" style="max-width: 800px; margin: 0 auto;">
+                <div class="accordion-item active">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Kurslarni qanday sotib olaman?</span>
+                        <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        Ro'yxatdan o'tganingizdan so'ng, istalgan kursni tanlang va "Sotib olish" tugmasini bosing. To'lovni Click, Payme yoki bank kartasi orqali amalga oshirishingiz mumkin.
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Kurslarga umrbod kirish mumkinmi?</span>
+                        <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        Ha, bir marta sotib olingan kursga umrbod kirish huquqiga ega bo'lasiz. Barcha yangilanishlar ham bepul bo'ladi.
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Sertifikat olamanmi?</span>
+                        <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        Ha, har bir kursni muvaffaqiyatli tugatganingizda NetAdmin Academy sertifikatini olasiz. Bu sertifikat LinkedIn profilingizga qo'shish mumkin.
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>Pulni qaytarib olish mumkinmi?</span>
+                        <svg class="accordion-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="accordion-content">
+                        Ha, agar kurs sizga yoqmasa, 7 kun ichida to'liq pulni qaytarib olishingiz mumkin. Hech qanday savol berilmaydi.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 NetAdmin Academy. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all items
+            document.querySelectorAll('.accordion-item').forEach(i => {
+                i.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert('Xabaringiz yuborildi! Tez orada javob beramiz.');
+            event.target.reset();
+        }
+    </script>
+</body>
+</html>

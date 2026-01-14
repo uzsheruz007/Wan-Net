@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kurslar - NetAdmin Academy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                    </svg>
+                </div>
+                <span>NetAdmin Academy</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html" class="nav-link">Bosh sahifa</a>
+                <a href="courses.html" class="nav-link active">Kurslar</a>
+                <a href="paths.html" class="nav-link">O'quv Yo'llari</a>
+                <a href="community.html" class="nav-link">Jamoa</a>
+                <a href="contact.html" class="nav-link">Aloqa</a>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-ghost">Kirish</a>
+                <a href="signup.html" class="btn btn-primary">Ro'yxatdan o'tish</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="index.html" class="mobile-nav-link">Bosh sahifa</a>
+            <a href="courses.html" class="mobile-nav-link active">Kurslar</a>
+            <a href="paths.html" class="mobile-nav-link">O'quv Yo'llari</a>
+            <a href="community.html" class="mobile-nav-link">Jamoa</a>
+            <a href="contact.html" class="mobile-nav-link">Aloqa</a>
+            <div class="mobile-actions">
+                <a href="login.html" class="btn btn-ghost btn-block">Kirish</a>
+                <a href="signup.html" class="btn btn-primary btn-block">Ro'yxatdan o'tish</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1 class="page-title">Barcha <span class="text-primary">Kurslar</span></h1>
+            <p class="page-description">Professional tarmoq va tizim administratsiyasi bo'yicha kurslarimizni o'rganing</p>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses-page">
+        <div class="container">
+            <!-- Search -->
+            <div class="search-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" placeholder="Kurslarni qidirish..." id="searchInput" onkeyup="filterCourses()">
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterByCategory('all', this)">Barchasi</button>
+                <button class="filter-btn" onclick="filterByCategory('network', this)">Tarmoq</button>
+                <button class="filter-btn" onclick="filterByCategory('linux', this)">Linux</button>
+                <button class="filter-btn" onclick="filterByCategory('windows', this)">Windows</button>
+                <button class="filter-btn" onclick="filterByCategory('security', this)">Xavfsizlik</button>
+                <button class="filter-btn" onclick="filterByCategory('cloud', this)">Cloud</button>
+                <button class="filter-btn" onclick="filterByCategory('devops', this)">DevOps</button>
+            </div>
+
+            <!-- Courses Grid -->
+            
+<div class="courses-grid">
+    {% for course in courses %}
+        <div class="course-card">
+            <h3>{{ course.title }}</h3>
+            <p>{{ course.short_description }}</p>
+
+            <a href="{% url 'course_detail' course.id %}">
+                Batafsil
+            </a>
+        </div>
+    {% empty %}
+        <p>Hozircha kurslar yo‘q</p>
+    {% endfor %}
+</div>
+
+                <!-- Course 2 -->
+                <div class="course-card" data-category="linux">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Linux administratsiyasi">
+                        <span class="course-badge badge-intermediate">O'rta</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Linux</div>
+                        <h3 class="course-title">Linux Server Administratsiyasi</h3>
+                        <p class="course-description">Linux serverlarini o'rnatish, sozlash va boshqarishni o'rganing</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 20 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 36 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★★</span>
+                                <span>4.8 (189)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 3 -->
+                <div class="course-card" data-category="security">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Kiberxavfsizlik">
+                        <span class="course-badge badge-advanced">Yuqori</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Xavfsizlik</div>
+                        <h3 class="course-title">Kiberxavfsizlik Asoslari</h3>
+                        <p class="course-description">Tarmoq xavfsizligi, penetration testing va himoya usullari</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 25 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 42 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★★</span>
+                                <span>4.9 (312)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 4 -->
+                <div class="course-card" data-category="windows">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Windows Server">
+                        <span class="course-badge badge-intermediate">O'rta</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Windows</div>
+                        <h3 class="course-title">Windows Server va Active Directory</h3>
+                        <p class="course-description">Windows Server o'rnatish, AD, Group Policy va boshqarish</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 18 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 32 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★☆</span>
+                                <span>4.7 (156)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 5 -->
+                <div class="course-card" data-category="cloud">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Cloud Computing">
+                        <span class="course-badge badge-intermediate">O'rta</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Cloud</div>
+                        <h3 class="course-title">Cloud Computing Asoslari</h3>
+                        <p class="course-description">AWS, Azure va GCP platformalari bilan ishlashni o'rganing</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 22 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 38 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★★</span>
+                                <span>4.8 (267)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 6 -->
+                <div class="course-card" data-category="devops">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Docker va Kubernetes">
+                        <span class="course-badge badge-advanced">Yuqori</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">DevOps</div>
+                        <h3 class="course-title">Docker va Kubernetes</h3>
+                        <p class="course-description">Konteynerlashtirish va orkestrlash texnologiyalarini o'rganing</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 28 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 45 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★★</span>
+                                <span>4.9 (198)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 7 -->
+                <div class="course-card" data-category="network">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Cisco CCNA">
+                        <span class="course-badge badge-intermediate">O'rta</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Tarmoq</div>
+                        <h3 class="course-title">Cisco CCNA Tayyorgarlik</h3>
+                        <p class="course-description">Cisco routerlar va switchlar bilan ishlash, CCNA sertifikati</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 35 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 52 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★★</span>
+                                <span>4.9 (423)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 8 -->
+                <div class="course-card" data-category="linux">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Bash Scripting">
+                        <span class="course-badge badge-intermediate">O'rta</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Linux</div>
+                        <h3 class="course-title">Bash Scripting va Avtomatlashtirish</h3>
+                        <p class="course-description">Shell skriptlar yozish va tizim vazifalarini avtomatlashtirish</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 15 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 28 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★☆</span>
+                                <span>4.7 (145)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course 9 -->
+                <div class="course-card" data-category="security">
+                    <div class="course-image">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Firewall">
+                        <span class="course-badge badge-advanced">Yuqori</span>
+                    </div>
+                    <div class="course-content">
+                        <div class="course-category">Xavfsizlik</div>
+                        <h3 class="course-title">Firewall va Tarmoq Xavfsizligi</h3>
+                        <p class="course-description">pfSense, iptables va enterprise firewall yechimlari</p>
+                        <div class="course-meta">
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> 20 soat</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> 34 dars</span>
+                        </div>
+                        <div class="course-footer">
+                            <div class="course-rating">
+                                <span class="stars">★★★★★</span>
+                                <span>4.8 (178)</span>
+                            </div>
+                            <a href="course-detail.html" class="btn btn-primary btn-sm">Batafsil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                            </svg>
+                        </div>
+                        <span>NetAdmin Academy</span>
+                    </a>
+                    <p class="footer-description">Professional tarmoq va tizim administratsiyasi ta'lim platformasi.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Platforma</h4>
+                    <ul>
+                        <li><a href="courses.html">Kurslar</a></li>
+                        <li><a href="paths.html">O'quv Yo'llari</a></li>
+                        <li><a href="community.html">Jamoa</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Yordam</h4>
+                    <ul>
+                        <li><a href="contact.html">Bog'lanish</a></li>
+                        <li><a href="privacy.html">Maxfiylik</a></li>
+                        <li><a href="terms.html">Shartlar</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 NetAdmin Academy. Barcha huquqlar himoyalangan.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+
+        function filterCourses() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.course-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.course-title').textContent.toLowerCase();
+                const description = card.querySelector('.course-description').textContent.toLowerCase();
+                
+                if (title.includes(searchInput) || description.includes(searchInput)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function filterByCategory(category, btn) {
+            const cards = document.querySelectorAll('.course-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
