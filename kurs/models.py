@@ -1,86 +1,74 @@
 from django.db import models
-from django.urls import reverse
-from ckeditor.fields import RichTextField
+from django.contrib.auth.models import User  # User modelini import qilishni unutmang!
 
-
+# 1. Kurs modeli
 class Course(models.Model):
-    LEVEL_CHOICES = (
-        ('beginner', "Boshlang'ich"),
-        ('intermediate', "O'rta"),
-        ('advanced', "Yuqori"),
-    )
-
-    CATEGORY_CHOICES = (
-        ('network', 'Tarmoq'),
-        ('linux', 'Linux'),
-        ('security', 'Xavfsizlik'),
-        ('cloud', 'Cloud'),
-        ('devops', 'DevOps'),
-    )
-
     title = models.CharField(max_length=200)
-    short_description = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=200)
+    description = models.TextField()
+    level = models.CharField(max_length=50)
+    duration = models.CharField(max_length=50)
+    icon = models.CharField(max_length=50, default="fas fa-book")
 
-    description = RichTextField(
-        blank=True,
-        default="Tavsif kiritilmagan"
-    )
-
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    level = models.CharField(max_length=20, choices=LEVEL_CHOICES)
-
-    image = models.ImageField(
-        upload_to='courses/images/',
-        blank=True,
-        null=True
-    )
-
-    duration_hours = models.PositiveIntegerField(
-        default=0
-    )
-    lessons_count = models.PositiveIntegerField(
-        default=0
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
-    def get_absolute_url(self):
-        return reverse('course_detail', args=[self.id])
 
-
-class Lesson(models.Model):
-    course = models.ForeignKey(
-        Course,
-        on_delete=models.CASCADE,
-        related_name='lessons'
-    )
-
+# 2. Modul modeli
+class Module(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="modules")
     title = models.CharField(max_length=200)
-
-    description = RichTextField(
-        blank=True,
-        default=""
-    )
-
     order = models.PositiveIntegerField()
 
-    video = models.FileField(
-        upload_to='courses/videos/',
-        blank=True,
-        null=True
-    )
+    def __str__(self):
+        return f"{self.order}. {self.title}"
 
-    slide = models.FileField(
-        upload_to='courses/slides/',
-        blank=True,
-        null=True
-    )
+
+# 3. Dars modeli
+class Lesson(models.Model):
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name="lessons")
+    title = models.CharField(max_length=200)
+    video_url = models.URLField(blank=True)
+    content = models.TextField()
+    order = models.PositiveIntegerField()
+    is_free = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.course.title} - {self.title}"
+        return self.title
+
+
+# 4. Test savollari
+class Quiz(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="quizzes")
+    question = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.question
+
+
+# 5. Test javoblari
+class QuizOption(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="options")
+    text = models.CharField(max_length=200)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
+
+
+class LessonProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE) # 'Lesson' deb yozdik, mabodo Lesson classi pastroqda bo'lsa
+    is_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['order']
+        # Bir foydalanuvchi bir darsni faqat bir marta "progress" qila olishi uchun
+        unique_together = ('user', 'lesson')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.lesson.title}"
+    
+
+

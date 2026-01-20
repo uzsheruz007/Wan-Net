@@ -1,0 +1,4 @@
+<h1>Salom, {{ request.user.first_name }}</h1>
+<p>Email: {{ request.user.email }}</p>
+
+<a href="{% url 'logout' %}">Chiqish</a>

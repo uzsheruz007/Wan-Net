@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetAdmin Pro - Kurslar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- UMUMIY SOZLAMALAR --- */
+        :root {
+            --primary: #00f2ff;
+            --secondary: #7b2cbf;
+            --bg-dark: #050a14;
+            --card-bg: #101624;
+            --text-light: #e0e6ed;
+            --text-gray: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border_box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-dark); color: var(--text-light); line-height: 1.6; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* HEADER */
+        header {
+            background: rgba(5, 10, 20, 0.8); padding: 20px 5%; position: fixed; width: 100%; top: 0; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+            backdrop-filter: blur(15px);
+        }
+        .logo { font-size: 24px; font-weight: 700; color: var(--primary); text-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+        .logo span { color: #fff; }
+        nav ul { display: flex; gap: 30px; }
+        nav a:hover { color: var(--primary); text-shadow: 0 0 5px var(--primary); }
+        .btn-cta {
+            background: linear-gradient(45deg, var(--secondary), var(--primary)); padding: 10px 25px; border-radius: 4px; font-weight: 600; color: #000;
+            transition: 0.3s; border: none; cursor: pointer;
+        }
+        .btn-cta:hover { box-shadow: 0 0 20px rgba(0, 242, 255, 0.6); transform: translateY(-2px); }
+
+        /* HERO KIÇRAYTIRILGAN (Kurslar bo'limiga urg'u berish uchun) */
+        .hero {
+            height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative;
+            background: radial-gradient(circle at center, #1a253a 0%, var(--bg-dark) 80%); margin-top: 60px;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 20px; color: #fff; }
+
+        /* --- YANGI KURSLAR BO'LIMI --- */
+        .features { padding: 80px 10%; background: var(--bg-dark); }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 60px; }
+        .section-title span { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Kattaroq kartalar */
+            gap: 40px;
+        }
+
+        .course-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Hover effekti: Neon chegara */
+        .course-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px -10px rgba(0, 242, 255, 0.2);
+        }
+
+        /* Karta ichidagi rangli chiziq */
+        .card-top-line {
+            height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            width: 100%;
+        }
+
+        .card-content { padding: 30px; flex-grow: 1; }
+
+        /* Icon va Sarlavha */
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .icon-box {
+            width: 60px; height: 60px;
+            background: rgba(0, 242, 255, 0.1);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--primary);
+        }
+        .course-title h3 { font-size: 1.4rem; color: #fff; }
+        .course-title span { font-size: 0.85rem; color: var(--text-gray); }
+
+        /* Kurs haqida qisqacha */
+        .card-desc { color: var(--text-gray); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.7; }
+
+        /* Mavzular ro'yxati */
+        .topic-list {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .topic-list li {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #d1d5db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .topic-list li:last-child { margin-bottom: 0; }
+        .topic-list i { color: var(--primary); font-size: 12px; }
+
+        /* Teglar (Tags) */
+        .tags { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tag {
+            font-size: 12px; padding: 5px 12px; border-radius: 20px; font-weight: 500;
+        }
+        .tag-level { background: rgba(123, 44, 191, 0.2); color: #d8b4fe; border: 1px solid rgba(123, 44, 191, 0.3); }
+        .tag-time { background: rgba(0, 242, 255, 0.1); color: var(--primary); border: 1px solid rgba(0, 242, 255, 0.3); }
+
+        /* Karta tugmasi */
+        .card-btn {
+            display: block; width: 100%; text-align: center; padding: 12px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; border-radius: 8px; transition: 0.3s; font-weight: 600;
+        }
+        .card-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .courses-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+
+    
+
+    <section class="features">
+        <h2 class="section-title">O'quv <span>Modullari</span></h2>
+        
+        <div class="courses-grid">
+            
+            
+             <div class="course-card">
+                <div class="card-top-line"></div>
+                <div class="card-content">
+                    <div class="card-header">
+                        <div class="icon-box"><i class="fas fa-user-shield"></i></div>
+                        <div class="course-title">
+                            <h3>Kiberxavfsizlik</h3>
+                            <span>Network Security</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tags">
+                        <span class="tag tag-level">Advanced</span>
+                        <span class="tag tag-time">1.5 oy</span>
+                    </div>
+
+                    <p class="card-desc">Tarmoqni xakerlardan himoya qilish. Firewall sozlash va zaifliklarni topish usullari.</p>
+                    
+                    <ul class="topic-list">
+                        <li><i class="fas fa-check-circle"></i> VPN Tunellar (IPsec/OpenVPN)</li>
+                        <li><i class="fas fa-check-circle"></i> Firewall (Mikrotik/PaloAlto)</li>
+                        <li><i class="fas fa-check-circle"></i> DDOS hujum turlari</li>
+                        <li><i class="fas fa-check-circle"></i> Pen-testing asoslari</li>
+                    </ul>
+
+                    <a href="#" class="card-btn">Dasturni ko'rish</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+ 
+</body>
+</html>

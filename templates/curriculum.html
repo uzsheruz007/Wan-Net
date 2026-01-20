@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetAdmin Pro - Dars Rejasi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- SOZLAMALAR --- */
+        :root {
+            --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.4);
+            --secondary: #7b2cbf;
+            --bg-dark: #050a14;
+            --card-bg: #0f1623;
+            --item-bg: rgba(255, 255, 255, 0.03);
+            --text-light: #e0e6ed;
+            --text-gray: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; }
+
+        /* --- SECTION STYLE --- */
+        .section-padding { 
+            padding: 80px 5%; 
+            background: radial-gradient(circle at top right, #1a253a 0%, var(--bg-dark) 80%);
+            min-height: 100vh;
+        }
+
+        .section-title { 
+            text-align: center; font-size: 2.5rem; margin-bottom: 50px; font-weight: 700; 
+        }
+        .section-title span { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
+
+        /* --- ACCORDION CONTAINER --- */
+        .accordion-container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+
+        /* --- ACCORDION ITEM (Yopiq holat) --- */
+        .accordion-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+
+        /* Chap tomondagi yorug'lik chizig'i (Boshida ko'rinmaydi) */
+        .accordion-item::before {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+            background: var(--primary); opacity: 0; transition: 0.3s;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        /* ACTIVE HOLAT (Ochilganda) */
+        .accordion-item.active {
+            border-color: rgba(0, 242, 255, 0.3);
+            background: rgba(15, 22, 35, 0.95);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+            transform: translateX(5px); /* Biroz o'ngga suriladi */
+        }
+        .accordion-item.active::before { opacity: 1; }
+
+        /* --- HEADER QISMI --- */
+        .accordion-header {
+            padding: 20px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: 0.3s;
+        }
+        .accordion-header:hover { background: rgba(255, 255, 255, 0.02); }
+
+        .header-left { display: flex; align-items: center; gap: 25px; width: 85%; }
+
+        /* Modul raqami dizayni */
+        .module-number {
+            font-size: 2rem; font-weight: 800; color: rgba(255, 255, 255, 0.05);
+            min-width: 50px; transition: 0.3s;
+        }
+        .accordion-item.active .module-number { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
+
+        .header-text { width: 100%; }
+        
+        /* Modul sarlavhasi (Standartlashtirilgan) */
+        .header-text h3 {
+            font-size: 1.1rem; color: #fff; margin-bottom: 4px;
+            /* 1 qatorga sig'dirish, ortig'ini kesish */
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 90%; 
+        }
+
+        .lesson-count { font-size: 0.85rem; color: var(--text-gray); display: flex; align-items: center; gap: 5px; }
+        .lesson-count i { font-size: 10px; color: var(--secondary); }
+
+        /* Arrow Icon */
+        .arrow-icon {
+            width: 35px; height: 35px; border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-gray); transition: 0.4s;
+        }
+        .accordion-item.active .arrow-icon { 
+            transform: rotate(180deg); 
+            background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* --- CONTENT QISMI --- */
+        .accordion-content {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.5s ease-out; /* Silliq ochilish */
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .content-inner { padding: 0 30px 30px 30px; }
+
+        /* Tavsif (Description) */
+        .topic-desc {
+            margin: 15px 0 25px 0; color: #b0b8c4; font-size: 0.95rem; line-height: 1.6;
+            padding-left: 20px; border-left: 2px solid var(--secondary);
+        }
+
+        /* --- DARSLAR RO'YXATI (LI) --- */
+        .lesson-list-acc { list-style: none; }
+
+        .lesson-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: var(--item-bg);
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .lesson-row:hover {
+            background: rgba(0, 242, 255, 0.05);
+            border-color: rgba(0, 242, 255, 0.2);
+            padding-left: 20px; /* O'ngga siljish effekti */
+        }
+
+        .lesson-left { display: flex; align-items: center; gap: 15px; overflow: hidden; }
+
+        /* Play/Lock Icon */
+        .status-icon {
+            font-size: 14px; min-width: 20px; text-align: center;
+        }
+        .fa-play-circle { color: var(--primary); }
+        .fa-lock { color: var(--text-gray); opacity: 0.5; }
+
+        /* Dars nomi (Standartlashtirilgan) */
+        .lesson-title {
+            color: var(--text-light); font-size: 0.95rem;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 400px; /* Ekran kichrayganda qisqaradi */
+        }
+        .lesson-row:hover .lesson-title { color: #fff; }
+
+        /* O'ng tomon (Vaqt / Badge) */
+        .lesson-meta {
+            font-size: 11px; font-weight: 600;
+            background: rgba(255,255,255,0.08); padding: 4px 8px; border-radius: 6px;
+            color: var(--text-gray); white-space: nowrap;
+        }
+        .pro-badge { background: rgba(123, 44, 191, 0.2); color: #d8b4fe; }
+        .free-badge { background: rgba(0, 242, 255, 0.1); color: var(--primary); }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            .section-title { font-size: 1.8rem; }
+            .accordion-header { padding: 15px 20px; }
+            .module-number { font-size: 1.5rem; min-width: 35px; }
+            .arrow-icon { width: 30px; height: 30px; font-size: 12px; }
+            .content-inner { padding: 0 20px 20px 20px; }
+            .lesson-title { max-width: 200px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+<section id="curriculum" class="section-padding">
+
+    <h2 class="section-title">
+        Kurs <span>Dasturi</span>
+    </h2>
+
+    <div class="accordion-container">
+
+        {% for module in course.modules.all %}
+        <div class="accordion-item">
+
+            <div class="accordion-header">
+                <div class="header-left">
+                    <span class="module-number">
+                        {{ forloop.counter|stringformat:"02d" }}
+                    </span>
+
+                    <div class="header-text">
+                        <h3>{{ module.title }}</h3>
+                        <span class="lesson-count">
+                            <i class="fas fa-video"></i> {{ module.lessons.count }} ta dars
+                        </span>
+                    </div>
+                </div>
+
+                <div class="arrow-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+
+            <div class="accordion-content">
+                <div class="content-inner">
+                    
+                    {% if module.description %}
+                    <p class="topic-desc">
+                        {{ module.description }}
+                    </p>
+                    {% endif %}
+
+                    <ul class="lesson-list-acc">
+                        {% for lesson in module.lessons.all %}
+                        
+                        <a href="{% url 'lesson_detail' lesson.id %}" style="text-decoration: none;">
+                            <li class="lesson-row">
+                                <div class="lesson-left">
+                                    <span class="status-icon">
+                                        {% if lesson.is_free %}
+                                            <i class="fas fa-play-circle"></i> {% else %}
+                                            <i class="fas fa-lock"></i> {% endif %}
+                                    </span>
+                                    
+                                    <span class="lesson-title">
+                                        {{ lesson.order }}. {{ lesson.title }}
+                                    </span>
+                                </div>
+
+                                <div class="lesson-right">
+                                    {% if lesson.is_free %}
+                                        <span class="lesson-meta free-badge">
+                                            {{ lesson.duration|default:"Video" }}
+                                        </span>
+                                    {% else %}
+                                        <span class="lesson-meta pro-badge">PRO</span>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        </a>
+
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+
+<script>
+    // Akkordeon Logikasi (Faqat bittasi ochiq turadi)
+    const accordions = document.querySelectorAll('.accordion-item');
+
+    accordions.forEach(item => {
+        const header = item.querySelector('.accordion-header');
+
+        header.addEventListener('click', () => {
+            // 1. Boshqa hammasini yopish
+            accordions.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                    otherItem.querySelector('.accordion-content').style.maxHeight = null;
+                }
+            });
+
+            // 2. Tanlanganini ochish yoki yopish
+            item.classList.toggle('active');
+            const content = item.querySelector('.accordion-content');
+            
+            if (item.classList.contains('active')) {
+                // ScrollHeight ichki kontentning haqiqiy balandligini oladi
+                content.style.maxHeight = content.scrollHeight + "px";
+            } else {
+                content.style.maxHeight = null;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

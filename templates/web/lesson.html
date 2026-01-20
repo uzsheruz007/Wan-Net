@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ current_lesson.title }} - {{ course.title }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS oldingi kod bilan bir xil */
+        :root { --primary: #00f2ff; --bg-dark: #050a14; --bg-panel: #0f1623; --text-light: #e0e6ed; --success: #00c851; --danger: #ff4444; }
+        body { background: var(--bg-dark); color: var(--text-light); height: 100vh; display: flex; margin: 0; font-family: 'Poppins', sans-serif; }
+        a { text-decoration: none; color: inherit; }
+        
+        .sidebar { width: 300px; background: var(--bg-panel); border-right: 1px solid #333; overflow-y: auto; padding-bottom: 20px; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .module-title { font-size: 11px; text-transform: uppercase; color: #64748b; margin: 20px 15px 10px; font-weight: 700; }
+        
+        .lesson-item { display: flex; gap: 10px; padding: 10px 15px; color: #94a3b8; transition: 0.2s; font-size: 14px; }
+        .lesson-item:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .lesson-item.active { background: rgba(0, 242, 255, 0.1); color: var(--primary); border-left: 3px solid var(--primary); }
+        
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .video-wrapper { width: 100%; aspect-ratio: 16/9; background: #000; }
+        
+        .lesson-tabs { display: flex; background: var(--bg-panel); border-bottom: 1px solid #333; }
+        .tab-btn { padding: 15px 25px; background: none; border: none; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--primary); border-color: var(--primary); }
+        
+        .content-body { padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Quiz Styles */
+        .quiz-card { background: #1e293b; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
+        .options label { display: block; padding: 10px; background: rgba(255,255,255,0.05); margin-top: 5px; cursor: pointer; border-radius: 5px; }
+        .options input { margin-right: 10px; }
+        .result-msg { margin-top: 10px; font-weight: bold; }
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'home' %}"><i class="fas fa-arrow-left"></i> Chiqish</a>
+            <span style="font-size: 12px; color: gray;">{{ course.title }}</span>
+        </div>
+
+        {% for module in modules %}
+            <div class="module-title">{{ module.order }}-Modul: {{ module.title }}</div>
+            
+            {% for lesson in module.lessons.all %}
+            <a href="{% url 'lesson_detail' course.slug lesson.id %}" 
+               class="lesson-item {% if lesson.id == current_lesson.id %}active{% endif %}">
+                
+                {% if lesson.id == current_lesson.id %}
+                    <i class="fas fa-play-circle"></i>
+                {% elif lesson.is_preview %}
+                    <i class="far fa-play-circle"></i>
+                {% else %}
+                    <i class="fas fa-lock"></i>
+                {% endif %}
+                
+                <span>{{ lesson.order }}. {{ lesson.title }}</span>
+            </a>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div class="main-content">
+        
+        <div class="video-wrapper">
+            {% if current_lesson.video_url %}
+                <iframe width="100%" height="100%" src="{{ current_lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+            {% else %}
+                <div style="display:flex; align-items:center; justify-content:center; height:100%; color:gray;">
+                    Video mavjud emas
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="lesson-tabs">
+            <button class="tab-btn active" onclick="openTab('info')">Ma'lumot</button>
+            <button class="tab-btn" onclick="openTab('quiz')">Test ({{ current_lesson.questions.count }})</button>
+        </div>
+
+        <div class="content-body">
+            
+            <div id="info" class="tab-content active">
+                <h1 style="margin-top:0;">{{ current_lesson.title }}</h1>
+                <div style="line-height: 1.8; color: #cbd5e1;">
+                    {{ current_lesson.content|safe|linebreaks }}
+                </div>
+            </div>
+
+            <div id="quiz" class="tab-content">
+                {% if current_lesson.questions.exists %}
+                    {% for question in current_lesson.questions.all %}
+                    <div class="quiz-card" id="q-{{ question.id }}">
+                        <p class="question" style="font-size:1.1rem; font-weight:bold;">{{ forloop.counter }}. {{ question.question_text }}</p>
+                        
+                        <div class="options">
+                            <label><input type="radio" name="q{{ question.id }}" value="A" data-correct="{{ question.correct_answer }}"> {{ question.option_a }}</label>
+                            <label><input type="radio" name="q{{ question.id }}" value="B" data-correct="{{ question.correct_answer }}"> {{ question.option_b }}</label>
+                            <label><input type="radio" name="q{{ question.id }}" value="C" data-correct="{{ question.correct_answer }}"> {{ question.option_c }}</label>
+                            <label><input type="radio" name="q{{ question.id }}" value="D" data-correct="{{ question.correct_answer }}"> {{ question.option_d }}</label>
+                        </div>
+                        <button onclick="checkAnswer({{ question.id }})" style="margin-top:10px; padding:5px 15px; background:var(--primary); border:none; border-radius:4px; cursor:pointer;">Tekshirish</button>
+                        <p class="result-msg" id="res-{{ question.id }}"></p>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Bu dars uchun testlar yo'q.</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Tablarni almashtirish
+        function openTab(name) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name).style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+
+        // Testni tekshirish
+        function checkAnswer(id) {
+            const options = document.getElementsByName('q' + id);
+            const resultMsg = document.getElementById('res-' + id);
+            let selected = null;
+            let correct = null;
+
+            for (let opt of options) {
+                if (opt.checked) {
+                    selected = opt.value;
+                    correct = opt.getAttribute('data-correct'); // To'g'ri javobni olamiz
+                }
+            }
+
+            if (!selected) {
+                resultMsg.innerText = "Javob tanlang!";
+                resultMsg.className = "result-msg text-danger";
+                return;
+            }
+
+            if (selected === correct) {
+                resultMsg.innerText = "To'g'ri javob! ✅";
+                resultMsg.className = "result-msg text-success";
+            } else {
+                resultMsg.innerText = "Noto'g'ri javob ❌";
+                resultMsg.className = "result-msg text-danger";
+            }
+        }
+    </script>
+
+</body>
+</html>

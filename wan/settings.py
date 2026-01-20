@@ -28,12 +28,22 @@ SECRET_KEY = 'django-insecure-6@zfudnxm783y27xy4)v6_v)gu#y*5gb38tg&6pj0johbc7vr4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+# settings.py faylining oxiriga:
 
+# Agar user login qilmagan bo'lsa, qaysi URL ga borsin?
+LOGIN_URL = 'login' 
+
+# Login qilgandan keyin qayerga borsin? (Masalan, Bosh sahifaga)
+LOGIN_REDIRECT_URL = 'course_list' 
+
+# Logout qilgandan keyin qayerga borsin?
+LOGOUT_REDIRECT_URL = 'login'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_ckeditor_5',
     'kurs',
 ]
 
@@ -53,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'wan.urls'
 
@@ -135,3 +147,32 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Media fayllar uchun
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
+            'alignment', '|',
+            'numberedList', 'bulletedList', '|',
+            'insertTable', '|',
+            'link', 'imageUpload', '|',
+            'sourceEditing', '|',
+            'undo', 'redo'
+        ],
+        'table': {
+            'contentToolbar': [
+                'tableColumn',
+                'tableRow',
+                'mergeTableCells',
+                'tableCellProperties',
+                'tableProperties'
+            ]
+        }
+    }
+}
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'

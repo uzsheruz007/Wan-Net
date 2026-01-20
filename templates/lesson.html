@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ lesson.title }} - NetAdmin Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 1. GLOBAL O'ZGARUVCHILAR --- */
+        :root {
+            --primary: #00f2ff;
+            --primary-glow: rgba(0, 242, 255, 0.4);
+            --secondary: #7b2cbf;
+            --bg-dark: #050a14;
+            --bg-panel: #0b111e;
+            --bg-card: #151e2e;
+            --text-light: #e0e6ed;
+            --text-gray: #94a3b8;
+            --border: rgba(255, 255, 255, 0.05);
+            --success: #00d26a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-light); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+        }
+
+        /* Scrollbar dizayni */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #2d3748; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* --- 2. SIDEBAR (CHAP PANEL) --- */
+        .sidebar {
+            width: 350px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column;
+            height: 100%;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(11, 17, 30, 0.95);
+        }
+
+        .back-link {
+            color: var(--text-gray); font-size: 0.9rem; display: flex; align-items: center; gap: 8px;
+            margin-bottom: 15px; transition: 0.3s;
+        }
+        .back-link:hover { color: var(--primary); transform: translateX(-3px); }
+
+        .progress-container { margin-top: 10px; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; color: var(--text-gray); }
+        .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--success); width: {{ progress }}%; box-shadow: 0 0 10px var(--success); transition: width 1s ease; }
+
+        .modules-list { flex-grow: 1; overflow-y: auto; padding: 10px; }
+        .module-group { margin-bottom: 20px; }
+        .module-label {
+            font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-gray);
+            letter-spacing: 1px; margin: 15px 10px 8px;
+        }
+
+        .lesson-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 15px;
+            margin-bottom: 4px;
+            border-radius: 8px;
+            color: #b0b8c4;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .lesson-link:hover { background: rgba(255, 255, 255, 0.03); color: #fff; }
+
+        .lesson-link.active {
+            background: linear-gradient(90deg, rgba(0, 242, 255, 0.1), transparent);
+            border-left-color: var(--primary);
+            color: #fff;
+        }
+        .lesson-link.active i { color: var(--primary); animation: pulse 2s infinite; }
+
+        .lesson-icon { font-size: 14px; min-width: 20px; text-align: center; }
+
+        /* --- 3. MAIN CONTENT (ASOSIY QISM) --- */
+        .main-wrapper {
+            flex-grow: 1;
+            display: flex; flex-direction: column;
+            height: 100%;
+            overflow-y: auto;
+            position: relative;
+            background: radial-gradient(circle at center, #0f1623 0%, var(--bg-dark) 100%);
+        }
+
+        /* Video Player va Ambient Light */
+        .video-container {
+            width: 100%;
+            background: #000;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .video-responsive {
+            position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%;
+        }
+        .video-responsive iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        
+        .video-container::after {
+            content: ''; position: absolute; top: 10%; left: 0; right: 0; bottom: 0;
+            background: var(--primary); filter: blur(80px); opacity: 0.1; z-index: -1;
+        }
+
+        /* --- 4. TABS (MENYU) --- */
+        .content-tabs {
+            position: sticky; top: 0;
+            background: rgba(5, 10, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 40px;
+            display: flex; gap: 30px;
+            z-index: 20;
+        }
+
+        .tab-btn {
+            background: transparent; border: none; padding: 20px 5px;
+            color: var(--text-gray); font-size: 15px; font-weight: 500; cursor: pointer; position: relative; transition: 0.3s;
+        }
+        .tab-btn:hover { color: #fff; }
+        .tab-btn.active { color: var(--primary); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px;
+            background: var(--primary); box-shadow: 0 -2px 10px var(--primary-glow);
+        }
+
+        /* --- 5. CONTENT BODY --- */
+        .tab-content { padding: 40px; max-width: 900px; margin: 0 auto; display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1.lesson-title { font-size: 2rem; margin-bottom: 20px; color: #fff; }
+        .lesson-desc { color: #d1d5db; line-height: 1.8; font-size: 1rem; }
+
+        /* --- 6. FOOTER ACTION BAR (TUGMALAR) --- */
+        .lesson-footer {
+            margin-top: 60px; padding-top: 30px; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .btn-prev { color: var(--text-gray); font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-prev:hover { color: #fff; transform: translateX(-5px); }
+
+        /* SEHRLI TUGMA */
+        .btn-next-step {
+            position: relative; display: flex; align-items: center; gap: 12px;
+            padding: 14px 30px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 1rem;
+            cursor: pointer; overflow: hidden; transition: all 0.4s;
+            box-shadow: 0 5px 20px rgba(0, 242, 255, 0.25);
+        }
+        .btn-next-step:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 10px 30px rgba(0, 242, 255, 0.4); }
+
+        .btn-icon {
+            background: rgba(255,255,255,0.2); width: 24px; height: 24px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; transition: 0.4s;
+        }
+        .btn-text, .btn-hover-text { transition: 0.4s; }
+        
+        .btn-hover-text {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, 150%);
+            opacity: 0; width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        /* Hover effekti */
+        .btn-next-step:hover .btn-text, .btn-next-step:hover .btn-icon { transform: translateY(-150%); opacity: 0; }
+        .btn-next-step:hover .btn-hover-text { transform: translate(-50%, -50%); opacity: 1; }
+        
+        /* Loading */
+        .btn-next-step.loading { pointer-events: none; filter: grayscale(0.5); }
+
+        /* Mobile */
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; max-height: 300px; order: 2; }
+            .main-wrapper { height: auto; order: 1; }
+            .content-tabs { padding: 0 20px; gap: 15px; }
+            .tab-btn { font-size: 13px; }
+            .tab-content { padding: 25px 20px; }
+        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'course_detail' lesson.module.course.id %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Kursga qaytish
+            </a>
+            
+            
+        </div>
+
+        <div class="modules-list">
+            {% for module in lesson.module.course.modules.all %}
+                <div class="module-group">
+                    <div class="module-label">{{ module.order }}-Modul: {{ module.title }}</div>
+
+                    {% for l in module.lessons.all %}
+                        <a href="{% url 'lesson_detail' l.id %}" 
+                           class="lesson-link {% if l.id == lesson.id %}active{% endif %}">
+                            
+                            <span class="lesson-icon">
+                                {% if l.id == lesson.id %}
+                                    <i class="fas fa-play"></i>
+                                {% elif l in completed_lessons %}
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                {% else %}
+                                    <i class="fas fa-circle" style="font-size:8px; opacity:0.3;"></i>
+                                {% endif %}
+                            </span>
+                            
+                            <span>{{ l.order }}. {{ l.title }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        
+        <div class="video-container">
+            <div class="video-responsive">
+                <iframe src="{{ lesson.video_url }}" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div class="content-tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'desc')">
+                <i class="fas fa-file-alt"></i> Materiallar
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'quiz')">
+                <i class="fas fa-puzzle-piece"></i> Test
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'qa')">
+                <i class="fas fa-comments"></i> Muhokama
+            </button>
+        </div>
+
+        <div id="desc" class="tab-content active">
+            <h1 class="lesson-title">{{ lesson.title }}</h1>
+            
+            <div class="lesson-desc">
+                {{ lesson.content|safe }}
+            </div>
+
+            <div class="lesson-footer">
+                
+               
+
+                
+            </div>
+        </div>
+
+        <div id="quiz" class="tab-content">
+            <h2 style="color:#fff; margin-bottom:20px;">Bilimingizni sinab ko'ring</h2>
+            {% for quiz in lesson.quizzes.all %}
+                <div style="background:var(--bg-card); padding:20px; border-radius:10px; margin-bottom:20px; border:1px solid var(--border);">
+                    <p style="color:#fff; margin-bottom:15px; font-weight:600;">{{ forloop.counter }}. {{ quiz.question }}</p>
+                    {% for opt in quiz.options.all %}
+                        <label style="display:block; padding:10px; border-bottom:1px solid rgba(255,255,255,0.05); color:#ccc; cursor:pointer;">
+                            <input type="radio" name="q_{{ quiz.id }}" style="margin-right:10px;"> {{ opt.text }}
+                        </label>
+                    {% endfor %}
+                </div>
+            {% empty %}
+                <p style="color:var(--text-gray);">Bu dars uchun testlar yo'q.</p>
+            {% endfor %}
+        </div>
+
+        <div id="qa" class="tab-content">
+            <h2 style="color:#fff; margin-bottom:20px;">Savol va Javoblar</h2>
+            <div style="background:var(--bg-card); padding:20px; border-radius:12px; border:1px solid var(--border);">
+                <textarea style="width:100%; background:#0b111e; border:1px solid var(--border); padding:15px; color:#fff; border-radius:8px; min-height:80px;" placeholder="Savolingizni yozing..."></textarea>
+                <button style="margin-top:10px; background:var(--primary); border:none; padding:8px 20px; border-radius:6px; cursor:pointer; font-weight:600;">Yuborish</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. Tablarni almashtirish
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.className += " active";
+        }
+
+        // 2. Yakunlash va Jarayon Animatsiyasi
+        
+    </script>
+</body>
+</html>
