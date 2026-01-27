@@ -1,0 +1,73 @@
+{% extends 'ctf/base_ctf.html' %}
+
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="profile-avatar">
+        {{ user.username|slice:":1"|upper }}
+    </div>
+    <div style="flex-grow: 1;">
+        <h1 style="margin: 0; color: #fff; margin-bottom: 10px;">{{ user.username }}</h1>
+        <p style="color: var(--text-muted); margin: 0;">{{ user.email }}</p>
+    </div>
+    <div style="text-align: right;">
+        <a href="{% url 'logout' %}" class="btn-ctf" style="border-color: var(--danger); color: var(--danger);">
+            <i class="fas fa-sign-out-alt"></i> Chiqish
+        </a>
+    </div>
+</div>
+
+<div class="stats-grid" style="margin-bottom: 50px;">
+    <div class="stat-box">
+        <div class="stat-value">{{ profile.total_points }}</div>
+        <div class="stat-label">Jami Ball</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">{{ solved_challenges.count }}</div>
+        <div class="stat-label">Yechilgan Masalalar</div>
+    </div>
+    <div class="stat-box">
+        <div class="stat-value">#{{ rank|default:"-" }}</div>
+        <div class="stat-label">Joriy O'rin</div>
+    </div>
+</div>
+
+<h2 style="color: var(--primary); margin-bottom: 20px;">Yechilgan Masalalar</h2>
+<div class="challenge-card" style="padding: 0; overflow: hidden;">
+    <table class="leaderboard-table">
+        <thead>
+            <tr>
+                <th>MASALA</th>
+                <th>KATEGORIYA</th>
+                <th style="text-align: right;">BALL</th>
+                <th style="text-align: right;">YECHILGAN VAQT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for solved in solved_challenges %}
+            <tr>
+                <td style="color: #fff; font-weight: bold;">
+                    <a href="{% url 'challenge_detail' solved.challenge.id %}"
+                        style="color: inherit; text-decoration: none;">
+                        {{ solved.challenge.title }}
+                    </a>
+                </td>
+                <td><span class="challenge-category" style="margin: 0; font-size: 0.7rem;">{{
+                        solved.challenge.get_category_display }}</span></td>
+                <td style="text-align: right; color: var(--secondary);">+{{ solved.challenge.points }}</td>
+                <td style="text-align: right; color: var(--text-muted); font-size: 0.9rem;">
+                    {{ solved.solved_at|date:"d M Y, H:i" }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                    Siz hali hech qanday masala yechmadingiz.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

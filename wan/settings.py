@@ -34,8 +34,8 @@ ALLOWED_HOSTS = ["*"]
 # Agar user login qilmagan bo'lsa, qaysi URL ga borsin?
 LOGIN_URL = 'login' 
 
-# Login qilgandan keyin qayerga borsin? (Masalan, Bosh sahifaga)
-LOGIN_REDIRECT_URL = 'course_list' 
+# Agar user login qilmagan bo'lsa, qaysi URL ga borsin?
+LOGIN_URL = 'login' 
 
 # Logout qilgandan keyin qayerga borsin?
 LOGOUT_REDIRECT_URL = 'login'
@@ -53,6 +53,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_ckeditor_5',
     'kurs',
+    'ctf',
+    
+    # Allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +71,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    # Allauth middleware
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 
@@ -124,7 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uz-uz'
 
 TIME_ZONE = 'UTC'
 
@@ -139,6 +150,36 @@ USE_TZ = True
 
 # Statik fayllar uchun
 STATIC_URL = 'static/'
+
+# Allauth settings
+SITE_ID = 1
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+# Email settings (optional but recommended for allauth)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'  <-- Deprecated
+# ACCOUNT_EMAIL_REQUIRED = True            <-- Deprecated
+# ACCOUNT_USERNAME_REQUIRED = False        <-- Deprecated
+
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
@@ -173,6 +214,6 @@ CKEDITOR_5_CONFIGS = {
     }
 }
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = '/login/'

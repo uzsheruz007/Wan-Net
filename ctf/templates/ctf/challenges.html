@@ -1,0 +1,388 @@
+{% extends 'ctf/base_ctf.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Challenges // Wan-Net</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --neon-green: #10b981;
+            --neon-cyan: #06b6d4;
+            --card-bg: #0f1219;
+            --input-bg: #1a1d26;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050508;
+            overflow-x: hidden;
+            color: #cbd5e1;
+        }
+
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        .challenge-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .challenge-card.solved {
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .search-input {
+            background-color: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .search-input:focus {
+            border-color: var(--neon-cyan);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2);
+        }
+
+        .category-badge {
+            font-size: 10px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-kriptografiya {
+            background: rgba(168, 85, 247, 0.2);
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .badge-web {
+            background: rgba(6, 182, 212, 0.2);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .badge-osint {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .badge-default {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+        }
+
+        .btn-green {
+            background-color: #10b981;
+            color: #000;
+            font-weight: 500;
+            font-size: 12px;
+            padding: 6px 16px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .btn-green:hover {
+            background-color: #059669;
+        }
+
+        .btn-green.solved {
+            background-color: #064e3b;
+            color: #34d399;
+            cursor: default;
+        }
+
+        /* Matrix Background (Subtle) */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .bg-gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, rgba(0, 0, 0, 0) 50%);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+    <!-- Matrix Background -->
+    <canvas id="matrix-canvas"></canvas>
+    <div class="bg-gradient-overlay"></div>
+
+
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-6xl">
+
+        <!-- Page Title -->
+        <h1 class="text-center text-2xl font-semibold text-white mb-8">Masalalar</h1>
+
+        <!-- Search & Filter Bar -->
+        <form method="GET" action="{% url 'challenges' %}"
+            class="bg-[#12141a] border border-white/5 rounded-lg p-4 mb-8 shadow-lg">
+            <!-- Search -->
+            <div class="flex gap-2 mb-4">
+                <div class="relative flex-grow">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input type="text" name="q" value="{{ query }}"
+                        placeholder="Qidirish (Nomi, ID yoki Tavsifi bo'yicha)..."
+                        class="search-input w-full pl-10 pr-4 py-2 text-sm text-white rounded focus:outline-none placeholder:text-slate-600">
+                </div>
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-sm font-medium transition-colors">
+                    Qidirish
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
+                <div class="text-slate-500">
+                    <span class="text-white font-medium">{{ total_challenges }}</span> ta masaladan <span
+                        class="text-white font-medium">{{ challenges|length }}</span> tasi ushbu sahifada
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <select name="category" onchange="this.form.submit()"
+                            class="search-input text-slate-300 py-1.5 px-3 pr-8 rounded appearance-none cursor-pointer text-xs min-w-[140px]">
+                            <option value="">Barcha Kategoriyalar</option>
+                            {% for cat_obj in all_categories %}
+                            <option value="{{ cat_obj.code }}" {% if cat_obj.selected %}selected{% endif %}>{{
+                                cat_obj.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-1 border border-white/10 rounded p-1 bg-[#1a1d26]">
+                        <button type="button" class="p-1 rounded bg-blue-600 text-white"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg></button>
+                        <!-- List view button placeholder -->
+                        <button type="button" class="p-1 rounded text-slate-500 hover:text-white"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Challenges Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            {% if challenges %}
+            {% for item in challenges %}
+            <!-- Challenge Card -->
+            <div class="challenge-card p-5 flex flex-col justify-between h-full relative group">
+                <!-- Header -->
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h3
+                            class="text-white font-medium text-base mb-1 group-hover:text-emerald-400 transition-colors">
+                            #{{ item.serial_number }}. {{ item.title }}</h3>
+                        <div class="text-yellow-500 text-xs font-semibold">Ball: {{ item.points }}</div>
+                    </div>
+                    <span
+                        class="category-badge 
+                            {% if item.category == 'Cryptography' %}badge-kriptografiya{% elif item.category == 'Web' %}badge-web{% elif item.category == 'OSINT' %}badge-osint{% else %}badge-default{% endif %}">
+                        {{ item.category }}
+                    </span>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-between items-end mt-4">
+                    <span class="text-[10px] text-slate-600 font-mono">{{ item.created_at|date:"d.m.Y" }}</span>
+
+                    <a href="{% url 'challenge_detail' item.id %}"
+                        class="btn-green {% if item.is_solved %}solved{% endif %}">
+                        {% if item.is_solved %}Yechilgan{% else %}Masalani ko'rish{% endif %}
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-span-3 text-center py-24 border border-dashed border-white/10 rounded-2xl bg-[#12141a]">
+                <div
+                    class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-800/50 mb-4 text-slate-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-medium text-white mb-2">Natija topilmadi</h3>
+                <p class="text-slate-500 max-w-sm mx-auto text-sm">Qidiruv so'rovingiz bo'yicha hech qanday masala
+                    topilmadi. Filtrni tozalab ko'ring.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        {% if challenges.has_other_pages %}
+        <div class="flex justify-center gap-1">
+            {% if challenges.has_previous %}
+            <a href="?page={{ challenges.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                class="w-8 h-8 flex items-center justify-center rounded bg-[#1a1d26] text-slate-400 hover:text-white border border-white/5 text-xs hover:bg-emerald-600 hover:border-emerald-500 transition-colors">
+                << /a>
+                    {% else %}
+                    <button disabled
+                        class="w-8 h-8 flex items-center justify-center rounded bg-[#1a1d26] text-slate-700 border border-white/5 text-xs cursor-not-allowed">
+                        << /button>
+                            {% endif %}
+
+                            {% for i in challenges.paginator.page_range %}
+                            {% if challenges.number == i %}
+                            <button
+                                class="w-8 h-8 flex items-center justify-center rounded bg-blue-600 text-white text-xs">{{
+                                i }}</button>
+                            {% else %}
+                            <a href="?page={{ i }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                                class="w-8 h-8 flex items-center justify-center rounded bg-[#1a1d26] text-slate-400 hover:text-white border border-white/5 text-xs hover:bg-emerald-600 hover:border-emerald-500 transition-all">{{
+                                i }}</a>
+                            {% endif %}
+                            {% endfor %}
+
+                            {% if challenges.has_next %}
+                            <a href="?page={{ challenges.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+                                class="w-8 h-8 flex items-center justify-center rounded bg-[#1a1d26] text-slate-400 hover:text-white border border-white/5 text-xs hover:bg-emerald-600 hover:border-emerald-500 transition-colors">></a>
+                            {% else %}
+                            <button disabled
+                                class="w-8 h-8 flex items-center justify-center rounded bg-[#1a1d26] text-slate-700 border border-white/5 text-xs cursor-not-allowed">></button>
+                            {% endif %}
+        </div>
+        {% endif %}
+
+    </main>
+
+    <!-- Matrix Script -->
+    <script>
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        const chars = '01'; const fontSize = 14;
+        let columns = canvas.width / fontSize; const drops = [];
+        for (let i = 0; i < columns; i++) drops[i] = 1;
+
+        function draw() {
+            ctx.fillStyle = 'rgba(5, 5, 8, 0.05)'; // Fade effect
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#10b981'; ctx.font = fontSize + 'px monospace';
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 50);
+
+        // Layout Toggle Script
+        function setView(view) {
+            const container = document.getElementById('challenges-container');
+            const btnGrid = document.getElementById('btn-grid');
+            const btnList = document.getElementById('btn-list');
+
+            if (view === 'list') {
+                container.classList.remove('md:grid-cols-2', 'lg:grid-cols-3');
+                // Update buttons
+                btnList.classList.add('bg-blue-600', 'text-white');
+                btnList.classList.remove('text-slate-500', 'hover:text-white');
+                btnGrid.classList.remove('bg-blue-600', 'text-white');
+                btnGrid.classList.add('text-slate-500', 'hover:text-white');
+            } else {
+                container.classList.add('md:grid-cols-2', 'lg:grid-cols-3');
+                // Update buttons
+                btnGrid.classList.add('bg-blue-600', 'text-white');
+                btnGrid.classList.remove('text-slate-500', 'hover:text-white');
+                btnList.classList.remove('bg-blue-600', 'text-white');
+                btnList.classList.add('text-slate-500', 'hover:text-white');
+            }
+        }
+    </script>
+</body>
+
+</html>
+{% endblock %}

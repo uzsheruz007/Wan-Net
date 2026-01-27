@@ -1,25 +1,28 @@
 {% extends "index.html" %}
 {% load static %}
+{% load socialaccount %}
 
 {% block content %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         /* --- UMUMIY SOZLAMALAR --- */
         :root {
-            --primary: #0ea5e9;       
-            --primary-dark: #0284c7;  
-            --secondary: #6366f1;     
-            --dark-bg: #0f172a;       
-            --card-bg: rgba(30, 41, 59, 0.7);       
-            --text-light: #f8fafc;    
-            --text-gray: #94a3b8;     
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #6366f1;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
             --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
             --shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.3);
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -50,7 +53,7 @@
             height: 100%;
             z-index: -1;
             background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95)),
-                        url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop');
+                url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
         }
@@ -82,8 +85,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(20px, -20px); }
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(20px, -20px);
+            }
         }
 
         /* --- HEADER --- */
@@ -99,7 +109,11 @@
             padding: 15px 0;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
         .header-content {
             display: flex;
@@ -117,18 +131,31 @@
             text-decoration: none;
         }
 
-        .logo-icon { color: var(--primary); }
+        .logo-icon {
+            color: var(--primary);
+        }
 
-        .nav { display: flex; gap: 30px; }
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
         .nav-link {
             color: var(--text-gray);
             font-weight: 500;
             text-decoration: none;
             transition: var(--transition);
         }
-        .nav-link:hover { color: var(--primary); }
 
-        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
 
         .btn {
             padding: 10px 24px;
@@ -149,13 +176,18 @@
             color: var(--text-light);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+
+        .btn-ghost:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
 
         .btn-primary {
             background: var(--gradient);
             color: white;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
@@ -179,8 +211,15 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-card {
@@ -192,15 +231,40 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-title { font-size: 2rem; font-weight: 700; margin-bottom: 10px; }
-        .text-gradient { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .auth-subtitle { color: var(--text-gray); font-size: 0.95rem; }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .text-gradient {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
 
         /* FORM ELEMENTS */
-        .form-group { margin-bottom: 20px; }
-        .form-label { display: block; color: var(--text-gray); margin-bottom: 8px; font-size: 0.9rem; }
-        
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
         .form-input {
             width: 100%;
             padding: 12px 16px;
@@ -227,11 +291,25 @@
             color: var(--text-gray);
             font-size: 0.9rem;
         }
-        
-        .text-link { color: var(--primary); text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
-        .text-link:hover { color: var(--secondary); text-decoration: underline; }
 
-        .btn-block { width: 100%; margin-top: 10px; padding: 14px; font-size: 1.05rem; }
+        .text-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .text-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        .btn-block {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            font-size: 1.05rem;
+        }
 
         .auth-divider {
             text-align: center;
@@ -241,16 +319,23 @@
             font-size: 0.9rem;
         }
 
-        .auth-divider::before, .auth-divider::after {
+        .auth-divider::before,
+        .auth-divider::after {
             content: '';
             position: absolute;
             top: 50%;
             width: 40%;
             height: 1px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
-        .auth-divider::before { left: 0; }
-        .auth-divider::after { right: 0; }
+
+        .auth-divider::before {
+            left: 0;
+        }
+
+        .auth-divider::after {
+            right: 0;
+        }
 
         .btn-google {
             background: white;
@@ -259,26 +344,67 @@
             border: none;
             font-weight: 600;
         }
-        .btn-google:hover { background: #f1f5f9; transform: translateY(-2px); }
 
-        .auth-footer { text-align: center; margin-top: 25px; color: var(--text-gray); font-size: 0.9rem; }
+        .btn-google:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
 
         /* --- MOBILE MENU --- */
-        .mobile-menu-btn { display: none; background: none; border: none; color: white; cursor: pointer; }
-        .mobile-menu {
-            position: fixed; top: 70px; left: 0; width: 100%; background: var(--dark-bg);
-            padding: 20px; transform: translateY(-150%); transition: 0.4s; z-index: 999;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
         }
-        .mobile-menu.active { transform: translateY(0); }
-        .mobile-nav-link { display: block; padding: 15px; color: var(--text-light); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .mobile-menu {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: var(--dark-bg);
+            padding: 20px;
+            transform: translateY(-150%);
+            transition: 0.4s;
+            z-index: 999;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu.active {
+            transform: translateY(0);
+        }
+
+        .mobile-nav-link {
+            display: block;
+            padding: 15px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
         @media (max-width: 992px) {
-            .nav, .header-actions { display: none; }
-            .mobile-menu-btn { display: block; }
+
+            .nav,
+            .header-actions {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="bg-wrapper">
@@ -286,27 +412,34 @@
         <div class="glow-orb orb-2"></div>
     </div>
 
-    
+
     <section class="auth-page">
         <div class="auth-container">
             <div class="auth-card">
                 <div class="auth-header">
-                    <div style="width: 50px; height: 50px; background: rgba(14, 165, 233, 0.1); border-radius: 50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 15px auto; color: var(--primary);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    <div
+                        style="width: 50px; height: 50px; background: rgba(14, 165, 233, 0.1); border-radius: 50%; display:flex; align-items:center; justify-content:center; margin: 0 auto 15px auto; color: var(--primary);">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                            <polyline points="10 17 15 12 10 7"></polyline>
+                            <line x1="15" y1="12" x2="3" y2="12"></line>
+                        </svg>
                     </div>
                     <h1 class="auth-title">Xush <span class="text-gradient">Kelibsiz!</span></h1>
                     <p class="auth-subtitle">Platformaga kirish uchun ma'lumotlaringizni kiriting</p>
                 </div>
-                
-                <form id="loginForm" onsubmit="handleLogin(event)">
+
+                <form id="loginForm" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label class="form-label">Email manzil</label>
-                        <input type="email" class="form-input" placeholder="nom@example.com" required>
+                        <input type="email" name="email" class="form-input" placeholder="nom@example.com" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Parol</label>
-                        <input type="password" class="form-input" placeholder="Parolingizni kiriting" required>
+                        <input type="password" name="password" class="form-input" placeholder="Parolingizni kiriting"
+                            required>
                     </div>
                     <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
                         <label class="form-checkbox">
@@ -317,21 +450,30 @@
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">
                         Tizimga Kirish
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14"></path>
+                            <path d="M12 5l7 7-7 7"></path>
+                        </svg>
                     </button>
                 </form>
 
                 <div class="auth-divider">yoki</div>
 
-                <button class="btn btn-google btn-block" onclick="handleGoogleLogin()">
+                <a href="{% provider_login_url 'google' %}" class="btn btn-google btn-block"
+                    style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 8px;">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                     </svg>
                     Google bilan kirish
-                </button>
+                </a>
 
                 <div class="auth-footer">
                     Hisobingiz yo'qmi? <a href="{% url 'signup_view'%}" class="text-link">Ro'yxatdan o'ting</a>
@@ -346,26 +488,11 @@
             menu.classList.toggle('active');
         }
 
-        function handleLogin(event) {
-            event.preventDefault();
-            // Animatsiya qo'shish (tugmani bosganda)
-            const btn = event.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = "Tekshirilmoqda...";
-            btn.style.opacity = "0.8";
-            
-            setTimeout(() => {
-                alert('Tizimga muvaffaqiyatli kirdingiz!');
-                window.location.href = '{% url 'index'%}';
-                btn.innerHTML = originalText;
-                btn.style.opacity = "1";
-            }, 1000);
-        }
 
-        function handleGoogleLogin() {
-            alert('Google orqali kirish interfeysi ochilmoqda...');
-        }
+
+
     </script>
 </body>
+
 </html>
 {% endblock %}

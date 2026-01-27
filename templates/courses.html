@@ -2,239 +2,65 @@
 {% load static %}
 
 {% block content %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetAdmin Pro - Standart Kurslar</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* --- SOZLAMALAR --- */
-        :root {
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.5);
-            --secondary: #7b2cbf;
-            --bg-dark: #050a14;
-            --card-bg: #0f1623;
-            --text-light: #e0e6ed;
-            --text-gray: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.05);
-        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-light); line-height: 1.6; overflow-x: hidden; }
-        ul { list-style: none; }
-        a { text-decoration: none; color: inherit; transition: 0.3s; }
+<section class="features" style="padding-top: 120px; min-height: 100vh;">
+    <div class="container">
+        <h2 class="section-title">Professional <span class="text-gradient">Kurslar</span></h2>
 
-        .features { 
-            padding: 80px 5%; 
-            background: radial-gradient(circle at center, #1a253a 0%, var(--bg-dark) 80%);
-            min-height: 100vh;
-        }
+        <div class="courses-grid">
 
-        .section-title { 
-            text-align: center; font-size: 2.8rem; margin-bottom: 60px; font-weight: 700; 
-        }
-        .section-title span { color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
+            {% for course in courses %}
+            <div class="course-card reveal">
+                <div class="card-top-line"></div>
+                <div class="card-content">
 
-        /* --- GRID (KARTALAR JOYLASHUVI) --- */
-        .courses-grid {
-            display: grid;
-            /* Kartalar eni 340px dan kichik bo'lmaydi */
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
-            gap: 30px;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* --- KARTA ASOSI --- */
-        .course-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 100%; /* Karta har doim to'liq balandlikda */
-            transition: 0.4s ease;
-            position: relative;
-        }
-
-        .course-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--primary);
-            box-shadow: 0 15px 40px -10px rgba(0, 242, 255, 0.2);
-        }
-
-        .card-top-line {
-            height: 3px; background: linear-gradient(90deg, var(--secondary), var(--primary)); width: 100%;
-        }
-
-        .card-content { 
-            padding: 30px; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; /* Ichki kontentni cho'zish */
-        }
-
-        /* --- HEADER & ICON --- */
-        .card-header { display: flex; gap: 15px; margin-bottom: 20px; }
-        
-        .icon-box {
-            width: 55px; height: 55px; min-width: 55px;
-            background: rgba(0, 242, 255, 0.1); border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; color: var(--primary); border: 1px solid rgba(0, 242, 255, 0.2);
-        }
-
-        .title-area { width: 100%; }
-
-        /* [STANDART 1] SARLAVHA SOZLAMASI */
-        .course-title {
-            font-size: 1.25rem; 
-            color: #fff; 
-            font-weight: 600;
-            line-height: 1.4; /* Qator balandligi */
-            
-            /* STANDART: Har doim 2 qator balandlikni egallaydi (1.4 * 2 = 2.8em) */
-            height: 2.8em; 
-            
-            /* Ortiqcha matnni yashirish va "..." qo'yish */
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-bottom: 5px;
-        }
-
-        .course-subtitle { 
-            display: block; font-size: 0.85rem; color: var(--text-gray); 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; /* 1 qator */
-        }
-
-        /* --- TAGS --- */
-        .tags { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tag { font-size: 11px; padding: 5px 12px; border-radius: 50px; font-weight: 600; text-transform: uppercase; }
-        .tag-level { background: rgba(123, 44, 191, 0.2); color: #d8b4fe; }
-        .tag-time { background: rgba(0, 242, 255, 0.1); color: var(--primary); }
-
-        /* [STANDART 2] TAVSIF (DESCRIPTION) SOZLAMASI */
-        .card-desc { 
-            color: var(--text-gray); 
-            font-size: 0.95rem; 
-            margin-bottom: 20px; 
-            line-height: 1.6;
-            
-            /* STANDART: Har doim 3 qator balandlik (1.6 * 3 = 4.8em) */
-            height: 4.8em; 
-            
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* [STANDART 3] MAVZULAR QUTISI */
-        .topic-container {
-            background: rgba(0,0,0,0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255,255,255,0.05);
-            
-            /* STANDART: Balandlikni qotirib qo'yamiz */
-            height: 130px; 
-            overflow: hidden; /* Agar modullar ko'payib ketsa yashirish */
-        }
-
-        .topic-list li {
-            margin-bottom: 8px; font-size: 0.9rem; color: #d1d5db;
-            display: flex; align-items: flex-start; gap: 10px;
-            
-            /* Uzun mavzu nomini 1 qatorga sig'dirish */
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-        }
-        
-        /* Faqat birinchi 3 ta modulni ko'rsatish */
-        .topic-list li:nth-child(n+4) { display: none; }
-        
-        .topic-list i { color: var(--primary); font-size: 14px; margin-top: 4px; flex-shrink: 0; }
-
-        /* --- TUGMA (FOOTER) --- */
-        .card-footer { margin-top: auto; /* Eng pastga taqaladi */ }
-
-        .card-btn {
-            display: block; width: 100%; text-align: center; padding: 12px;
-            background: transparent; border: 1px solid rgba(255,255,255,0.1);
-            color: #fff; border-radius: 10px; font-weight: 600; transition: 0.3s;
-        }
-        .card-btn:hover { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
-
-        @media (max-width: 768px) {
-            .courses-grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-
-   <section class="features">
-    <h2 class="section-title">Professional <span>Kurslar</span></h2>
-
-    <div class="courses-grid">
-
-        {% for course in courses %}
-        <div class="course-card">
-            <div class="card-top-line"></div>
-            <div class="card-content">
-                
-                <div class="card-header">
-                    <div class="icon-box">
-                        <i class="{{ course.icon|default:'fas fa-laptop-code' }}"></i>
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <i class="{{ course.icon|default:'fas fa-laptop-code' }}"></i>
+                        </div>
+                        <div class="title-area">
+                            <h3 class="course-title">{{ course.title }}</h3>
+                            <span class="course-subtitle">{{ course.subtitle }}</span>
+                        </div>
                     </div>
-                    <div class="title-area">
-                        <h3 class="course-title">{{ course.title }}</h3>
-                        <span class="course-subtitle">{{ course.subtitle }}</span>
+
+                    <div class="tags">
+                        <span class="tag tag-level">{{ course.level }}</span>
+                        <span class="tag tag-time">{{ course.duration }}</span>
                     </div>
-                </div>
 
-                <div class="tags">
-                    <span class="tag tag-level">{{ course.level }}</span>
-                    <span class="tag tag-time">{{ course.duration }}</span>
-                </div>
+                    <p class="card-desc">
+                        {{ course.description }}
+                    </p>
 
-                <p class="card-desc">
-                    {{ course.description }}
-                </p>
-
-                <div class="topic-container">
-                    <ul class="topic-list">
-                        {% for module in course.modules.all %}
+                    <div class="topic-container">
+                        <ul class="topic-list">
+                            {% for module in course.modules.all %}
                             <li>
                                 <i class="fas fa-check-circle"></i>
                                 {{ module.title }}
                             </li>
-                        {% empty %}
+                            {% empty %}
                             <li><span style="color:gray">Ma'lumot yo'q</span></li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                            {% endfor %}
+                        </ul>
+                    </div>
 
-                <div class="card-footer">
-                    <a href="{% url 'course_detail' course.id %}" class="card-btn">
-                        Batafsil
-                    </a>
-                </div>
+                    <div class="card-footer">
+                        <a href="{% url 'course_detail' course.id %}" class="card-btn">
+                            Batafsil
+                        </a>
+                    </div>
 
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% empty %}
+            <p style="text-align: center; color: var(--text-gray); grid-column: 1 / -1;">Hozircha kurslar mavjud emas.
+            </p>
+            {% endfor %}
 
+        </div>
     </div>
 </section>
 
-</body>
-</html>
 {% endblock %}

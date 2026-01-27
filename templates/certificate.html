@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion - {{ course.title }}</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .certificate-container {
+            width: 1000px;
+            height: 700px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image:
+                radial-gradient(circle at 0 0, rgba(14, 165, 233, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.05) 0%, transparent 20%);
+        }
+
+        .border-pattern {
+            width: 100%;
+            height: 100%;
+            border: 2px solid #0ea5e9;
+            padding: 10px;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .inner-border {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #6366f1;
+            padding: 40px;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background:
+                linear-gradient(45deg, transparent 48%, #0ea5e9 49%, #0ea5e9 51%, transparent 52%) 0 0 / 20px 20px,
+                linear-gradient(-45deg, transparent 48%, #0ea5e9 49%, #0ea5e9 51%, transparent 52%) 0 0 / 20px 20px;
+            background-repeat: repeat-x;
+            background-position: top;
+            background-size: 20px 10px;
+        }
+
+        /* Clear background content for text clarity */
+        .content-layer {
+            background: rgba(255, 255, 255, 0.95);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: inset 0 0 50px rgba(255, 255, 255, 1);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: #0ea5e9;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .recipient-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #0ea5e9;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 0 40px 10px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .course-text {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .course-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 40px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+            margin-top: 50px;
+        }
+
+        .signature-block {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 200px;
+            height: 2px;
+            background: #94a3b8;
+            margin-bottom: 10px;
+        }
+
+        .signature-text {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .seal {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.3);
+            position: relative;
+        }
+
+        .seal::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+        }
+
+        @media print {
+            body {
+                background: none;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .certificate-container {
+                box-shadow: none;
+                width: 100%;
+                height: 100%;
+                page-break-after: always;
+            }
+        }
+
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0ea5e9;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(14, 165, 233, 0.4);
+        }
+
+        @media print {
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button onclick="window.print()" class="print-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Yuklab olish (PDF)
+    </button>
+
+    <div class="certificate-container">
+        <div class="border-pattern">
+            <div class="inner-border">
+                <div class="content-layer">
+                    <div class="logo">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                        Admin<span>Pro</span>
+                    </div>
+
+                    <div class="title">Certificate</div>
+                    <div class="subtitle">of Completion</div>
+
+                    <div class="course-text">This is to certify that</div>
+
+                    <div class="recipient-name">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+
+                    <div class="course-text">has successfully completed the course</div>
+
+                    <div class="course-title">{{ course.title }}</div>
+
+                    <div class="course-text" style="font-size: 0.9rem; color: #64748b;">
+                        Date: {% now "F j, Y" %}
+                    </div>
+
+                    <div class="footer">
+                        <div class="signature-block">
+                            <!-- Dummy Signature -->
+                            <div
+                                style="font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #1e293b; margin-bottom: 5px;">
+                                M.Rahimov</div>
+                            <div class="signature-line"></div>
+                            <div class="signature-text">Platform Director</div>
+                        </div>
+
+                        <div class="seal">
+                            PASSED
+                        </div>
+
+                        <div class="signature-block">
+                            <div
+                                style="font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #1e293b; margin-bottom: 5px;">
+                                A.Aripov</div>
+                            <div class="signature-line"></div>
+                            <div class="signature-text">Lead Instructor</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,26 +1,29 @@
 {% extends "index.html" %}
 {% load static %}
+{% load socialaccount %}
 
 {% block content %}
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ro'yxatdan o'tish - NetAdmin Academy</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
         /* --- UMUMIY SOZLAMALAR (Previous styles inherited) --- */
         :root {
-            --primary: #0ea5e9;       
-            --primary-dark: #0284c7;  
-            --secondary: #6366f1;     
-            --dark-bg: #0f172a;       
-            --card-bg: rgba(30, 41, 59, 0.75);       
-            --text-light: #f8fafc;    
-            --text-gray: #94a3b8;     
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #6366f1;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.75);
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
             --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -50,7 +53,7 @@
             height: 100%;
             z-index: -1;
             background: linear-gradient(rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95)),
-                        url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop');
+                url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
         }
@@ -64,12 +67,33 @@
             animation: float 12s infinite ease-in-out;
         }
 
-        .orb-1 { top: 10%; left: 10%; width: 350px; height: 350px; background: var(--secondary); }
-        .orb-2 { bottom: 10%; right: 10%; width: 300px; height: 300px; background: var(--primary); animation-delay: -6s; }
+        .orb-1 {
+            top: 10%;
+            left: 10%;
+            width: 350px;
+            height: 350px;
+            background: var(--secondary);
+        }
+
+        .orb-2 {
+            bottom: 10%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: var(--primary);
+            animation-delay: -6s;
+        }
 
         @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -30px); }
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(30px, -30px);
+            }
         }
 
         /* --- HEADER --- */
@@ -85,23 +109,89 @@
             padding: 15px 0;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.5rem; color: var(--text-light); text-decoration: none; }
-        .logo-icon { color: var(--primary); }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .nav { display: flex; gap: 30px; }
-        .nav-link { color: var(--text-gray); font-weight: 500; text-decoration: none; transition: var(--transition); }
-        .nav-link:hover { color: var(--primary); }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+        }
 
-        .header-actions { display: flex; gap: 15px; align-items: center; }
+        .logo-icon {
+            color: var(--primary);
+        }
 
-        .btn { padding: 10px 24px; border-radius: 50px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-ghost { background: transparent; color: var(--text-light); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-primary { background: var(--gradient); color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5); }
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            color: var(--text-gray);
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-light);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
 
         /* --- AUTH SECTION --- */
         .auth-page {
@@ -109,14 +199,26 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding: 100px 20px 40px; /* Header space */
+            padding: 100px 20px 40px;
+            /* Header space */
         }
 
-        .auth-container { width: 100%; max-width: 500px; animation: fadeInUp 0.8s ease-out; }
+        .auth-container {
+            width: 100%;
+            max-width: 500px;
+            animation: fadeInUp 0.8s ease-out;
+        }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .auth-card {
@@ -128,15 +230,40 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .auth-header { text-align: center; margin-bottom: 30px; }
-        .auth-title { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
-        .text-gradient { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .auth-subtitle { color: var(--text-gray); font-size: 0.95rem; }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .text-gradient {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .auth-subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
 
         /* FORM ELEMENTS */
-        .form-group { margin-bottom: 18px; }
-        .form-label { display: block; color: var(--text-gray); margin-bottom: 8px; font-size: 0.9rem; }
-        
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
         .form-input {
             width: 100%;
             padding: 12px 16px;
@@ -164,39 +291,123 @@
             font-size: 0.85rem;
             line-height: 1.4;
         }
-        
-        .form-checkbox input { accent-color: var(--primary); margin-top: 3px; }
-        .text-link { color: var(--primary); text-decoration: none; transition: 0.3s; }
-        .text-link:hover { color: var(--secondary); text-decoration: underline; }
 
-        .btn-block { width: 100%; margin-top: 10px; padding: 14px; font-size: 1.05rem; }
+        .form-checkbox input {
+            accent-color: var(--primary);
+            margin-top: 3px;
+        }
 
-        .auth-divider { text-align: center; margin: 25px 0; position: relative; color: var(--text-gray); font-size: 0.9rem; }
-        .auth-divider::before, .auth-divider::after { content: ''; position: absolute; top: 50%; width: 40%; height: 1px; background: rgba(255,255,255,0.1); }
-        .auth-divider::before { left: 0; }
-        .auth-divider::after { right: 0; }
+        .text-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: 0.3s;
+        }
 
-        .btn-google { background: white; color: #1e293b; width: 100%; font-weight: 600; }
-        .btn-google:hover { background: #f1f5f9; transform: translateY(-2px); }
+        .text-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
 
-        .auth-footer { text-align: center; margin-top: 25px; color: var(--text-gray); font-size: 0.9rem; }
+        .btn-block {
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            font-size: 1.05rem;
+        }
+
+        .auth-divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-divider::before {
+            left: 0;
+        }
+
+        .auth-divider::after {
+            right: 0;
+        }
+
+        .btn-google {
+            background: white;
+            color: #1e293b;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .btn-google:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
 
         /* --- MOBILE MENU --- */
-        .mobile-menu-btn { display: none; background: none; border: none; color: white; cursor: pointer; }
-        .mobile-menu {
-            position: fixed; top: 70px; left: 0; width: 100%; background: var(--dark-bg);
-            padding: 20px; transform: translateY(-150%); transition: 0.4s; z-index: 999;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
         }
-        .mobile-menu.active { transform: translateY(0); }
-        .mobile-nav-link { display: block; padding: 15px; color: var(--text-light); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .mobile-menu {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: var(--dark-bg);
+            padding: 20px;
+            transform: translateY(-150%);
+            transition: 0.4s;
+            z-index: 999;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu.active {
+            transform: translateY(0);
+        }
+
+        .mobile-nav-link {
+            display: block;
+            padding: 15px;
+            color: var(--text-light);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
         @media (max-width: 992px) {
-            .nav, .header-actions { display: none; }
-            .mobile-menu-btn { display: block; }
+
+            .nav,
+            .header-actions {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
         }
     </style>
 </head>
+
 <body>
 
     <div class="bg-wrapper">
@@ -204,7 +415,7 @@
         <div class="glow-orb orb-2"></div>
     </div>
 
-   
+
     <section class="auth-page">
         <div class="auth-container">
             <div class="auth-card">
@@ -212,53 +423,66 @@
                     <h1 class="auth-title">Ro'yxatdan <span class="text-gradient">O'tish</span></h1>
                     <p class="auth-subtitle">Kelajak kasbini bugundan o'rganishni boshlang</p>
                 </div>
-                
-                <form id="signupForm" onsubmit="handleSignup(event)">
+
+                <form id="signupForm" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label class="form-label">To'liq ismingiz</label>
-                        <input type="text" class="form-input" placeholder="Ism va familiyangiz" required>
+                        <input type="text" name="full_name" class="form-input" placeholder="Ism va familiyangiz"
+                            required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">Email manzil</label>
-                        <input type="email" class="form-input" placeholder="nom@example.com" required>
+                        <input type="email" name="email" class="form-input" placeholder="nom@example.com" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">Parol</label>
-                        <input type="password" class="form-input" placeholder="Kamida 8 ta belgi" required minlength="8">
+                        <input type="password" name="password1" class="form-input" placeholder="Kamida 8 ta belgi"
+                            required minlength="8">
                     </div>
-                    
+
                     <div class="form-group">
                         <label class="form-label">Parolni tasdiqlash</label>
-                        <input type="password" class="form-input" placeholder="Parolni qayta kiriting" required>
+                        <input type="password" name="password2" class="form-input" placeholder="Parolni qayta kiriting"
+                            required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-checkbox">
                             <input type="checkbox" required>
-                            <span>Men <a href="terms.html" class="text-link">Foydalanish shartlari</a> va <a href="privacy.html" class="text-link">Maxfiylik siyosati</a>ga roziman</span>
+                            <span>Men <a href="terms.html" class="text-link">Foydalanish shartlari</a> va <a
+                                    href="privacy.html" class="text-link">Maxfiylik siyosati</a>ga roziman</span>
                         </label>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-block">
                         Hisob Yaratish
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
                     </button>
                 </form>
 
                 <div class="auth-divider">yoki</div>
 
-                <button class="btn btn-google btn-block" onclick="handleGoogleSignup()">
+                <a href="{% provider_login_url 'google' %}" class="btn btn-google btn-block"
+                    style="display: flex; align-items: center; justify-content: center; text-decoration: none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" style="margin-right: 8px;">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                     </svg>
                     Google orqali davom etish
-                </button>
+                </a>
 
                 <div class="auth-footer">
                     Hisobingiz bormi? <a href="{% url 'login'%}" class="text-link">Kirish</a>
@@ -273,32 +497,11 @@
             menu.classList.toggle('active');
         }
 
-        function handleSignup(event) {
-            event.preventDefault();
-            
-            const btn = event.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            
-            // Yuklanish animatsiyasi
-            btn.innerHTML = "Hisob yaratilmoqda...";
-            btn.style.opacity = "0.8";
-            btn.disabled = true;
 
-            setTimeout(() => {
-                alert('Muvaffaqiyatli ro\'yxatdan o\'tdingiz! Iltimos, emailingizni tasdiqlang.');
-                window.location.href = '{% url 'login'%}';
-                
-                // Holatni qaytarish
-                btn.innerHTML = originalText;
-                btn.style.opacity = "1";
-                btn.disabled = false;
-            }, 1500);
-        }
 
-        function handleGoogleSignup() {
-            alert('Google orqali ro\'yxatdan o\'tish oynasi ochilmoqda...');
-        }
+
     </script>
 </body>
+
 </html>
 {% endblock %}

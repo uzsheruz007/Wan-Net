@@ -10,4 +10,6 @@ urlpatterns = [
     path("logout/", views.logout_view, name="logout"),
     path('course/<int:course_id>/', views.course_detail, name='course_detail'),
     path('lesson/<int:lesson_id>/', views.lesson_detail, name='lesson_detail'),
+    path('lesson/<int:lesson_id>/complete/', views.mark_lesson_complete, name='mark_lesson_complete'),
+    path('course/<int:course_id>/certificate/', views.certificate_view, name='certificate_view'),
 ]

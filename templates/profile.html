@@ -1,4 +1,946 @@
-<h1>Salom, {{ request.user.first_name }}</h1>
-<p>Email: {{ request.user.email }}</p>
+{% extends "index.html" %}
+{% load static %}
 
-<a href="{% url 'logout' %}">Chiqish</a>
+{% block content %}
+
+<head>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Poppins Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --glass-bg: rgba(30, 41, 59, 0.85);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.12);
+            --primary: #0ea5e9;
+            --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+            --secondary: #6366f1;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Profile Container */
+        .profile-wrapper {
+            min-height: 100vh;
+            padding-top: 80px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        .profile-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 30px;
+        }
+
+        /* Sidebar */
+        .profile-sidebar {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: var(--glass-border);
+            padding: 30px;
+            height: fit-content;
+            box-shadow: var(--shadow);
+        }
+
+        .user-card {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .user-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 25px rgba(14, 165, 233, 0.4);
+        }
+
+        .avatar-upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--primary-gradient);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid var(--dark-bg);
+        }
+
+        .user-info h3 {
+            margin: 10px 0 5px;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .user-email {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: var(--text-gray);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .logout-item {
+            margin-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 15px;
+            color: var(--danger) !important;
+        }
+
+        .logout-item:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger) !important;
+        }
+
+        /* Main Content */
+        .profile-main {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .stat-content h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-content p {
+            color: var(--text-gray);
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Course Items */
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+
+        .course-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(14, 165, 233, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .course-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(14, 165, 233, 0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .course-content {
+            flex: 1;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .course-progress {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .course-progress.completed {
+            color: var(--success);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        .progress-fill.completed {
+            background: var(--success);
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #0da271;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(14, 165, 233, 0.1);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-gray);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230ea5e9' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+            padding-right: 45px;
+        }
+
+        .file-upload {
+            display: none;
+        }
+
+        .avatar-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+        }
+
+        /* Certificate Cards */
+        .certificate-card {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+
+        .certificate-card:hover {
+            background: rgba(16, 185, 129, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .certificate-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-gray);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .profile-sidebar {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .course-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .course-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* Utility Classes */
+        .text-success {
+            color: var(--success) !important;
+        }
+
+        .text-warning {
+            color: var(--warning) !important;
+        }
+
+        .text-danger {
+            color: var(--danger) !important;
+        }
+
+        .text-muted {
+            color: var(--text-gray) !important;
+        }
+
+        .mt-30 {
+            margin-top: 30px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<div class="profile-wrapper">
+    <div class="profile-container">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="user-card">
+                <div class="avatar-wrapper">
+                    {% if request.user.profile.avatar %}
+                    <img src="{{ request.user.profile.avatar.url }}" class="user-avatar" id="avatarPreview">
+                    {% else %}
+                    <img src="https://ui-avatars.com/api/?name={{ request.user.first_name }}+{{ request.user.last_name }}&background=0ea5e9&color=fff&size=400"
+                        class="user-avatar" id="avatarPreview">
+                    {% endif %}
+                    <label for="avatarUpload" class="avatar-upload-btn">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                </div>
+                <div class="user-info">
+                    <h3>{{ request.user.get_full_name|default:request.user.username }}</h3>
+                    <p class="user-email">{{ request.user.email }}</p>
+                    <span class="status-badge">{{ request.user.profile.status|default:"O'quvchi" }}</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a onclick="switchTab('dashboard')" class="nav-item active" id="tab-dashboard">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a onclick="switchTab('courses')" class="nav-item" id="tab-courses">
+                    <i class="fas fa-book-open"></i>
+                    <span>Mening Kurslarim</span>
+                </a>
+                <a onclick="switchTab('certificates')" class="nav-item" id="tab-certificates">
+                    <i class="fas fa-award"></i>
+                    <span>Sertifikatlar</span>
+                </a>
+                <a onclick="switchTab('settings')" class="nav-item" id="tab-settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Sozlamalar</span>
+                </a>
+                <a href="{% url 'logout' %}" class="nav-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Chiqish</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="profile-main">
+            <!-- Dashboard Tab -->
+            <div id="view-dashboard" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ completed_courses_count }}</h3>
+                            <p>Tugatilgan Kurslar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(14, 165, 233, 0.1); color: var(--primary);">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ active_courses_count }}</h3>
+                            <p>Faol Kurslar</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ learning_hours }}</h3>
+                            <p>O'qish Soatlari</p>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="view-settings" class="content-section">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Profil Sozlamalari</h2>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" id="profileForm">
+                        {% csrf_token %}
+                        <input type="file" name="avatar" id="avatarUpload" class="file-upload" accept="image/*"
+                            onchange="previewAvatar(this)">
+
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Ism</label>
+                                <input type="text" name="first_name"
+                                    value="{{ u_form.first_name.value|default:request.user.first_name }}"
+                                    class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Familiya</label>
+                                <input type="text" name="last_name"
+                                    value="{{ u_form.last_name.value|default:request.user.last_name }}"
+                                    class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" name="email"
+                                    value="{{ u_form.email.value|default:request.user.email }}" class="form-control"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Telefon Raqam</label>
+                                <input type="tel" name="phone" value="{{ p_form.phone.value|default:'' }}"
+                                    class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hudud (Shahar)</label>
+                                <input type="text" name="region" value="{{ p_form.region.value|default:'' }}"
+                                    class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Daraja (Status)</label>
+                                <select name="status" class="form-control">
+                                    {% for value, label in p_form.fields.status.choices %}
+                                    <option value="{{ value }}" {% if
+                                        p_form.status.value|stringformat:"s"==value|stringformat:"s" %} selected{% endif
+                                        %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Bio (O'zingiz haqida)</label>
+                            <textarea name="bio" class="form-control"
+                                rows="4">{{ p_form.bio.value|default:'' }}</textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mt-30">
+                            <i class="fas fa-save"></i> O'zgarishlarni Saqlash
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Courses Tab -->
+            <div id="view-courses" class="content-section">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Mening Kurslarim</h2>
+                    </div>
+
+                    <div class="course-list">
+                        {% if user_courses %}
+                        {% for item in user_courses %}
+                        <div class="course-card">
+                            <div class="course-icon">
+                                <i class="{{ item.course.icon|default:'fas fa-book' }}"></i>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <h3 class="course-title">{{ item.course.title }}</h3>
+                                    <span class="course-progress {% if item.progress == 100 %}completed{% endif %}">
+                                        {{ item.status }} ({{ item.progress }}%)
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill {% if item.progress == 100 %}completed{% endif %}"
+                                        style="width: {{ item.progress }}%"></div>
+                                </div>
+                                <p class="text-muted">{{ item.course.description|truncatechars:100 }}</p>
+                            </div>
+                            <div class="course-actions">
+                                {% if item.progress == 100 %}
+                                <a href="{% url 'certificate_view' item.course.id %}" target="_blank"
+                                    class="btn btn-success btn-sm">
+                                    <i class="fas fa-award"></i> Sertifikat
+                                </a>
+                                {% else %}
+                                <a href="{% url 'course_detail' item.course.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play"></i> Davom Etish
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-book-open"></i>
+                            <h3>Hozircha kurslar yo'q</h3>
+                            <p>Yangi kurslarni o'rganishni boshlang</p>
+                            <a href="{% url 'course_list' %}" class="btn btn-primary mt-30">
+                                <i class="fas fa-search"></i> Barcha Kurslar
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificates Tab -->
+            <div id="view-certificates" class="content-section">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2 class="section-title">Mening Sertifikatlarim</h2>
+                    </div>
+
+                    {% if user_courses %}
+                    {% for item in user_courses %}
+                    <div class="certificate-card">
+                        <div class="certificate-icon"
+                            style="background: {% if item.progress == 100 %}rgba(16, 185, 129, 0.1){% else %}rgba(14, 165, 233, 0.1){% endif %}; color: {% if item.progress == 100 %}var(--success){% else %}var(--primary){% endif %};">
+                            <i class="{% if item.progress == 100 %}fas fa-award{% else %}fas fa-spinner{% endif %}"></i>
+                        </div>
+                        <div class="course-content">
+                            <div class="course-header">
+                                <h3 class="course-title">{{ item.course.title }}</h3>
+                                <span
+                                    class="{% if item.progress == 100 %}text-success{% else %}text-warning{% endif %}">
+                                    {% if item.progress == 100 %}
+                                    <i class="fas fa-check-circle"></i> Tugatilgan
+                                    {% else %}
+                                    {{ item.progress }}%
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <p class="text-muted">
+                                {% if item.progress == 100 %}
+                                Kurs muvaffaqiyatli yakunlandi. Sertifikatni yuklab oling.
+                                {% else %}
+                                Sertifikat olish uchun kursni tugating.
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="course-actions">
+                            {% if item.progress == 100 %}
+                            <a href="{% url 'certificate_view' item.course.id %}" target="_blank"
+                                class="btn btn-success btn-sm">
+                                <i class="fas fa-download"></i> Yuklab Olish
+                            </a>
+                            {% else %}
+                            <a href="{% url 'course_detail' item.course.id %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-play"></i> Davom Etish
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    {% if completed_courses_count == 0 and active_courses_count == 0 %}
+                    <div class="empty-state">
+                        <i class="fas fa-award"></i>
+                        <h3>Hozircha sertifikatlar yo'q</h3>
+                        <p>Kurslarni tugatib, sertifikat oling</p>
+                    </div>
+                    {% endif %}
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-award"></i>
+                        <h3>Hozircha sertifikatlar yo'q</h3>
+                        <p>Kurslarni tugatib, sertifikat oling</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+    </div>
+    </main>
+</div>
+</div>
+
+<script>
+    // Tab switching functionality
+    function switchTab(tabId) {
+        // Hide all content sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Show selected content section
+        const targetSection = document.getElementById('view-' + tabId);
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+
+        // Update navigation active state
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        const targetTab = document.getElementById('tab-' + tabId);
+        if (targetTab) {
+            targetTab.classList.add('active');
+        }
+
+        // Scroll to top of content
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Avatar preview and upload
+    function previewAvatar(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('avatarPreview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+
+            // Auto submit form on avatar change
+            document.getElementById('profileForm').submit();
+        }
+    }
+
+    // Initialize tooltips and other UI enhancements
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add loading animation to buttons
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                if (!this.classList.contains('logout-item')) {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kuting...';
+                    this.disabled = true;
+                }
+            });
+        });
+
+        // Form validation
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function (e) {
+                const firstName = this.querySelector('input[name="first_name"]');
+                const lastName = this.querySelector('input[name="last_name"]');
+                const email = this.querySelector('input[name="email"]');
+
+                if (!firstName.value.trim() || !lastName.value.trim() || !email.value.trim()) {
+                    e.preventDefault();
+                    alert('Iltimos, barcha majburiy maydonlarni to\'ldiring!');
+                }
+            });
+        }
+
+        // Initialize avatar upload trigger
+        const avatarUpload = document.getElementById('avatarUpload');
+        const avatarBtn = document.querySelector('.avatar-upload-btn');
+        if (avatarBtn && avatarUpload) {
+            avatarBtn.addEventListener('click', function () {
+                avatarUpload.click();
+            });
+        }
+    });
+</script>
+{% endblock %}
