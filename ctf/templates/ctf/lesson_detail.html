@@ -1,551 +1,59 @@
+{% extends 'ctf/ctf_home.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="uz">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ lesson.title }} // TERMINAL</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
+{% block title %}ACADEMY // LESSON{% endblock %}
 
-    <style>
-        /* --- CYBERPUNK THEME VARIABLES --- */
-        :root {
-            --primary: #10b981;
-            /* Emerald */
-            --primary-dim: rgba(16, 185, 129, 0.2);
-            --secondary: #06b6d4;
-            /* Cyan */
-            --bg-dark: #050505;
-            --bg-panel: #0a0a0a;
-            --border: #1f2937;
-            --text-main: #e5e7eb;
-            --text-dim: #6b7280;
-        }
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8 pt-32 min-h-screen">
+    
+    <!-- HEADER -->
+    <div class="mb-8 border-b border-white/5 pb-4 flex items-center justify-between">
+        <div>
+            <div class="text-xs font-mono text-emerald-500 mb-2">MODUL: {{ lesson.module.course.title }}</div>
+            <h1 class="text-3xl font-black text-white font-display">{{ lesson.title }}</h1>
+        </div>
+        <a href="{% url 'course_detail_ctf' course.id %}" class="hidden md:flex items-center gap-2 text-xs font-mono text-slate-500 hover:text-white transition-colors border border-white/10 px-3 py-1.5 rounded">
+            DARSDAN_CHIQISH <i class="fas fa-times"></i>
+        </a>
+    </div>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <!-- CONTENT -->
+    <div class="prose prose-invert prose-emerald max-w-none mb-12">
+        <div class="bg-[#0a0f18]/50 border border-white/5 p-8 rounded-lg text-slate-300 leading-relaxed font-light">
+            {{ lesson.content|safe }}
+        </div>
+    </div>
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            height: 100vh;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-            display: flex;
-        }
-
-        /* Tech Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #000;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 2px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            width: 320px;
-            background: var(--bg-panel);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            flex-shrink: 0;
-            position: relative;
-        }
-
-        .sidebar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(to bottom, transparent, var(--primary), transparent);
-            opacity: 0.3;
-        }
-
-        .sidebar-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border);
-            background: rgba(10, 10, 10, 0.95);
-        }
-
-        .back-link {
-            color: var(--text-dim);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
-            transition: 0.3s;
-        }
-
-        .back-link:hover {
-            color: var(--primary);
-            letter-spacing: 1px;
-        }
-
-        .modules-list {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .module-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: 700;
-            color: var(--secondary);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin: 20px 0 10px 5px;
-            opacity: 0.8;
-        }
-
-        .lesson-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            margin-bottom: 2px;
-            border-radius: 4px;
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
-
-        .lesson-link:hover {
-            background: rgba(255, 255, 255, 0.03);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .lesson-link.active {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: var(--primary);
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.05);
-        }
-
-        .lesson-link.active i {
-            color: var(--primary);
-            animation: pulse 2s infinite;
-        }
-
-        /* --- MAIN CONTENT --- */
-        .main-wrapper {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow-y: auto;
-            position: relative;
-            background: radial-gradient(circle at 50% 30%, #111 0%, #000 100%);
-        }
-
-        /* Video Area */
-        .video-container {
-            width: 100%;
-            background: #000;
-            flex-shrink: 0;
-            border-bottom: 1px solid var(--border);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-        }
-
-        .video-responsive {
-            padding-bottom: 50%;
-            position: relative;
-            height: 0;
-        }
-
-        .video-responsive video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* --- TABS --- */
-        .content-tabs {
-            position: sticky;
-            top: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border);
-            padding: 0 40px;
-            display: flex;
-            gap: 4px;
-            z-index: 20;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 15px 20px;
-            color: var(--text-dim);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            cursor: pointer;
-            position: relative;
-            transition: 0.3s;
-            border-bottom: 2px solid transparent;
-        }
-
-        .tab-btn:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--primary);
-            box-shadow: 0 -5px 10px var(--primary-dim);
-        }
-
-        /* --- CONTENT BODY --- */
-        .tab-content {
-            padding: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        h1.lesson-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 10px;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: -0.5px;
-        }
-
-        .lesson-desc {
-            color: #9ca3af;
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        .lesson-desc code {
-            background: #1f2937;
-            color: var(--primary);
-            padding: 2px 6px;
-            borderRadius: 4px;
-            font-size: 0.9em;
-        }
-
-        /* --- FOOTER ACTIONS --- */
-        .lesson-footer {
-            margin-top: 50px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Buttons */
-        .btn-cyber {
-            position: relative;
-            overflow: hidden;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 24px;
-            background: #111;
-            border: 1px solid var(--border);
-            color: #fff;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .btn-cyber:hover {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-dim);
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #000;
-            font-weight: 700;
-        }
-
-        .btn-primary:hover {
-            background: #34d399;
-            box-shadow: 0 0 20px var(--primary-dim);
-        }
-
-        /* Glitch text keyframes */
-        @keyframes pulse {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.4;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        /* Mobile */
-        @media (max-width: 900px) {
-            body {
-                flex-direction: column;
-                overflow: auto;
-                height: auto;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                max-height: 300px;
-                order: 2;
-                border-right: none;
-                border-top: 1px solid var(--border);
-            }
-
-            .main-wrapper {
-                height: auto;
-                order: 1;
-            }
-
-            .content-tabs {
-                padding: 0 10px;
-                overflow-x: auto;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="{% url 'course_detail_ctf' lesson.module.course.id %}" class="back-link">
-                <i class="fas fa-chevron-left"></i> [EXIT_TO_ROOT]
+    <!-- NAVIGATION ACTIONS -->
+    <div class="flex items-center justify-between border-t border-white/5 pt-8">
+        <!-- PREV -->
+        <div>
+            {% if prev_lesson %}
+            <a href="{% url 'lesson_detail_ctf' prev_lesson.id %}" class="flex items-center gap-2 text-sm text-slate-500 hover:text-white transition-colors">
+                <i class="fas fa-chevron-left"></i> OLDINGI
             </a>
-            <div class="text-white font-bold text-sm tracking-wider uppercase opacity-90">
-                {{ lesson.module.course.title }}
-            </div>
+            {% endif %}
         </div>
 
-        <div class="modules-list">
-            {% for module in lesson.module.course.modules.all|dictsort:"order" %}
-            <div class="module-group">
-                <div class="module-label"> >> MOD_0{{ module.order }} // {{ module.title }}</div>
-
-                {% for l in module.lessons.all|dictsort:"order" %}
-                <a href="{% url 'lesson_detail_ctf' l.id %}"
-                    class="lesson-link {% if l.id == lesson.id %}active{% endif %}">
-                    <span class="w-4 text-center">
-                        {% if l.id == lesson.id %}
-                        <i class="fas fa-play text-xs"></i>
-                        {% elif l.is_completed_by_user %}
-                        <i class="fas fa-check text-xs text-emerald-500"></i>
-                        {% else %}
-                        <i class="fas fa-lock text-[10px] opacity-30"></i>
-                        {% endif %}
-                    </span>
-                    <span class="truncate">{{ l.order }}. {{ l.title }}</span>
-                </a>
-                {% endfor %}
-            </div>
-            {% endfor %}
-        </div>
-    </aside>
-
-    <main class="main-wrapper">
-
-        <div class="video-container">
-            <div class="video-responsive">
-                {% if lesson.video_file %}
-                <video controls controlsList="nodownload">
-                    <source src="{{ lesson.video_file.url }}" type="video/mp4">
-                </video>
-                {% else %}
-                <div class="absolute inset-0 flex items-center justify-center bg-[#050505]">
-                    <div class="text-center">
-                        <i class="fas fa-video-slash text-4xl text-gray-800 mb-4"></i>
-                        <p class="text-gray-600 font-mono text-sm">NO_VIDEO_SIGNAL_DETECTED</p>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="content-tabs">
-            <button class="tab-btn active" onclick="openTab(event, 'desc')">
-                // MATERIAL
-            </button>
-            <button class="tab-btn" onclick="openTab(event, 'quiz')">
-                // SYSTEM_TEST
-            </button>
-            <button class="tab-btn" onclick="openTab(event, 'qa')">
-                // COMMS_LINK
-            </button>
-        </div>
-
-        <div id="desc" class="tab-content active">
-            <div class="flex items-center gap-3 mb-6">
-                <span
-                    class="px-2 py-1 bg-emerald-900/30 border border-emerald-500/20 text-emerald-400 text-xs font-mono rounded">LESSON_{{
-                    lesson.order }}</span>
-                <span class="h-px bg-gray-800 flex-grow"></span>
-            </div>
-
-            <h1 class="lesson-title">{{ lesson.title }}</h1>
-
-            <div class="lesson-desc prose prose-invert max-w-none">
-                {{ lesson.content|safe }}
-            </div>
-
-            <div class="lesson-footer">
-                {% if prev_lesson %}
-                <a href="{% url 'lesson_detail_ctf' prev_lesson.id %}" class="btn-cyber">
-                    <i class="fas fa-chevron-left"></i> PREV_UNIT
+        <!-- COMPLETE / NEXT -->
+        <div class="flex items-center gap-4">
+            {% if not is_completed %}
+            <a href="{% url 'mark_lesson_complete_ctf' lesson.id %}" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all transform hover:scale-105">
+                TUGATISH VA DAVOM ETISH <i class="fas fa-check ml-2"></i>
+            </a>
+            {% else %}
+                {% if next_lesson %}
+                <a href="{% url 'lesson_detail_ctf' next_lesson.id %}" class="px-6 py-2 border border-white/10 bg-white/5 hover:bg-white/10 text-white font-bold rounded transition-colors">
+                    KEYINGI DARS <i class="fas fa-arrow-right ml-2"></i>
                 </a>
                 {% else %}
-                <div></div>
+                <a href="{% url 'course_detail_ctf' course.id %}" class="px-6 py-2 border border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10 font-bold rounded transition-colors">
+                    KURSNI TUGATISH <i class="fas fa-flag ml-2"></i>
+                </a>
                 {% endif %}
-
-                <div class="flex gap-4">
-                    {% if not is_completed %}
-                    <form action="{% url 'mark_lesson_complete_ctf' lesson.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-cyber btn-primary">
-                            MARK_COMPLETE <i class="fas fa-check"></i>
-                        </button>
-                    </form>
-                    {% else %}
-                    <button class="btn-cyber"
-                        style="border-color: var(--primary); color: var(--primary); cursor: default;">
-                        UNIT_COMPLETED <i class="fas fa-check-double"></i>
-                    </button>
-                    {% endif %}
-
-                    {% if next_lesson %}
-                    <a href="{% url 'lesson_detail_ctf' next_lesson.id %}" class="btn-cyber">
-                        NEXT_UNIT <i class="fas fa-chevron-right"></i>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
+            {% endif %}
         </div>
+    </div>
 
-        <div id="quiz" class="tab-content">
-            <div class="bg-[#0a0a0a] border border-red-500/20 p-6 rounded mb-8">
-                <h3 class="text-red-400 font-mono mb-2"><i class="fas fa-shield-alt mr-2"></i> KNOWLEDGE_VERIFICATION
-                </h3>
-                <p class="text-sm text-gray-500">Complete the quiz to verify your understanding of this module.</p>
-            </div>
-
-            {% for quiz in lesson.quizzes.all %}
-            <div class="mb-8 border-l-2 border-gray-800 pl-6 hover:border-emerald-500 transition-colors">
-                <p class="text-white font-medium mb-4 text-lg">{{ forloop.counter }}. {{ quiz.question }}</p>
-                <div class="space-y-2">
-                    {% for opt in quiz.options.all %}
-                    <label
-                        class="flex items-center gap-3 p-3 rounded bg-[#111] border border-[#222] hover:border-gray-600 cursor-pointer transition-all">
-                        <input type="radio" name="q_{{ quiz.id }}" class="accent-emerald-500">
-                        <span class="text-gray-300 text-sm">{{ opt.text }}</span>
-                    </label>
-                    {% endfor %}
-                </div>
-            </div>
-            {% empty %}
-            <p class="text-gray-600 font-mono text-sm text-center py-10">// NO_QUIZ_DATA_FOUND</p>
-            {% endfor %}
-        </div>
-
-        <div id="qa" class="tab-content">
-            <h2 class="text-white mb-6 font-mono">SECURE_CHANNEL // DISCUSSION</h2>
-            <div class="bg-[#0a0a0a] border border-[#222] p-4 rounded-lg">
-                <textarea
-                    class="w-full bg-[#050505] border border-[#222] p-4 text-white rounded focus:border-emerald-500 focus:outline-none transition-colors min-h-[100px] font-mono text-sm"
-                    placeholder="> Enter query..."></textarea>
-                <div class="flex justify-end mt-3">
-                    <button class="btn-cyber">TRANSMIT <i class="fas fa-paper-plane ml-2"></i></button>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        function openTab(evt, tabName) {
-            const contents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < contents.length; i++) {
-                contents[i].classList.remove("active");
-                contents[i].style.display = "none";
-            }
-            const tabs = document.getElementsByClassName("tab-btn");
-            for (let i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove("active");
-            }
-
-            const activeContent = document.getElementById(tabName);
-            activeContent.style.display = "block";
-            // Small timeout to allow display:block to apply before opacity transition
-            setTimeout(() => activeContent.classList.add("active"), 10);
-
-            evt.currentTarget.classList.add("active");
-        }
-    </script>
-</body>
-
-</html>
+</div>
+{% endblock %}

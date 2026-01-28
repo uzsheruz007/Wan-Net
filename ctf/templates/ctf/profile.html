@@ -5,272 +5,301 @@
 
 {% block content %}
 <style>
-    /* Cyberpunk Profile Styles */
     :root {
+        --neon-gold: #ffd700;
+        --neon-cyan: #10b981; /* Replaced with Emerald */
         --neon-green: #10b981;
-        --neon-blue: #06b6d4;
-        --neon-purple: #8b5cf6;
-        --bg-panel: #0a0c10;
-        --card-border: rgba(255, 255, 255, 0.1);
+        --bg-dark: #050a14;
+        --glass: rgba(10, 20, 40, 0.7);
     }
 
-    /* ID Card Scan Effect */
-    .scan-line {
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        background: var(--neon-green);
-        top: 0;
-        left: 0;
-        animation: scan 3s infinite linear;
-        box-shadow: 0 0 10px var(--neon-green);
-        opacity: 0.5;
-    }
-
-    @keyframes scan {
-        0% {
-            top: 0;
-            opacity: 0;
-        }
-
-        50% {
-            opacity: 1;
-        }
-
-        100% {
-            top: 100%;
-            opacity: 0;
-        }
-    }
-
-    /* Hexagon Avatar Clip */
-    .hex-avatar {
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-    }
-
-    /* HUD Stats Box */
-    .hud-box {
-        background: rgba(10, 12, 16, 0.8);
-        border: 1px solid var(--card-border);
+    /* === IDENTITY CARD === */
+    .identity-card {
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(0, 243, 255, 0.2);
+        clip-path: polygon(
+            20px 0, 100% 0, 
+            100% calc(100% - 20px), calc(100% - 20px) 100%, 
+            0 100%, 0 20px
+        );
+        padding: 2rem;
         position: relative;
         overflow: hidden;
     }
 
-    .hud-box::before {
+    .identity-card::before {
         content: '';
         position: absolute;
-        top: 0;
+        top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+        box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    .scan-line {
+        position: absolute;
+        width: 100%; height: 100%;
+        background: linear-gradient(180deg, transparent 40%, rgba(0, 243, 255, 0.1) 50%, transparent 60%);
+        top: -100%;
         left: 0;
-        width: 10px;
-        height: 10px;
-        border-top: 2px solid var(--neon-green);
-        border-left: 2px solid var(--neon-green);
+        animation: scanBody 4s infinite linear;
+        pointer-events: none;
     }
 
-    .hud-box::after {
-        content: '';
+    @keyframes scanBody {
+        0% { top: -100%; }
+        100% { top: 100%; }
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1.5rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .profile-avatar img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        border: 2px solid rgba(0, 243, 255, 0.5);
+    }
+
+    .profile-avatar-placeholder {
+        width: 100%; height: 100%;
+        background: #0f172a;
+        color: var(--neon-cyan);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 900;
+        clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+        border: 2px solid rgba(0, 243, 255, 0.5);
+    }
+
+    .upload-btn {
         position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 10px;
-        height: 10px;
-        border-bottom: 2px solid var(--neon-green);
-        border-right: 2px solid var(--neon-green);
+        bottom: 0; right: 0;
+        background: var(--neon-cyan);
+        color: #000;
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: 0.2s;
+        z-index: 10;
     }
 
-    /* Glitch Text Hover */
-    .glitch-hover:hover {
-        animation: glitch-text 0.3s infinite;
-        color: var(--neon-green);
+    .upload-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px var(--neon-cyan);
     }
 
-    @keyframes glitch-text {
-        0% {
-            transform: translate(0);
-        }
-
-        20% {
-            transform: translate(-2px, 2px);
-        }
-
-        40% {
-            transform: translate(-2px, -2px);
-        }
-
-        60% {
-            transform: translate(2px, 2px);
-        }
-
-        80% {
-            transform: translate(2px, -2px);
-        }
-
-        100% {
-            transform: translate(0);
-        }
+    /* === STATS HUD === */
+    .hud-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
     }
+
+    .hud-stat {
+        background: rgba(10, 20, 30, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 1.5rem;
+        text-align: center;
+        clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        transition: 0.3s;
+    }
+
+    .hud-stat:hover {
+        border-color: var(--neon-cyan);
+        background: rgba(0, 243, 255, 0.05);
+    }
+
+    .stat-label {
+        font-family: 'Orbitron', monospace;
+        font-size: 0.75rem;
+        color: rgba(255,255,255,0.5);
+        letter-spacing: 2px;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 2rem;
+        font-weight: 900;
+        color: white;
+    }
+
+    /* === ACTIVITY LOG === */
+    .terminal-window {
+        background: #050a10;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .terminal-header {
+        background: #0f1520;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .cyber-row {
+        display: grid;
+        grid-template-columns: 80px 1fr 100px 100px;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.02);
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+        transition: 0.2s;
+        align-items: center;
+    }
+
+    .cyber-row:hover {
+        background: rgba(255,255,255,0.02);
+        border-left: 3px solid var(--neon-green);
+        padding-left: 23px;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+        .hud-grid { grid-template-columns: 1fr; }
+        .cyber-row { grid-template-columns: 60px 1fr 80px; }
+        .hide-mobile { display: none; }
+        .grid-master { grid-template-columns: 1fr; }
+    }
+
+    /* Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #050a10; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
 </style>
 
-<main class="flex-grow container mx-auto px-4 py-8 max-w-5xl pt-32 min-h-screen relative">
+<div class="max-w-6xl mx-auto px-4 py-20 min-h-screen grid grid-cols-1 lg:grid-cols-3 gap-8 grid-master">
+    
+    <!-- LEFT COLUMN: IDENTITY -->
+    <div class="lg:col-span-1">
+        <div class="identity-card">
+            <div class="scan-line"></div>
+            
+            <div class="text-xs font-mono text-emerald-500 mb-6 tracking-widest">// AGENT ID: {{ user.id|stringformat:"04d" }}</div>
 
-    <!-- Background Grid -->
-    <div class="fixed inset-0 bg-[url('/static/img/grid.svg')] opacity-5 pointer-events-none"></div>
+            <!-- Avatar -->
+            <div class="profile-avatar group">
+                {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}">
+                {% else %}
+                <div class="profile-avatar-placeholder">{{ user.username.0|upper }}</div>
+                {% endif %}
+                
+                <form method="POST" enctype="multipart/form-data" id="avatar-form">
+                    {% csrf_token %}
+                    <input type="file" name="avatar" id="avatar-input" class="hidden" accept="image/*" onchange="document.getElementById('avatar-form').submit();">
+                </form>
+                <div class="upload-btn" onclick="document.getElementById('avatar-input').click();">
+                    <i class="fas fa-camera text-xs"></i>
+                </div>
+            </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            <!-- Name -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-black text-white font-display mb-2">{{ user.username }}</h1>
+                <div class="inline-block px-3 py-1 bg-emerald-900/30 border border-emerald-500/30 text-emerald-400 text-xs font-mono rounded">
+                    {{ rank|default:"1" }}-DARAJA RUXSATI
+                </div>
+            </div>
 
-        <!-- Left Column: Identity Card -->
-        <div class="md:col-span-1">
-            <div
-                class="bg-[#0f1219]/90 backdrop-blur-md border border-emerald-500/30 p-6 relative overflow-hidden group">
-                <!-- Decorative Elements -->
-                <div class="absolute top-0 right-0 p-2 opacity-50"><i
-                        class="fas fa-fingerprint text-emerald-500 text-4xl"></i></div>
-                <div class="scan-line"></div>
-
-                <!-- Avatar -->
-                <div class="relative w-32 h-32 mx-auto mb-6 group/avatar cursor-pointer"
-                    onclick="document.getElementById('avatar-input').click();">
-                    <form method="POST" enctype="multipart/form-data" id="avatar-form">
+            <div class="space-y-4">
+                <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2">
+                    <span class="text-slate-500"></span>
+                    <form method="POST" class="flex items-center gap-2">
                         {% csrf_token %}
-                        <input type="file" name="avatar" id="avatar-input" class="hidden" accept="image/*"
-                            onchange="document.getElementById('avatar-form').submit();">
+                        <input type="email" name="email"  placeholder="" 
+                               class="bg-transparent border-none text-right font-mono text-slate-300 focus:ring-0 focus:text-white placeholder-slate-600 w-40 text-xs">
+                        <button type="submit" class="text-emerald-500 hover:text-emerald-400">
+                            <i class="fas fa-save"></i>
+                        </button>
                     </form>
-
-                    <div
-                        class="w-full h-full hex-avatar bg-gray-800 p-1 relative z-10 group-hover:bg-emerald-500 transition-colors duration-500">
-                        {% if profile.avatar %}
-                        <img src="{{ profile.avatar.url }}" alt="Avatar"
-                            class="w-full h-full object-cover hex-avatar opacity-80 group-hover:opacity-100 transition-opacity">
-                        {% else %}
-                        <div class="w-full h-full bg-black hex-avatar flex items-center justify-center">
-                            <span class="text-4xl font-mono text-emerald-500">{{ user.username|slice:":1" }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <!-- Upload Icon Overlay -->
-                    <div
-                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity z-20 pointer-events-none">
-                        <i class="fas fa-camera text-white drop-shadow-lg"></i>
-                    </div>
                 </div>
-
-                <!-- User Info -->
-                <div class="text-center">
-                    <h2
-                        class="text-2xl font-bold text-white font-display mb-1 tracking-wider glitch-hover cursor-default">
-                        {{ user.username }}</h2>
-                    <div
-                        class="inline-block px-2 py-0.5 bg-emerald-900/30 border border-emerald-500/30 rounded text-[10px] font-mono text-emerald-400 mb-4">
-                        LEVEL {{ rank|default:"1" }} OPERATIVE
-                    </div>
-
-                    <div class="text-xs font-mono text-slate-500 mb-6 flex items-center justify-center gap-2">
-                        <i class="fas fa-envelope"></i> {{ user.email }}
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="flex gap-2 justify-center">
-                        <a href="{% url 'logout' %}"
-                            class="px-4 py-2 bg-red-900/10 border border-red-500/20 text-red-500 text-xs font-mono hover:bg-red-900/30 transition-colors">
-                            [LOGOUT]
-                        </a>
-                    </div>
+                <div class="flex justify-between text-sm border-b border-white/5 pb-2">
+                    <span class="text-slate-500">Qo'shilgan vaqti</span>
+                    <span class="text-slate-300 font-mono">{{ user.date_joined|date:"M Y" }}</span>
                 </div>
-
-                <!-- Corner Decorations -->
-                <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-emerald-500 opacity-50">
-                </div>
-                <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-emerald-500 opacity-50"></div>
+                
+                <a href="{% url 'logout' %}" class="block w-full py-3 text-center bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors font-mono text-xs mt-8">
+                    [ TIZIMDAN CHIQISH ]
+                </a>
             </div>
-
-            <!-- Rank Card (Mobile Only visible, Desktop in column) -->
-            <div class="mt-4 md:hidden">
-                <div class="bg-black/40 border border-white/10 p-4 flex items-center justify-between">
-                    <span class="text-xs text-slate-500 font-mono">GLOBAL RANK</span>
-                    <span class="text-xl font-bold text-white">#{{ rank|default:"-" }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Column: Stats & Logs -->
-        <div class="md:col-span-2 flex flex-col gap-6">
-
-            <!-- HUD Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <!-- Total Score -->
-                <div class="hud-box p-4 text-center">
-                    <div class="text-[10px] text-emerald-500 font-mono mb-1 uppercase tracking-widest">Total Score</div>
-                    <div class="text-3xl font-bold text-white font-display">{{ profile.total_points }}</div>
-                </div>
-
-                <!-- Flags Captured -->
-                <div class="hud-box p-4 text-center">
-                    <div class="text-[10px] text-cyan-500 font-mono mb-1 uppercase tracking-widest">Flags Captured</div>
-                    <div class="text-3xl font-bold text-white font-display">{{ solved_challenges.count }}</div>
-                </div>
-
-                <!-- Global Rank (Desktop) -->
-                <div class="hud-box p-4 text-center hidden md:block">
-                    <div class="text-[10px] text-purple-500 font-mono mb-1 uppercase tracking-widest">Global Rank</div>
-                    <div class="text-3xl font-bold text-white font-display">#{{ rank|default:"-" }}</div>
-                </div>
-            </div>
-
-            <!-- Activity Log / Solved Challenges -->
-            <div class="flex-grow bg-[#0a0c10] border border-white/10 relative">
-                <!-- Terminal Header -->
-                <div class="bg-[#151921] px-4 py-2 border-b border-white/5 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500"></div>
-                        <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500"></div>
-                        <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500"></div>
-                    </div>
-                    <span class="text-xs font-mono text-slate-500">user_activity.log</span>
-                </div>
-
-                <!-- Log Content -->
-                <div class="p-4 overflow-x-auto">
-                    <table class="w-full text-left border-collapse font-mono text-sm">
-                        <thead>
-                            <tr class="text-xs text-slate-500 border-b border-white/5">
-                                <th class="py-3 px-2">STATUS</th>
-                                <th class="py-3 px-2">MISSION</th>
-                                <th class="py-3 px-2">CAT</th>
-                                <th class="py-3 px-2 text-right">PTS</th>
-                                <th class="py-3 px-2 text-right">TIMESTAMP</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-white/5">
-                            {% for solved in solved_challenges %}
-                            <tr class="group hover:bg-white/[0.02]">
-                                <td class="py-3 px-2">
-                                    <span class="text-emerald-500">[SUCCESS]</span>
-                                </td>
-                                <td class="py-3 px-2 text-white group-hover:text-emerald-400 transition-colors">
-                                    <a href="{% url 'challenge_detail' solved.challenge.id %}">{{ solved.challenge.title
-                                        }}</a>
-                                </td>
-                                <td class="py-3 px-2">
-                                    <span class="text-cyan-600 text-[10px] border border-cyan-900 px-1">{{
-                                        solved.challenge.category }}</span>
-                                </td>
-                                <td class="py-3 px-2 text-right text-emerald-500">+{{ solved.challenge.points }}</td>
-                                <td class="py-3 px-2 text-right text-slate-600 text-xs">{{ solved.solved_at|date:"Y-m-d
-                                    H:i" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="py-12 text-center text-slate-600">
-                                    > No activity detected in system logs...
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
         </div>
     </div>
-</main>
+
+    <!-- RIGHT COLUMN: STATS & LOGS -->
+    <div class="lg:col-span-2">
+        
+        <!-- HUD Stats -->
+        <div class="hud-grid">
+            <div class="hud-stat">
+                <div class="stat-label">JAMI BALL</div>
+                <div class="stat-value text-emerald-400">{{ profile.total_points }}</div>
+            </div>
+            <div class="hud-stat">
+                <div class="stat-label">TOPILGAN BAYROQLAR</div>
+                <div class="stat-value text-cyan-400">{{ solved_challenges.count }}</div>
+            </div>
+            <div class="hud-stat">
+                <div class="stat-label">GLOBAL REYTING</div>
+                <div class="stat-value text-purple-400">#{{ rank }}</div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="terminal-window h-[500px] flex flex-col">
+            <div class="terminal-header flex-shrink-0">
+                <div class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <div class="text-xs font-mono text-slate-500">tizim_jurnali.log</div>
+            </div>
+            
+            <div class="p-4 bg-slate-900/50 text-xs font-mono text-slate-400 border-b border-white/5 flex-shrink-0">
+                > Faoliyat tasmasini ishga tushirish...<br>
+                > Oxirgi yutuqlarni yuklash... [OK]
+            </div>
+
+            <div class="overflow-y-auto custom-scrollbar flex-grow">
+                {% for solved in solved_challenges %}
+                <div class="cyber-row">
+                    <div class="text-emerald-500">[YECHILDI]</div>
+                    <div class="text-white font-bold truncate pr-4">
+                        <a href="{% url 'challenge_detail' solved.challenge.id %}" class="hover:text-cyan-400 transition-colors">
+                            {{ solved.challenge.title }}
+                        </a>
+                    </div>
+                    <div class="text-right text-emerald-400">+{{ solved.challenge.points }}</div>
+                    <div class="text-right text-slate-500 hide-mobile">{{ solved.solved_at|date:"M d" }}</div>
+                </div>
+                {% empty %}
+                <div class="p-10 text-center text-slate-600 font-mono">
+                    > Faoliyat qaydlari topilmadi.<br>
+                    > Jurnalni yaratish uchun misollarni yechishni boshlang.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+</div>
 {% endblock %}

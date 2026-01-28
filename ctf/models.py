@@ -5,12 +5,12 @@ from django.dispatch import receiver
 
 class Challenge(models.Model):
     CATEGORY_CHOICES = (
-        ('Web', 'Web Exploitation'),
-        ('Crypto', 'Cryptography'),
+        ('Web', 'Web'),
+        ('Crypto', 'Kriptografiya'),
         ('OSINT', 'OSINT'),
-        ('Forensics', 'Forensics'),
+        ('Forensics', 'Forensika'),
         ('Reverse', 'Reverse Engineering'),
-        ('Misc', 'Miscellaneous'),
+        ('Misc', 'Boshqa'),
     )
 
     title = models.CharField(max_length=200, verbose_name="Sarlavha")
@@ -46,8 +46,9 @@ class SolvedChallenge(models.Model):
 class CTFProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='ctf_profile', verbose_name="Foydalanuvchi")
     total_points = models.IntegerField(default=0, verbose_name="Jami Ball")
-    last_solved = models.DateTimeField(auto_now=True, verbose_name="Oxirgi yechim vaqti")
+    last_solved = models.DateTimeField(auto_now_add=True, verbose_name="Oxirgi yechim vaqti")
     avatar = models.ImageField(upload_to='profile_avatars/', blank=True, null=True, verbose_name="Avatar")
+    telegram_id = models.BigIntegerField(null=True, blank=True, unique=True, verbose_name="Telegram ID")
 
     class Meta:
         verbose_name = "CTF Profil"
@@ -55,6 +56,15 @@ class CTFProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.total_points} pts"
+
+class TelegramAuth(models.Model):
+    telegram_id = models.BigIntegerField(unique=True, verbose_name="Telegram ID")
+    username = models.CharField(max_length=255, null=True, blank=True, verbose_name="Telegram Username")
+    access_code = models.CharField(max_length=6, verbose_name="Tasdiqlash kodi")
+    created_at = models.DateTimeField(auto_now=True, verbose_name="Yaratilgan vaqt")
+    
+    def __str__(self):
+        return f"{self.telegram_id} - {self.access_code}"
 
 # Signal to create CTFProfile when User is created
 @receiver(post_save, sender=User)
@@ -65,5 +75,7 @@ def create_ctf_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_ctf_profile(sender, instance, **kwargs):
     # Ensure profile exists
-    CTFProfile.objects.get_or_create(user=instance)
-    instance.ctf_profile.save()
+    if hasattr(instance, 'ctf_profile'):
+        instance.ctf_profile.save()
+    else:    
+        CTFProfile.objects.get_or_create(user=instance)

@@ -15,5 +15,10 @@ urlpatterns = [
     path('academy/lesson/<int:lesson_id>/', views.lesson_detail_ctf, name='lesson_detail_ctf'),
     path('academy/lesson/<int:lesson_id>/complete/', views.mark_lesson_complete_ctf, name='mark_lesson_complete_ctf'),
     
+    
+    # Auth
+    path('login/', views.telegram_login, name='login'),
+    path('logout/', views.logout_user, name='logout'),
+
     path('secret/', views.secret_view, name='secret_view'),
 ]

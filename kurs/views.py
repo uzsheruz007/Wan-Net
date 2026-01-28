@@ -16,58 +16,7 @@ def home(request):
     return render(request, "index.html", {"courses": courses})
 
 
-# ==========================
-# AUTH
-# ==========================
-def signup_view(request):
-    if request.method == "POST":
-        full_name = request.POST.get("full_name")
-        email = request.POST.get("email")
-        password1 = request.POST.get("password1")
-        password2 = request.POST.get("password2")
 
-        if password1 != password2:
-            messages.error(request, "Parollar mos emas")
-            return redirect("signup_view")
-
-        if User.objects.filter(username=email).exists():
-            messages.error(request, "Bu email allaqachon mavjud")
-            return redirect("signup_view")
-
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password1,
-            first_name=full_name
-        )
-        user.save()
-
-        messages.success(request, "Ro'yxatdan muvaffaqiyatli o'tdingiz")
-        return redirect("login")
-
-    return render(request, "registration/signup.html")
-
-
-def login_view(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
-
-        user = authenticate(request, username=email, password=password)
-
-        if user is not None:
-            login(request, user)
-            return redirect("index")
-        else:
-            messages.error(request, "Email yoki parol noto‘g‘ri")
-            return redirect("login")
-
-    return render(request, "registration/login.html")
-
-
-def logout_view(request):
-    logout(request)
-    return redirect("login")
 
 
 from .forms import UserUpdateForm, ProfileUpdateForm

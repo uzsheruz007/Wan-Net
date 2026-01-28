@@ -8,7 +8,6 @@ urlpatterns = [
     
     path('accounts/', include('allauth.urls')),
     path("ckeditor5/", include('django_ckeditor_5.urls')),
-    path('ctf/', include('ctf.urls')), # CTF uchun alohida yo'l
-    path('', include('kurs.urls')), 
+    path('', include('ctf.urls')), # CTF uchun alohida yo'l
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

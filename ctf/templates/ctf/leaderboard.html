@@ -290,11 +290,7 @@
                 {% if page_obj.number != 1 or forloop.counter > 3 %}
                 <tr class="hover:bg-white/[0.02] transition-colors group">
                     <td class="px-6 py-4 text-center rank-cell text-slate-500 group-hover:text-emerald-500">
-                        {% if page_obj.number > 1 %}
-                        {{ forloop.counter|add:20|add:-20|add:page_obj.start_index|add:-1 }}
-                        {% else %}
-                        {{ forloop.counter }}
-                        {% endif %}
+                        {{ page_obj.start_index|add:forloop.counter0 }}
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">

@@ -1,0 +1,36 @@
+{% extends 'ctf/ctf_home.html' %}
+{% load static %}
+
+{% block title %}SHAXSNI TASDIQLASH{% endblock %}
+
+{% block content %}
+<style>
+/* ... keep styles ... */
+</style>
+
+<div class="login-container">
+    <div class="terminal-card">
+        <h2 class="text-center text-emerald-500 mb-2 font-bold text-xl tracking-widest">SHAXSNI TASDIQLASH</h2>
+        <p class="text-center text-slate-500 font-mono text-xs mb-8">XAVFSIZ_ALOQA_O'RNATILDI_V4.2</p>
+
+        <form method="POST" id="login-form">
+            {% csrf_token %}
+            
+            {% if error %}
+            <div class="bg-red-500/10 border border-red-500/50 text-red-500 p-3 mb-6 text-center text-xs font-mono shake">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <input type="text" name="access_code" id="access_code" class="code-input text-center" placeholder="KODNI KIRITING" maxlength="6" autocomplete="off" required autofocus>
+
+            <button type="submit" class="action-btn mt-4">KIRISH</button>
+        </form>
+        
+        <div class="instruction">
+            Botga kiring: <a href="https://t.me/Wan_Netbot" target="_blank">Wan-Net.uz</a><br>
+            Start bosing va kodni kiriting.
+        </div>
+    </div>
+</div>
+{% endblock %}

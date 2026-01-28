@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 from .models import Challenge, SolvedChallenge, CTFProfile
 import hashlib
 
@@ -12,6 +13,7 @@ def ctf_home(request):
 from django.db.models import Q
 from django.core.paginator import Paginator
 from kurs.models import Course, Lesson, LessonProgress # Import from 'kurs' app
+
 
 def challenges(request):
     # Base QuerySet - Sorted by ID by default to ensure sequential order
@@ -88,9 +90,10 @@ def challenge_detail(request, challenge_id):
             # Correct flag
             SolvedChallenge.objects.create(user=request.user, challenge=challenge)
             
-            # Update points
+            # Update points and time
             profile, created = CTFProfile.objects.get_or_create(user=request.user)
             profile.total_points += challenge.points
+            profile.last_solved = timezone.now()
             profile.save()
 
             messages.success(request, f"Tabriklaymiz! Flag to'g'ri. Sizga {challenge.points} ball berildi.")
@@ -101,35 +104,50 @@ def challenge_detail(request, challenge_id):
     return render(request, 'ctf/challenge_detail.html', {'challenge': challenge, 'is_solved': is_solved})
 
 def leaderboard(request):
-    # Sort by total_points descending
     queryset = CTFProfile.objects.order_by('-total_points', 'last_solved')
-    
-    # Pagination
-    paginator = Paginator(queryset, 20)  # Show 20 players per page
-    page_number = request.GET.get('page')
+
+    paginator = Paginator(queryset, 20)
+    page_number = int(request.GET.get('page', 1))
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'ctf/leaderboard.html', {'page_obj': page_obj})
+    start_rank = page_obj.start_index()
+    for i, profile in enumerate(page_obj):
+        profile.rank = start_rank + i
+
+    podium = []
+    if page_number == 1:
+        items = list(page_obj)
+        podium = items[:3]
+
+    return render(request, 'ctf/leaderboard_v2.html', {
+        'page_obj': page_obj,
+        'podium': podium,
+        'is_first_page': page_number == 1,
+        'is_paginated': page_obj.has_other_pages(),
+    })
 
 @login_required
 def profile(request):
-    profile, created = CTFProfile.objects.get_or_create(user=request.user)
+    user_profile, created = CTFProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
         # Handle Avatar Upload
         if 'avatar' in request.FILES:
-            profile.avatar = request.FILES['avatar']
-            profile.save()
+            user_profile.avatar = request.FILES['avatar']
+            user_profile.save()
             messages.success(request, "Profil rasmi muvaffaqiyatli yangilandi!")
-            return redirect('ctf_profile')
+        
+
+
+        return redirect('ctf_profile')
 
     solved_challenges = SolvedChallenge.objects.filter(user=request.user).select_related('challenge').order_by('-solved_at')
     
     # Calculate rank
-    rank = CTFProfile.objects.filter(total_points__gt=profile.total_points).count() + 1
+    rank = CTFProfile.objects.filter(total_points__gt=user_profile.total_points).count() + 1
     
     return render(request, 'ctf/profile.html', {
-        'profile': profile, 
+        'profile': user_profile, 
         'solved_challenges': solved_challenges,
         'rank': rank
     })
@@ -152,31 +170,43 @@ def courses_list(request):
 def course_detail_ctf(request, course_id):
     course = get_object_or_404(Course, id=course_id)
 
+    modules = (
+        course.modules
+        .prefetch_related("lessons")
+        .order_by("order")
+    )
+
     # Auto-start course logic
-    has_progress = LessonProgress.objects.filter(user=request.user, lesson__module__course=course).exists()
+    has_progress = LessonProgress.objects.filter(
+        user=request.user,
+        lesson__module__course=course
+    ).exists()
+
     if not has_progress:
-        first_lesson = Lesson.objects.filter(module__course=course).order_by('module__order', 'order').first()
+        first_lesson = Lesson.objects.filter(
+            module__course=course
+        ).order_by("module__order", "order").first()
         if first_lesson:
             LessonProgress.objects.create(user=request.user, lesson=first_lesson)
 
-    # Get completed lessons IDs for UI indicators
-    completed_lessons_ids = LessonProgress.objects.filter(
-        user=request.user,
-        lesson__module__course=course,
-        is_completed=True
-    ).values_list("lesson_id", flat=True)
+    completed_lessons_ids = set(
+        LessonProgress.objects.filter(
+            user=request.user,
+            lesson__module__course=course,
+            is_completed=True
+        ).values_list("lesson_id", flat=True)
+    )
 
-    # Calculate overall progress
     total_lessons = Lesson.objects.filter(module__course=course).count()
     progress = int((len(completed_lessons_ids) / total_lessons) * 100) if total_lessons else 0
 
     context = {
         "course": course,
-        "completed_lessons_ids": set(completed_lessons_ids), # Use set for faster lookups in template
-        "progress": progress
+        "modules": modules,
+        "completed_lessons_ids": completed_lessons_ids,
+        "progress": progress,
     }
-    return render(request, "ctf/course_detail.html", context)
-
+    return render(request, "ctf/course_detail_v2.html", context)
 
 @login_required
 def lesson_detail_ctf(request, lesson_id):
@@ -192,7 +222,6 @@ def lesson_detail_ctf(request, lesson_id):
     try:
         current_index = all_lessons.index(lesson)
     except ValueError:
-        # Should not happen if data is consistent
         current_index = 0
 
     next_lesson = all_lessons[current_index + 1] if current_index + 1 < len(all_lessons) else None
@@ -212,7 +241,6 @@ def lesson_detail_ctf(request, lesson_id):
         "is_completed": is_completed,
     }
     return render(request, "ctf/lesson_detail.html", context)
-
 
 @login_required
 def mark_lesson_complete_ctf(request, lesson_id):
@@ -237,6 +265,79 @@ def mark_lesson_complete_ctf(request, lesson_id):
         pass
 
     return redirect('course_detail_ctf', course_id=lesson.module.course.id)
+
+# Telegram Authentication
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from datetime import timedelta
+from .models import TelegramAuth
+import uuid
+
+def telegram_login(request):
+    if request.user.is_authenticated:
+        return redirect('ctf_home')
+
+    error = None
+    if request.method == "POST":
+        code = request.POST.get("access_code")
+        
+        try:
+            auth_entry = TelegramAuth.objects.get(access_code=code)
+            
+            # Check expiry (5 minutes)
+            if timezone.now() - auth_entry.created_at > timedelta(minutes=5):
+                auth_entry.delete()
+                error = "Kodning amal qilish muddati tugagan."
+            else:
+                # Valid Code
+                telegram_id = auth_entry.telegram_id
+                tg_username = auth_entry.username
+                
+                # Try to find existing profile
+                try:
+                    profile = CTFProfile.objects.get(telegram_id=telegram_id)
+                    user = profile.user
+                    
+                    # Sync Username if changed (and available)
+                    if tg_username and tg_username != "Unknown" and user.username != tg_username:
+                        if not User.objects.filter(username=tg_username).exists():
+                            user.username = tg_username
+                            user.save()
+
+                except CTFProfile.DoesNotExist:
+                    # Create new user
+                    final_username = tg_username if (tg_username and tg_username != "Unknown") else f"agent_{str(uuid.uuid4())[:8]}"
+                    
+                    # Ensure uniqueness
+                    if User.objects.filter(username=final_username).exists():
+                        final_username = f"{final_username}_{str(uuid.uuid4())[:4]}"
+
+                    user = User.objects.create_user(username=final_username)
+                    # Profile is created by signal, just update telegram_id
+                    profile = CTFProfile.objects.get(user=user)
+                    profile.telegram_id = telegram_id
+                    profile.save()
+                
+                # Log in
+                login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+                
+                # Cleanup
+                auth_entry.delete()
+                messages.success(request, f"Xush kelibsiz, {user.username}!")
+                return redirect('ctf_home')
+
+        except TelegramAuth.DoesNotExist:
+            error = "Kod noto'g'ri."
+
+    return render(request, 'ctf/telegram_login.html', {'error': error})
+
+from django.contrib.auth import logout
+
+def logout_user(request):
+    logout(request)
+    return redirect('ctf_home')
+
+
 
 
 
