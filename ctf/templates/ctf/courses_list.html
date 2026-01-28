@@ -1,0 +1,171 @@
+{% extends 'ctf/ctf_home.html' %}
+{% load static %}
+
+{% block title %}Academy // Wan-Net{% endblock %}
+
+{% block content %}
+<main class="flex-grow container mx-auto px-4 py-8 max-w-7xl pt-32 min-h-screen">
+
+    <!-- Page Title -->
+    <div class="text-center mb-16 relative">
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-emerald-500/10 blur-[100px] -z-10">
+        </div>
+        <h1
+            class="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-4 font-display glitch-hover cursor-default">
+            Wan-Net <span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Academy</span>
+        </h1>
+        <p class="text-slate-500 font-mono text-sm tracking-[0.2em] uppercase">
+            <span class="text-emerald-500">>></span> SYSTEM.TRAINING_MODULES_LOADED(100%)
+        </p>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {% for course in courses %}
+        <div
+            class="group relative bg-[#0a0c10] border border-white/5 rounded-none overflow-hidden hover:border-emerald-500/50 transition-all duration-300 flex flex-col h-full">
+
+            <!-- Matrix/Glitch Effect Overlay -->
+            <div
+                class="absolute inset-0 bg-[url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif')] opacity-0 group-hover:opacity-5 mix-blend-overlay pointer-events-none transition-opacity duration-300">
+            </div>
+
+            <!-- Corner Accents -->
+            <div
+                class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/20 group-hover:border-emerald-500 transition-colors">
+            </div>
+            <div
+                class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white/20 group-hover:border-emerald-500 transition-colors">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white/20 group-hover:border-emerald-500 transition-colors">
+            </div>
+            <div
+                class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/20 group-hover:border-emerald-500 transition-colors">
+            </div>
+
+            <!-- Course Image / Cover -->
+            <div class="h-56 relative overflow-hidden bg-black">
+                {% if course.image %}
+                <!-- Image with Glitch/Scale Effect -->
+                <div class="w-full h-full relative group-hover:scale-110 transition-transform duration-700">
+                    <img src="{{ course.image.url }}" alt="{{ course.title }}"
+                        class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0">
+                    <!-- Color Overlay that disappears on hover -->
+                    <div
+                        class="absolute inset-0 bg-emerald-900/30 mix-blend-hard-light group-hover:opacity-0 transition-opacity duration-500">
+                    </div>
+                </div>
+                {% else %}
+                <!-- Fallback Gradient/Icon -->
+                <div
+                    class="w-full h-full bg-gradient-to-b from-slate-900 to-black flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-[url('/static/img/grid.svg')] opacity-20"></div>
+                    <i
+                        class="{{ course.icon|default:'fas fa-book' }} text-6xl text-slate-700 group-hover:text-emerald-500 transition-colors duration-500 transform group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i>
+                </div>
+                {% endif %}
+
+                <!-- Level Badge -->
+                <div class="absolute top-4 right-4 z-10">
+                    <div
+                        class="px-3 py-1 bg-black/80 backdrop-blur border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                        {{ course.level }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 flex-grow flex flex-col relative z-10">
+                <div class="mb-4">
+                    <h3
+                        class="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors line-clamp-1 font-display tracking-wide">
+                        {{ course.title }}
+                    </h3>
+                    <p
+                        class="text-slate-400 text-xs font-mono line-clamp-2 border-l-2 border-slate-700 pl-3 group-hover:border-emerald-500/50 transition-colors">
+                        {{ course.subtitle }}
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-4 text-[10px] font-mono text-slate-500 mb-6">
+                    <span class="flex items-center gap-1.5">
+                        <i class="far fa-clock"></i> {{ course.duration }}
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <i class="fas fa-layer-group"></i> {{ course.modules.count }} MODULES
+                    </span>
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-white/5 flex items-center justify-between">
+                    <!-- Tech Tags (simulated) -->
+                    <div class="flex -space-x-2">
+                        <div
+                            class="w-6 h-6 rounded-full bg-slate-800 border border-black flex items-center justify-center text-[8px] text-white">
+                            01</div>
+                        <div
+                            class="w-6 h-6 rounded-full bg-slate-800 border border-black flex items-center justify-center text-[8px] text-white">
+                            02</div>
+                    </div>
+
+                    <a href="{% url 'course_detail_ctf' course.id %}"
+                        class="relative inline-flex items-center justify-center px-4 py-2 overflow-hidden font-mono font-medium tracking-tighter text-white bg-slate-800 rounded-sm group hover:bg-emerald-600 transition-all duration-300">
+                        <span
+                            class="absolute w-0 h-0 transition-all duration-500 ease-out bg-emerald-500 rounded-full group-hover:w-56 group-hover:h-56"></span>
+                        <span
+                            class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-700"></span>
+                        <span class="relative flex items-center gap-2 text-xs">
+                            ACCESS_COURSE <i class="fas fa-chevron-right text-[10px]"></i>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full py-20 text-center border border-dashed border-slate-800 rounded-lg">
+            <div class="inline-block p-4 rounded-full bg-slate-900/50 mb-4 text-emerald-500 animate-pulse">
+                <i class="fas fa-folder-open text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-mono text-white mb-2">NO_DATA_FOUND</h3>
+            <p class="text-slate-600 font-mono text-sm">System database is empty.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+</main>
+
+<style>
+    /* Glitch text effect for title */
+    .glitch-hover:hover {
+        animation: glitch-anim 0.3s infinite;
+    }
+
+    @keyframes glitch-anim {
+        0% {
+            transform: translate(0)
+        }
+
+        20% {
+            transform: translate(-2px, 2px)
+        }
+
+        40% {
+            transform: translate(-2px, -2px)
+        }
+
+        60% {
+            transform: translate(2px, 2px)
+        }
+
+        80% {
+            transform: translate(2px, -2px)
+        }
+
+        100% {
+            transform: translate(0)
+        }
+    }
+</style>
+{% endblock %}

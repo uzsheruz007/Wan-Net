@@ -10,6 +10,7 @@ class Course(models.Model):
     level = models.CharField(max_length=50, verbose_name="Daraja")
     duration = models.CharField(max_length=50, verbose_name="Davomiyligi")
     icon = models.CharField(max_length=50, default="fas fa-book", verbose_name="Belgi (Icon)")
+    image = models.ImageField(upload_to='course_images/', blank=True, null=True, verbose_name="Kurs Rasmi")
 
 
     def __str__(self):

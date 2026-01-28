@@ -47,6 +47,7 @@ class CTFProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='ctf_profile', verbose_name="Foydalanuvchi")
     total_points = models.IntegerField(default=0, verbose_name="Jami Ball")
     last_solved = models.DateTimeField(auto_now=True, verbose_name="Oxirgi yechim vaqti")
+    avatar = models.ImageField(upload_to='profile_avatars/', blank=True, null=True, verbose_name="Avatar")
 
     class Meta:
         verbose_name = "CTF Profil"

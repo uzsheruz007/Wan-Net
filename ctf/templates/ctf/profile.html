@@ -1,73 +1,276 @@
-{% extends 'ctf/base_ctf.html' %}
+{% extends 'ctf/ctf_home.html' %}
+{% load static %}
 
-{% block title %}{{ user.username }}{% endblock %}
+{% block title %}IDENTITY // {{ user.username }}{% endblock %}
 
 {% block content %}
-<div class="profile-header">
-    <div class="profile-avatar">
-        {{ user.username|slice:":1"|upper }}
-    </div>
-    <div style="flex-grow: 1;">
-        <h1 style="margin: 0; color: #fff; margin-bottom: 10px;">{{ user.username }}</h1>
-        <p style="color: var(--text-muted); margin: 0;">{{ user.email }}</p>
-    </div>
-    <div style="text-align: right;">
-        <a href="{% url 'logout' %}" class="btn-ctf" style="border-color: var(--danger); color: var(--danger);">
-            <i class="fas fa-sign-out-alt"></i> Chiqish
-        </a>
-    </div>
-</div>
+<style>
+    /* Cyberpunk Profile Styles */
+    :root {
+        --neon-green: #10b981;
+        --neon-blue: #06b6d4;
+        --neon-purple: #8b5cf6;
+        --bg-panel: #0a0c10;
+        --card-border: rgba(255, 255, 255, 0.1);
+    }
 
-<div class="stats-grid" style="margin-bottom: 50px;">
-    <div class="stat-box">
-        <div class="stat-value">{{ profile.total_points }}</div>
-        <div class="stat-label">Jami Ball</div>
-    </div>
-    <div class="stat-box">
-        <div class="stat-value">{{ solved_challenges.count }}</div>
-        <div class="stat-label">Yechilgan Masalalar</div>
-    </div>
-    <div class="stat-box">
-        <div class="stat-value">#{{ rank|default:"-" }}</div>
-        <div class="stat-label">Joriy O'rin</div>
-    </div>
-</div>
+    /* ID Card Scan Effect */
+    .scan-line {
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background: var(--neon-green);
+        top: 0;
+        left: 0;
+        animation: scan 3s infinite linear;
+        box-shadow: 0 0 10px var(--neon-green);
+        opacity: 0.5;
+    }
 
-<h2 style="color: var(--primary); margin-bottom: 20px;">Yechilgan Masalalar</h2>
-<div class="challenge-card" style="padding: 0; overflow: hidden;">
-    <table class="leaderboard-table">
-        <thead>
-            <tr>
-                <th>MASALA</th>
-                <th>KATEGORIYA</th>
-                <th style="text-align: right;">BALL</th>
-                <th style="text-align: right;">YECHILGAN VAQT</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for solved in solved_challenges %}
-            <tr>
-                <td style="color: #fff; font-weight: bold;">
-                    <a href="{% url 'challenge_detail' solved.challenge.id %}"
-                        style="color: inherit; text-decoration: none;">
-                        {{ solved.challenge.title }}
-                    </a>
-                </td>
-                <td><span class="challenge-category" style="margin: 0; font-size: 0.7rem;">{{
-                        solved.challenge.get_category_display }}</span></td>
-                <td style="text-align: right; color: var(--secondary);">+{{ solved.challenge.points }}</td>
-                <td style="text-align: right; color: var(--text-muted); font-size: 0.9rem;">
-                    {{ solved.solved_at|date:"d M Y, H:i" }}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
-                    Siz hali hech qanday masala yechmadingiz.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    @keyframes scan {
+        0% {
+            top: 0;
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            top: 100%;
+            opacity: 0;
+        }
+    }
+
+    /* Hexagon Avatar Clip */
+    .hex-avatar {
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+
+    /* HUD Stats Box */
+    .hud-box {
+        background: rgba(10, 12, 16, 0.8);
+        border: 1px solid var(--card-border);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hud-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        border-top: 2px solid var(--neon-green);
+        border-left: 2px solid var(--neon-green);
+    }
+
+    .hud-box::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-bottom: 2px solid var(--neon-green);
+        border-right: 2px solid var(--neon-green);
+    }
+
+    /* Glitch Text Hover */
+    .glitch-hover:hover {
+        animation: glitch-text 0.3s infinite;
+        color: var(--neon-green);
+    }
+
+    @keyframes glitch-text {
+        0% {
+            transform: translate(0);
+        }
+
+        20% {
+            transform: translate(-2px, 2px);
+        }
+
+        40% {
+            transform: translate(-2px, -2px);
+        }
+
+        60% {
+            transform: translate(2px, 2px);
+        }
+
+        80% {
+            transform: translate(2px, -2px);
+        }
+
+        100% {
+            transform: translate(0);
+        }
+    }
+</style>
+
+<main class="flex-grow container mx-auto px-4 py-8 max-w-5xl pt-32 min-h-screen relative">
+
+    <!-- Background Grid -->
+    <div class="fixed inset-0 bg-[url('/static/img/grid.svg')] opacity-5 pointer-events-none"></div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+
+        <!-- Left Column: Identity Card -->
+        <div class="md:col-span-1">
+            <div
+                class="bg-[#0f1219]/90 backdrop-blur-md border border-emerald-500/30 p-6 relative overflow-hidden group">
+                <!-- Decorative Elements -->
+                <div class="absolute top-0 right-0 p-2 opacity-50"><i
+                        class="fas fa-fingerprint text-emerald-500 text-4xl"></i></div>
+                <div class="scan-line"></div>
+
+                <!-- Avatar -->
+                <div class="relative w-32 h-32 mx-auto mb-6 group/avatar cursor-pointer"
+                    onclick="document.getElementById('avatar-input').click();">
+                    <form method="POST" enctype="multipart/form-data" id="avatar-form">
+                        {% csrf_token %}
+                        <input type="file" name="avatar" id="avatar-input" class="hidden" accept="image/*"
+                            onchange="document.getElementById('avatar-form').submit();">
+                    </form>
+
+                    <div
+                        class="w-full h-full hex-avatar bg-gray-800 p-1 relative z-10 group-hover:bg-emerald-500 transition-colors duration-500">
+                        {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" alt="Avatar"
+                            class="w-full h-full object-cover hex-avatar opacity-80 group-hover:opacity-100 transition-opacity">
+                        {% else %}
+                        <div class="w-full h-full bg-black hex-avatar flex items-center justify-center">
+                            <span class="text-4xl font-mono text-emerald-500">{{ user.username|slice:":1" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <!-- Upload Icon Overlay -->
+                    <div
+                        class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition-opacity z-20 pointer-events-none">
+                        <i class="fas fa-camera text-white drop-shadow-lg"></i>
+                    </div>
+                </div>
+
+                <!-- User Info -->
+                <div class="text-center">
+                    <h2
+                        class="text-2xl font-bold text-white font-display mb-1 tracking-wider glitch-hover cursor-default">
+                        {{ user.username }}</h2>
+                    <div
+                        class="inline-block px-2 py-0.5 bg-emerald-900/30 border border-emerald-500/30 rounded text-[10px] font-mono text-emerald-400 mb-4">
+                        LEVEL {{ rank|default:"1" }} OPERATIVE
+                    </div>
+
+                    <div class="text-xs font-mono text-slate-500 mb-6 flex items-center justify-center gap-2">
+                        <i class="fas fa-envelope"></i> {{ user.email }}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2 justify-center">
+                        <a href="{% url 'logout' %}"
+                            class="px-4 py-2 bg-red-900/10 border border-red-500/20 text-red-500 text-xs font-mono hover:bg-red-900/30 transition-colors">
+                            [LOGOUT]
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Corner Decorations -->
+                <div class="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-emerald-500 opacity-50">
+                </div>
+                <div class="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-emerald-500 opacity-50"></div>
+            </div>
+
+            <!-- Rank Card (Mobile Only visible, Desktop in column) -->
+            <div class="mt-4 md:hidden">
+                <div class="bg-black/40 border border-white/10 p-4 flex items-center justify-between">
+                    <span class="text-xs text-slate-500 font-mono">GLOBAL RANK</span>
+                    <span class="text-xl font-bold text-white">#{{ rank|default:"-" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Stats & Logs -->
+        <div class="md:col-span-2 flex flex-col gap-6">
+
+            <!-- HUD Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Total Score -->
+                <div class="hud-box p-4 text-center">
+                    <div class="text-[10px] text-emerald-500 font-mono mb-1 uppercase tracking-widest">Total Score</div>
+                    <div class="text-3xl font-bold text-white font-display">{{ profile.total_points }}</div>
+                </div>
+
+                <!-- Flags Captured -->
+                <div class="hud-box p-4 text-center">
+                    <div class="text-[10px] text-cyan-500 font-mono mb-1 uppercase tracking-widest">Flags Captured</div>
+                    <div class="text-3xl font-bold text-white font-display">{{ solved_challenges.count }}</div>
+                </div>
+
+                <!-- Global Rank (Desktop) -->
+                <div class="hud-box p-4 text-center hidden md:block">
+                    <div class="text-[10px] text-purple-500 font-mono mb-1 uppercase tracking-widest">Global Rank</div>
+                    <div class="text-3xl font-bold text-white font-display">#{{ rank|default:"-" }}</div>
+                </div>
+            </div>
+
+            <!-- Activity Log / Solved Challenges -->
+            <div class="flex-grow bg-[#0a0c10] border border-white/10 relative">
+                <!-- Terminal Header -->
+                <div class="bg-[#151921] px-4 py-2 border-b border-white/5 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500/20 border border-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/20 border border-green-500"></div>
+                    </div>
+                    <span class="text-xs font-mono text-slate-500">user_activity.log</span>
+                </div>
+
+                <!-- Log Content -->
+                <div class="p-4 overflow-x-auto">
+                    <table class="w-full text-left border-collapse font-mono text-sm">
+                        <thead>
+                            <tr class="text-xs text-slate-500 border-b border-white/5">
+                                <th class="py-3 px-2">STATUS</th>
+                                <th class="py-3 px-2">MISSION</th>
+                                <th class="py-3 px-2">CAT</th>
+                                <th class="py-3 px-2 text-right">PTS</th>
+                                <th class="py-3 px-2 text-right">TIMESTAMP</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            {% for solved in solved_challenges %}
+                            <tr class="group hover:bg-white/[0.02]">
+                                <td class="py-3 px-2">
+                                    <span class="text-emerald-500">[SUCCESS]</span>
+                                </td>
+                                <td class="py-3 px-2 text-white group-hover:text-emerald-400 transition-colors">
+                                    <a href="{% url 'challenge_detail' solved.challenge.id %}">{{ solved.challenge.title
+                                        }}</a>
+                                </td>
+                                <td class="py-3 px-2">
+                                    <span class="text-cyan-600 text-[10px] border border-cyan-900 px-1">{{
+                                        solved.challenge.category }}</span>
+                                </td>
+                                <td class="py-3 px-2 text-right text-emerald-500">+{{ solved.challenge.points }}</td>
+                                <td class="py-3 px-2 text-right text-slate-600 text-xs">{{ solved.solved_at|date:"Y-m-d
+                                    H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="py-12 text-center text-slate-600">
+                                    > No activity detected in system logs...
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
 {% endblock %}
