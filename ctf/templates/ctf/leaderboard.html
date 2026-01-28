@@ -287,16 +287,11 @@
             </thead>
             <tbody class="divide-y divide-white/5 text-sm font-mono text-slate-300">
                 {% for profile in page_obj %}
-                <!-- Show row if: Not page 1 OR (Rank > 3) -->
-                <!-- We hide top 3 on page 1 because they are on the podium. -->
                 {% if page_obj.number != 1 or forloop.counter > 3 %}
                 <tr class="hover:bg-white/[0.02] transition-colors group">
                     <td class="px-6 py-4 text-center rank-cell text-slate-500 group-hover:text-emerald-500">
-                        {{ forloop.counter|add:page_obj.start_index|add:"-1" }}
-                        <!-- Adjust counter logic if needed, simpler: just show actual rank -->
                         {% if page_obj.number > 1 %}
                         {{ forloop.counter|add:20|add:-20|add:page_obj.start_index|add:-1 }}
-                        <!-- Placeholder logic, just use loop counter + offset -->
                         {% else %}
                         {{ forloop.counter }}
                         {% endif %}
