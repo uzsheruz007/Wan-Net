@@ -42,7 +42,7 @@ class Lesson(models.Model):
     video_file = models.FileField(upload_to='videos/', blank=True, null=True, verbose_name="Video fayl")
     content = CKEditor5Field(verbose_name="Mazmuni", config_name='default')
     order = models.PositiveIntegerField(verbose_name="Tartib raqami")
-    is_free = models.BooleanField(default=False, verbose_name="Bepulmi?")
+    is_open = models.BooleanField(default=False, verbose_name="Dars ochiqmi?")
 
     def __str__(self):
         return self.title

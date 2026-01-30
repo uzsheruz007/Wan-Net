@@ -66,6 +66,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #030303;
             overflow-x: hidden;
         }
 
@@ -413,7 +414,7 @@
     </script>
 </head>
 
-<body class="bg-[#0f172a] text-slate-300 selection:bg-emerald-500/30 selection:text-emerald-200">
+<body class="text-slate-400 selection:bg-emerald-500/30 selection:text-emerald-200">
 
     <!-- Dynamic Matrix Background (Lightweight) -->
     <canvas id="matrix-canvas" class="fixed inset-0 -z-10 pointer-events-none opacity-20"></canvas>
@@ -477,7 +478,7 @@
     {% endblock %}
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-40 border-b border-white/10 bg-[#0f172a]/90 backdrop-blur-md shadow-lg">
+    <nav class="fixed top-0 w-full z-40 border-b border-white/5 bg-[#030303]/80 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
             <a href="{% url 'ctf_home' %}" class="flex items-center gap-2 group">
                 <div class="w-2 h-2 bg-emerald-500 rounded-sm group-hover:animate-pulse"></div>
@@ -734,8 +735,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-6">
                 <!-- Card 1 -->
                 <div
-                    class="group relative p-6 bg-[#111827] rounded-xl border border-white/10 hover:border-emerald-500/50 transition-all duration-300 hover:bg-[#1f2937] hover:shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:-translate-y-1">
-                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-emerald-400">
+                    class="group relative p-6 bg-[#080808] rounded-xl border border-white/5 hover:border-emerald-500/30 transition-all duration-300 hover:bg-white/[0.02]">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                             viewBox="0 0 24 24" data-icon="lucide:arrow-up-right">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -743,9 +744,9 @@
                         </svg>
                     </div>
                     <div
-                        class="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6 text-emerald-400 group-hover:scale-110 transition-transform duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="24" height="24"
-                            viewBox="0 0 24 24" data-icon="lucide:globe" data-width="24">
+                        class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-6 text-emerald-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20"
+                            viewBox="0 0 24 24" data-icon="lucide:globe" data-width="20">
                             <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                 stroke-width="2">
                                 <circle cx="12" cy="12" r="10"></circle>
@@ -753,20 +754,21 @@
                             </g>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-emerald-400 transition-colors">Web Exploitation</h3>
-                    <p class="leading-relaxed text-sm text-slate-300 mb-6 border-l-2 border-emerald-500/30 pl-3">
-                        OWASP Top 10, SQL injection, XSS va zamonaviy web ilovalaridagi zaifliklarni o'rganing.
-                    </p>
+                    <h3 class="text-lg font-medium text-slate-100 mb-2 tracking-tight">Web Exploitation</h3>
+                    <p class="leading-relaxed text-sm text-slate-500 mb-4" style="">OWASP Top 10, SQL injection,
+                        XSS va zamonaviy web ilovalaridagi zaifliklarni o'rganing.</p>
                     <div class="flex gap-2">
-                        <span class="text-[11px] font-mono px-2 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">SQLi</span>
-                        <span class="text-[11px] font-mono px-2 py-1 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">RCE</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-400 border border-white/5">SQLi</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-400 border border-white/5">RCE</span>
                     </div>
                 </div>
 
                 <!-- Card 2 -->
                 <div
-                    class="group relative p-6 bg-[#111827] rounded-xl border border-white/10 hover:border-cyan-500/50 transition-all duration-300 hover:bg-[#1f2937] hover:shadow-[0_0_20px_rgba(6,182,212,0.15)] hover:-translate-y-1">
-                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-cyan-400">
+                    class="group hover:border-cyan-500/30 transition-all duration-300 hover:bg-white/[0.02] bg-[#080808] border-white/5 border rounded-xl pt-6 pr-6 pb-6 pl-6 relative">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                             viewBox="0 0 24 24" data-icon="lucide:arrow-up-right">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -774,9 +776,9 @@
                         </svg>
                     </div>
                     <div
-                        class="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6 text-cyan-400 group-hover:scale-110 transition-transform duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="24" height="24"
-                            viewBox="0 0 24 24" data-icon="lucide:binary" data-width="24">
+                        class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-6 text-cyan-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20"
+                            viewBox="0 0 24 24" data-icon="lucide:binary" data-width="20">
                             <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                 stroke-width="2">
                                 <rect width="4" height="6" x="14" y="14" rx="2"></rect>
@@ -785,20 +787,22 @@
                             </g>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-cyan-400 transition-colors">Binary Exploitation</h3>
-                    <p class="leading-relaxed text-sm text-slate-300 mb-6 border-l-2 border-cyan-500/30 pl-3">
-                         Xotira buzilishi, bufer to'lib ketishi va ROP zanjirlarini chuqur o'rganing.
+                    <h3 class="text-lg font-medium text-slate-100 mb-2 tracking-tight">Binary Exploitation</h3>
+                    <p class="leading-relaxed text-sm text-slate-500 mb-4">
+                        Xotira buzilishi, bufer to'lib ketishi va ROP zanjirlarini chuqur o'rganing. Noma'lumni teskari muhandislik qiling.
                     </p>
                     <div class="flex gap-2">
-                        <span class="text-[11px] font-mono px-2 py-1 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">ASM</span>
-                        <span class="text-[11px] font-mono px-2 py-1 rounded bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">GDB</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-400 border border-white/5">Assembly</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-400 border border-white/5">GDB</span>
                     </div>
                 </div>
 
                 <!-- Card 3 -->
                 <div
-                    class="group relative p-6 bg-[#111827] rounded-xl border border-white/10 hover:border-purple-500/50 transition-all duration-300 hover:bg-[#1f2937] hover:shadow-[0_0_20px_rgba(168,85,247,0.15)] hover:-translate-y-1">
-                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-purple-400">
+                    class="group relative p-6 bg-[#080808] rounded-xl border border-white/5 hover:border-purple-500/30 transition-all duration-300 hover:bg-white/[0.02]">
+                    <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em"
                             viewBox="0 0 24 24" data-icon="lucide:arrow-up-right">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -806,22 +810,25 @@
                         </svg>
                     </div>
                     <div
-                        class="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6 text-purple-400 group-hover:scale-110 transition-transform duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="24" height="24"
-                            viewBox="0 0 24 24" data-icon="lucide:shield-alert" data-width="24">
+                        class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center mb-6 text-purple-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="20" height="20"
+                            viewBox="0 0 24 24" data-icon="lucide:shield-alert" data-width="20">
                             <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                                 stroke-width="2"
                                 d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1zm-8-5v4m0 4h.01">
                             </path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3 tracking-tight group-hover:text-purple-400 transition-colors">Privilege Escalation</h3>
-                    <p class="leading-relaxed text-sm text-slate-300 mb-6 border-l-2 border-purple-500/30 pl-3">
-                        Oddiy foydalanuvchidan root darajasiga qanday o'tishni o'rganing. Linux va Windows.
+                    <h3 class="text-lg font-medium text-slate-100 mb-2 tracking-tight">Privilege Escalation</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed mb-4">
+                        Oddiy foydalanuvchidan root darajasiga qanday o'tishni o'rganing. Linux va Windows yadrosi ekspluatatsiyasi.
                     </p>
                     <div class="flex gap-2">
-                        <span class="text-[11px] font-mono px-2 py-1 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">Linux</span>
-                        <span class="text-[11px] font-mono px-2 py-1 rounded bg-purple-500/10 text-purple-300 border border-purple-500/20">AD</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-400 border border-white/5">Linux</span>
+                        <span
+                            class="text-[10px] font-mono px-2 py-1 rounded bg-white/5 text-slate-400 border border-white/5">Active
+                            Directory</span>
                     </div>
                 </div>
             </div>
@@ -829,18 +836,20 @@
 
         <!-- Live Arena Section -->
         <div class="max-w-7xl mx-auto px-6">
-            <div class="relative rounded-2xl border border-white/10 bg-[#111827] overflow-hidden shadow-2xl hover:shadow-emerald-900/20 transition-all duration-500">
+            <div class="relative rounded-2xl border border-white/10 bg-[#050505] overflow-hidden">
                 <!-- Background decoration -->
-                <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-emerald-500/5 to-transparent pointer-events-none"></div>
+                <div
+                    class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-emerald-900/10 to-transparent pointer-events-none">
+                </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2">
-                    <div class="p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-white/10">
+                    <div class="p-8 md:p-12 border-b lg:border-b-0 lg:border-r border-white/5">
                         <div class="flex items-center gap-2 mb-6">
-                            <span class="flex h-3 w-3 rounded-full bg-red-500 shadow-[0_0_10px_#ef4444] animate-pulse"></span>
-                            <span class="text-xs font-mono text-red-400 tracking-widest uppercase font-bold">Jonli Nishon</span>
+                            <span class="flex h-2 w-2 rounded-full bg-red-500"></span>
+                            <span class="text-xs font-mono text-red-400 tracking-widest uppercase">Jonli Nishon</span>
                         </div>
-                        <h2 class="text-3xl font-bold text-white tracking-tight mb-4">Operatsiya: Qora Qal'a</h2>
-                        <p class="text-slate-300 mb-8 leading-relaxed text-sm">
+                        <h2 class="text-3xl font-medium text-white tracking-tight mb-4">Operatsiya: Qora Qal'a</h2>
+                        <p class="text-slate-400 mb-8 leading-relaxed text-sm">
                             Yuqori darajada himoyalangan bank infratuzilmasi simulyatsiyasi. Perimetrga kiring,
                             IDS ni chetlab o'ting va mijozlar ma'lumotlar bazasini chiqarib oling.
                         </p>
@@ -920,7 +929,7 @@
     {% endblock %}
 
     <!-- Footer -->
-    <footer class="border-t border-white/10 pt-16 pb-8 relative z-10">
+    <footer class="border-t border-white/10 bg-[#020202] pt-16 pb-8 relative z-10">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
                 <div>

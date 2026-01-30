@@ -3,216 +3,50 @@
 {% block title %}Challenges{% endblock %}
 
 {% block content %}
-
-
-
 <style>
-    /* Premium Cyberpunk Styles - Enhanced */
-    :root {
-        --grid-color: rgba(6, 182, 212, 0.1);
-        --neon-cyan: #06b6d4;
-        --neon-emerald: #10b981;
-        --neon-purple: #a855f7;
-        --bg-dark: #050505;
-        --card-bg: #0a0a0a;
-    }
-
-    /* Entry Animation */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .animate-entry {
-        animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) backwards;
-    }
-    .delay-100 { animation-delay: 100ms; }
-    .delay-200 { animation-delay: 200ms; }
-    .delay-300 { animation-delay: 300ms; }
-
-    .mission-hud {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        background: rgba(10, 10, 10, 0.8); /* Higher opacity for visibility */
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(12px);
-        margin-bottom: 40px;
-        border-radius: 8px; /* Softer rounded corners */
+    /* New Card Style based on Team Dashboard */
+    .cyber-card {
+        background: #0b1120; /* Midnight Blue */
+        border: 1px solid rgba(16, 185, 129, 0.4); /* Emerald Border */
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-        position: relative;
-        z-index: 10;
-    }
-
-    .hud-stat {
-        padding: 24px;
-        text-align: center;
-        border-right: 1px solid rgba(255, 255, 255, 0.05);
-        position: relative;
-        background: linear-gradient(to bottom, rgba(255,255,255,0.02), transparent);
-    }
-    
-    .hud-stat:last-child { border-right: none; }
-
-    .hud-label {
-        color: #94a3b8;
-        font-size: 11px;
-        font-family: 'JetBrains Mono', monospace;
-        letter-spacing: 2px;
-        margin-bottom: 8px;
-        text-transform: uppercase;
-    }
-
-    .hud-value {
-        color: white;
-        font-size: 28px;
-        font-weight: 700;
-        font-family: 'Orbitron', sans-serif;
-        text-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
-    }
-
-    /* Filter Bar */
-    .filter-bar {
-        display: flex;
-        gap: 12px;
-        overflow-x: auto;
-        padding-bottom: 20px;
-        margin-bottom: 40px;
-        scrollbar-width: none;
-        mask-image: linear-gradient(to right, black 95%, transparent 100%);
-    }
-    .filter-bar::-webkit-scrollbar { display: none; }
-
-    .cat-btn {
-        background: rgba(20, 20, 20, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #cbd5e1; /* Brighter text */
-        padding: 12px 24px;
-        border-radius: 6px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        white-space: nowrap;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        text-transform: uppercase;
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(4px);
-    }
-
-    .cat-btn:hover, .cat-btn.active {
-        background: rgba(16, 185, 129, 0.15);
-        border-color: var(--neon-emerald);
-        color: var(--neon-emerald);
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
-        transform: translateY(-2px);
-    }
-
-    /* Challenge Cards */
-    .chal-card {
-        background: var(--card-bg);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 12px; /* Modern cleaner look */
-        height: 100%;
-        position: relative;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        overflow: hidden;
         display: flex;
         flex-direction: column;
-        z-index: 1;
+        height: 100%;
+        position: relative;
     }
 
-    .chal-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        border-color: var(--neon-emerald);
-        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(16, 185, 129, 0.1);
-        z-index: 20;
+    .cyber-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
     }
 
-    /* Card Top Glow Line */
-    .card-top-accent {
-        height: 3px;
-        width: 100%;
-        background: #334155;
-        transition: 0.3s;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    }
-    .chal-card:hover .card-top-accent { 
-        background: var(--neon-emerald); 
-        box-shadow: 0 0 15px var(--neon-emerald); 
-    }
-
-    .card-graphic {
-        height: 140px; /* Slightly taller */
-        background: radial-gradient(circle at center, rgba(30, 41, 59, 0.5), rgba(10, 10, 10, 0.8));
+    .card-header {
+        background: radial-gradient(circle at center, #1e293b, #020617);
+        height: 140px;
         display: flex;
         align-items: center;
         justify-content: center;
-        position: relative;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        overflow: hidden;
+        position: relative;
     }
 
-    /* Animated Grid Background in Card Graphic */
-    .card-graphic::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: 
-            linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
-        background-size: 20px 20px;
-        opacity: 0.5;
-        transform: perspective(500px) rotateX(60deg) translateY(0);
-        transform-origin: bottom;
-        animation: gridMove 20s linear infinite;
-    }
-
-    @keyframes gridMove {
-        from { background-position: 0 0; }
-        to { background-position: 0 100%; }
-    }
-
-    .cyber-icon {
-        font-size: 3.5rem;
-        color: rgba(255, 255, 255, 0.15);
-        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        z-index: 2;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
-    }
-    .chal-card:hover .cyber-icon {
-        color: var(--neon-emerald);
-        transform: scale(1.15) rotate(-5deg);
-        filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.5));
-    }
-
-    .diff-badge {
-        font-size: 10px;
-        font-family: 'JetBrains Mono', monospace;
-        padding: 4px 10px;
-        border-radius: 4px; /* Matches card corner style */
-        background: rgba(0, 0, 0, 0.85);
-        border: 1px solid rgba(255,255,255,0.15);
-        text-transform: uppercase;
-        color: #e2e8f0;
-        font-weight: 600;
-        backdrop-filter: blur(4px);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-    }
-
-    .chal-content {
-        padding: 24px;
+    .card-body {
+        padding: 1.5rem;
+        flex-grow: 1;
+        background: #0f172a;
         display: flex;
         flex-direction: column;
-        flex-grow: 1;
-        background: linear-gradient(to bottom, #0a0a0a, #050505);
     }
 
-    /* Solved Effect */
+    /* Solved Overlay */
     .solved-overlay {
         position: absolute;
         inset: 0;
-        background: rgba(5, 5, 5, 0.85); /* Darker for clarity */
-        backdrop-filter: blur(4px); /* Stronger blur */
+        background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(4px);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -221,26 +55,35 @@
         transition: opacity 0.3s;
         pointer-events: none;
     }
-    .chal-card:has(.solved-overlay) .solved-overlay { opacity: 1; pointer-events: auto; }
+    .cyber-card:has(.solved-overlay) .solved-overlay { opacity: 1; pointer-events: auto; }
 
-    .stamp-solved {
-        color: var(--neon-emerald);
-        border: 4px solid var(--neon-emerald);
-        padding: 12px 30px;
+    .stamp {
+        border: 4px solid;
+        padding: 10px 20px;
         font-weight: 900;
-        font-family: 'Orbitron', sans-serif;
         text-transform: uppercase;
-        transform: rotate(-12deg) scale(0.8);
-        font-size: 26px;
-        letter-spacing: 4px;
-        animation: stampIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        background: rgba(16, 185, 129, 0.05);
-        box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+        transform: rotate(-12deg);
+        font-family: 'Orbitron', sans-serif;
     }
+    .stamp-success { color: #10b981; border-color: #10b981; }
+    .stamp-fail { color: #ef4444; border-color: #ef4444; transform: rotate(12deg); }
 
-    @keyframes stampIn {
-        from { opacity: 0; transform: rotate(-12deg) scale(2); }
-        to { opacity: 1; transform: rotate(-12deg) scale(1); }
+    /* Filter Buttons */
+    .filter-btn {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 20px;
+        border-radius: 8px;
+        color: #94a3b8;
+        font-size: 11px;
+        font-family: 'JetBrains Mono', monospace;
+        transition: 0.2s;
+        margin-right: 8px;
+    }
+    .filter-btn:hover, .filter-btn.active {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: #10b981;
+        color: #10b981;
     }
 </style>
 
@@ -249,7 +92,7 @@
     <!-- HERO HEADER -->
     <div class="mb-12 animate-entry">
         <h1 class="text-5xl md:text-6xl font-black text-white font-display uppercase tracking-tighter mb-4 drop-shadow-2xl">
-            Topshiriqlar <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]">Bazasi</span>
+            Topshiriqlar <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Bazasi</span>
         </h1>
         <p class="text-slate-400 font-mono text-sm max-w-2xl border-l-2 border-emerald-500/50 pl-4">
             > Markazlashtirilgan o'ljalar taxtasiga xush kelibsiz.<br>
@@ -257,93 +100,110 @@
         </p>
     </div>
 
-    <!-- MISSION DASHBOARD HUD -->
-    <div class="mission-hud animate-entry delay-100">
-        <div class="hud-stat">
-            <div class="hud-label">MAVJUD TOPSHIRIQLAR</div>
-            <div class="hud-value">{{ total_challenges }}</div>
+    <!-- HUD STATS (Style like Profile/Team) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 animate-entry delay-100">
+        <div class="bg-[#0b1120] border border-emerald-500/30 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 bg-emerald-500/5 group-hover:bg-emerald-500/10 transition-colors"></div>
+            <div class="relative z-10 text-center">
+                <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">MAVJUD TOPSHIRIQLAR</div>
+                <div class="text-3xl font-black text-white font-mono">{{ total_challenges }}</div>
+            </div>
         </div>
-        <div class="hud-stat border-l border-white/10 pl-8 md:pl-0 md:border-none">
-            <div class="hud-label">KO'RSATILMOQDA</div>
-            <div class="hud-value text-emerald-100">{{ displayed_count }}</div>
+        <div class="bg-[#0b1120] border border-white/10 rounded-xl p-6 relative overflow-hidden group">
+            <div class="relative z-10 text-center">
+                <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">KO'RSATILMOQDA</div>
+                <div class="text-3xl font-black text-emerald-100 font-mono">{{ displayed_count }}</div>
+            </div>
         </div>
-        <div class="hud-stat hidden md:block">
-            <div class="hud-label">TIZIM HOLATI</div>
-            <div class="hud-value text-emerald-400 text-sm mt-3 flex items-center gap-2 justify-center">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></span> ONLINE
+        <div class="bg-[#0b1120] border border-white/10 rounded-xl p-6 relative overflow-hidden md:block hidden">
+            <div class="relative z-10 text-center">
+                <div class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-1">TIZIM HOLATI</div>
+                 <div class="text-emerald-400 text-sm mt-2 flex items-center gap-2 justify-center font-bold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10b981]"></span> ONLINE
+                </div>
             </div>
         </div>
     </div>
 
     <!-- FILTERS -->
-    <div class="filter-bar animate-entry delay-200">
-        <a href="?" class="cat-btn {% if not selected_category %}active{% endif %}">
-            <i class="fas fa-globe mr-2"></i>BARCHA FAYLLAR
+    <div class="flex overflow-x-auto pb-6 mb-4 animate-entry delay-200 no-scrollbar">
+        <a href="?" class="filter-btn {% if not request.GET.category %}active{% endif %}">
+            BARCHA FAYLLAR
         </a>
+        {% if user.is_authenticated %}
+        <a href="?category=solved" class="filter-btn {% if request.GET.category == 'solved' %}active{% endif %}">
+            YECHILGAN
+        </a>
+        <a href="?category=failed" class="filter-btn {% if request.GET.category == 'failed' %}active{% endif %}">
+            YECHILMAGAN
+        </a>
+        {% endif %}
         {% for cat in all_categories %}
-        <a href="?category={{ cat.code }}" class="cat-btn {% if cat.selected %}active{% endif %}">
+        <a href="?category={{ cat.code }}" class="filter-btn {% if cat.selected %}active{% endif %}">
             #{{ cat.name|upper }}
         </a>
         {% endfor %}
     </div>
 
     <!-- CHALLENGE GRID -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {% for challenge in challenges %}
-        <a href="{% url 'challenge_detail' challenge.id %}" class="block h-full group animate-entry delay-300" style="animation-delay: {{ forloop.counter|add:'2' }}00ms;">
-            <div class="chal-card">
-                <!-- Top Accent Line -->
-                <div class="card-top-accent"></div>
+        <a href="{% url 'challenge_detail' challenge.id %}" class="block h-full animate-entry delay-300">
+            <div class="cyber-card">
                 
                 <!-- Graphic Header -->
-                <div class="card-graphic">
-                    <i class="fas 
-                        {% if challenge.category == 'Web' %}fa-globe
-                        {% elif challenge.category == 'Crypto' %}fa-key
-                        {% elif challenge.category == 'OSINT' %}fa-eye
-                        {% elif challenge.category == 'Forensics' %}fa-search
-                        {% elif challenge.category == 'Reverse' %}fa-cogs
-                        {% else %}fa-microchip{% endif %} 
-                        cyber-icon">
-                    </i>
+                <div class="card-header">
+                     <!-- Green Box CTF Text -->
+                    <div class="border-2 border-emerald-500 px-5 py-2 bg-black z-10 shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                        <span class="text-3xl font-black text-emerald-500 font-mono tracking-[0.2em] drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]">
+                            CTF
+                        </span>
+                    </div>
                     
-                    <div class="absolute top-3 right-3 z-10">
-                        <span class="diff-badge">{{ challenge.points }} PTS</span>
+                    <!-- Background Grid Effect -->
+                    <div class="absolute inset-0 opacity-20 pointer-events-none" 
+                         style="background-image: linear-gradient(#10b981 1px, transparent 1px), linear-gradient(90deg, #10b981 1px, transparent 1px); background-size: 20px 20px;">
+                    </div>
+
+                    <!-- PTS Badge -->
+                    <div class="absolute top-3 right-3 font-mono text-[10px] font-bold text-slate-400 bg-slate-900/80 px-2 py-1 rounded border border-white/10">
+                        {{ challenge.points }} PTS
                     </div>
                 </div>
 
                 <!-- Content -->
-                <div class="chal-content">
-                    <div class="text-[10px] text-emerald-500/80 font-mono mb-2 uppercase tracking-widest font-bold">{{ challenge.category }}</div>
-                    <h3 class="text-white font-bold text-lg leading-snug mb-3 group-hover:text-emerald-400 transition-colors">
-                        {{ challenge.title|truncatechars:35 }}
+                <div class="card-body">
+                    <div class="text-[10px] text-emerald-500 font-mono mb-2 uppercase tracking-widest font-bold opacity-80">{{ challenge.category }}</div>
+                    <h3 class="text-white font-bold text-lg leading-tight mb-4 group-hover:text-emerald-400 transition-colors">
+                        {{ challenge.title|truncatechars:40 }}
                     </h3>
                     
                     <div class="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
-                        <div class="font-mono text-xs text-slate-500">
-                             Qiyinchilik: <span class="text-slate-300">NORMAL</span>
+                        <div class="font-mono text-[10px] text-slate-500 uppercase">
+                             QIYINCHILIK: <span class="text-white font-bold">NORMAL</span>
                         </div>
-                        <i class="fas fa-arrow-right text-slate-700 group-hover:text-emerald-400 transform group-hover:translate-x-1 transition-all"></i>
+                        <i class="fas fa-arrow-right text-slate-600 text-xs"></i>
                     </div>
                 </div>
 
-                <!-- Solved Overlay -->
+                <!-- Overlays -->
                 {% if challenge.is_solved %}
                 <div class="solved-overlay">
-                    <div class="stamp-solved">YECHILGAN</div>
+                    <div class="stamp stamp-success">YECHILGAN</div>
+                </div>
+                {% elif challenge.has_failed_attempt %}
+                <div class="solved-overlay">
+                    <div class="stamp stamp-fail">YECHILMAGAN</div>
                 </div>
                 {% endif %}
             </div>
         </a>
         {% empty %}
-        <div class="col-span-full py-32 text-center border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
-            <div class="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-6 text-slate-600">
-                <i class="fas fa-search text-2xl"></i>
-            </div>
-            <h3 class="text-white font-medium text-lg mb-2">Hech narsa topilmadi</h3>
-            <p class="text-slate-500 font-mono text-sm">Hozirgi mezonlarga mos topshiriq mavjud emas.</p>
-            <a href="?" class="mt-6 inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm font-mono border-b border-emerald-500/30 hover:border-emerald-500 pb-0.5 transition-colors">
-                <i class="fas fa-undo"></i> Filtrlarni tozalash
+        <div class="col-span-full py-24 text-center border-2 border-dashed border-emerald-500/20 rounded-2xl bg-emerald-500/5">
+            <h3 class="text-emerald-500 font-bold text-xl mb-2">Ma'lumot topilmadi</h3>
+            <p class="text-slate-400 font-mono text-sm">Tanlangan kategoriyada topshiriqlar mavjud emas.</p>
+            <a href="?" class="mt-6 inline-block px-6 py-2 bg-emerald-500 text-white rounded font-bold hover:bg-emerald-400 transition-colors">
+                Barchasini ko'rsatish
             </a>
         </div>
         {% endfor %}
@@ -351,22 +211,22 @@
 
     <!-- PAGINATION -->
     {% if challenges.has_other_pages %}
-    <div class="flex justify-center mt-16 gap-3 animate-entry delay-300">
+    <div class="flex justify-center mt-12 gap-3 animate-entry delay-300">
         {% if challenges.has_previous %}
         <a href="?page={{ challenges.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}" 
-           class="px-5 py-2.5 rounded border border-white/10 bg-white/[0.02] text-slate-400 hover:text-white hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all font-mono text-xs flex items-center gap-2">
-           <i class="fas fa-chevron-left"></i> OLDINGI
+           class="px-4 py-2 rounded-lg border border-white/10 bg-[#0b1120] text-slate-400 hover:text-white hover:border-emerald-500 transition-colors font-mono text-xs font-bold">
+           &lt; OLDINGI
         </a>
         {% endif %}
         
-        <span class="px-5 py-2.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+        <span class="px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-xs font-bold">
             {{ challenges.number }}
         </span>
 
         {% if challenges.has_next %}
         <a href="?page={{ challenges.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}" 
-           class="px-5 py-2.5 rounded border border-white/10 bg-white/[0.02] text-slate-400 hover:text-white hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all font-mono text-xs flex items-center gap-2">
-           KEYINGI <i class="fas fa-chevron-right"></i>
+           class="px-4 py-2 rounded-lg border border-white/10 bg-[#0b1120] text-slate-400 hover:text-white hover:border-emerald-500 transition-colors font-mono text-xs font-bold">
+           KEYINGI &gt;
         </a>
         {% endif %}
     </div>

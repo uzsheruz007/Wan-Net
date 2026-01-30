@@ -1,0 +1,290 @@
+{% extends 'ctf/ctf_home.html' %}
+{% load static %}
+
+{% block title %}Jamoa Boshqaruvi // Wan-Net{% endblock %}
+
+{% block content %}
+<style>
+    /* Custom Animations */
+    @keyframes border-pulse {
+        0%, 100% { border-color: rgba(16, 185, 129, 0.3); }
+        50% { border-color: rgba(16, 185, 129, 0.6); }
+    }
+    
+    .cyber-card {
+        background: #0b1120; /* Juda to'q ko'k (Midnight) */
+        border: 1px solid rgba(16, 185, 129, 0.4); /* Yashil ramka (Ayil chiziq) */
+        border-radius: 24px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Token Glass Box */
+    .glass-token-box {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px dashed rgba(16, 185, 129, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-token-box::before {
+        content: "";
+        position: absolute;
+        top: 0; left: -100%; width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(16,185,129,0.1), transparent);
+        animation: shire 3s infinite;
+    }
+
+    @keyframes shire {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+</style>
+
+<div class="min-h-screen pt-28 pb-20 relative z-10 px-4">
+    <div class="max-w-7xl mx-auto">
+        
+        <!-- Header -->
+        <div class="flex items-center gap-3 mb-8 text-sm text-slate-400 font-mono uppercase tracking-widest pl-2 border-l-2 border-emerald-500">
+             <span class="text-emerald-400">Wan-Net</span> // PLATFORMA <i class="fas fa-chevron-right text-[10px]"></i> JAMOA
+        </div>
+
+        {% if team %}
+            <!-- DASHBOARD GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full items-stretch">
+                
+                <!-- LEFT COLUMN: TEAM INFO CARD -->
+                <div class="lg:col-span-1">
+                    <div class="cyber-card h-full p-8 flex flex-col items-center justify-center text-center">
+                        
+                        <!-- Background glow effects -->
+                        <div class="absolute top-0 right-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+                        <div class="absolute -top-20 -left-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <!-- Avatar -->
+                        <div class="w-32 h-32 rounded-3xl bg-slate-800 border-2 border-emerald-500/20 shadow-2xl flex items-center justify-center text-5xl mb-6 relative z-10">
+                            {% if team.avatar %}
+                                <img src="{{ team.avatar.url }}" class="w-full h-full object-cover rounded-3xl">
+                            {% else %}
+                                🤖
+                            {% endif %}
+                        </div>
+
+                        <h2 class="text-3xl font-bold text-white mb-2">{{ team.name }}</h2>
+                        <p class="text-emerald-400 font-mono text-xs uppercase tracking-[0.2em] mb-8 px-4">"{{ team.motto|default:'No motto provided' }}"</p>
+                        
+                        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-800/50 border border-emerald-500/20 rounded-lg text-xs text-slate-300 font-mono mb-12">
+                            <i class="fas fa-crown text-yellow-500"></i> Kapitan: <span class="text-white font-bold">{{ team.captain.username }}</span>
+                        </div>
+
+                        <!-- TOKEN SECTION -->
+                        <div class="w-full relative z-10">
+                            <div class="h-px w-full bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent mb-6"></div>
+                            
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3">Taklif Kodi (Invite Token)</p>
+                            
+                            <div class="glass-token-box rounded-xl p-4 cursor-pointer group hover:border-emerald-500 transition-colors bg-slate-900/50" onclick="navigator.clipboard.writeText('{{ team.token }}'); alert('Token nusxalandi!')">
+                                <code class="text-3xl font-black text-emerald-400 font-mono tracking-wider drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                                    {{ team.token }}
+                                </code>
+                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity text-slate-500">
+                                    <i class="fas fa-copy"></i>
+                                </div>
+                            </div>
+                            
+                            <p class="text-[10px] text-slate-600 mt-3 font-mono">Bu kodni do'stlaringizga yuboring.</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: MEMBERS & STATS (Unified Card) -->
+                <div class="lg:col-span-2">
+                    <div class="cyber-card h-full p-8 flex flex-col">
+                        
+                        <!-- Members Section -->
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                                Jamoa A'zolari
+                            </h3>
+                            <span class="bg-slate-800 text-slate-300 px-3 py-1 rounded-md text-xs font-mono border border-emerald-500/30">
+                                {{ team.members.count }} / 5
+                            </span>
+                        </div>
+
+                        <div class="space-y-3 mb-8">
+                            {% for member in team.members.all %}
+                            <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-800/30 border border-white/5 hover:border-emerald-500/30 hover:bg-slate-800/50 transition-colors group">
+                                <div class="w-10 h-10 rounded-lg bg-slate-700 flex items-center justify-center text-white font-bold text-lg border border-white/5">
+                                    {{ member.username.0 }}
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="text-white font-bold text-lg leading-none mb-1 flex items-center gap-2">
+                                        {{ member.username }}
+                                        {% if member == team.captain %}
+                                            <i class="fas fa-crown text-yellow-500 text-xs" title="Kapitan"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-[11px] text-slate-500 font-mono uppercase tracking-wide">
+                                        {% if member == team.captain %}Kapitan{% else %}Operative{% endif %} • <span class="text-emerald-400">{{ member.ctf_profile.total_points }} pts</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center gap-3">
+                                    {% if member == request.user %}
+                                        <span class="bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 px-3 py-1 rounded text-[10px] font-bold tracking-wider">YOU</span>
+                                        {% if team.captain != request.user %}
+                                            <a href="{% url 'leave_team' %}" onclick="return confirm('Ishonchingiz komilmi?')" class="w-8 h-8 flex items-center justify-center rounded bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors border border-red-500/20">
+                                                <i class="fas fa-sign-out-alt text-xs"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% if team.captain == request.user and member != request.user %}
+                                        <a href="{% url 'kick_team_member' member.id %}" onclick="return confirm('Chetlashtirilsinmi?')" class="w-8 h-8 flex items-center justify-center rounded bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors border border-red-500/20" title="Kick">
+                                            <i class="fas fa-times"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            <!-- Empty Slots Visualization -->
+                            {% if team.members.count < 5 %}
+                                <div class="p-4 rounded-xl border border-dashed border-white/10 flex items-center gap-4 opacity-30">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-800/30 flex items-center justify-center text-slate-500">
+                                        <i class="fas fa-plus"></i>
+                                    </div>
+                                    <div class="text-sm text-slate-500 font-mono">Bo'sh o'rin</div>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="w-full h-px bg-emerald-500/20 mb-8"></div>
+
+                        <!-- Stats Section -->
+                        <div class="flex-grow flex flex-col">
+                            <h3 class="text-lg font-bold text-white mb-6">Jamoa Statistikasi</h3>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center h-full">
+                                <div class="h-48 relative flex items-center justify-center">
+                                    <canvas id="teamChart"></canvas>
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                        <span class="text-2xl font-black text-white">{{ team.points }}</span>
+                                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">JAMI BALL</span>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-slate-400 space-y-4 font-mono">
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Yechilgan masalalar:</span>
+                                        <span class="text-white font-bold">{{ total_solved }} ta</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Turnir reytingi:</span>
+                                        <span class="text-white font-bold">#{{ team.id }}</span>
+                                    </div>
+                                    <div class="flex justify-between border-b border-white/5 pb-2">
+                                        <span>Jamoa darajasi:</span>
+                                        <span class="text-emerald-400 font-bold">Professional</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        {% else %}
+            <!-- NO TEAM STATE (Create / Join) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 animate-entry">
+                
+                <!-- Create Team Card -->
+                <div class="cyber-card p-10 hover:border-emerald-500 transition-all duration-300 group">
+                    <div class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-2xl mb-6 group-hover:scale-110 transition-transform border border-emerald-500/20">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Jamoa Tuzish</h2>
+                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">
+                        Yangi kiber-xavfsizlik guruhini shakllantiring. Do'stlaringizni taklif qiling va turnirlarda qatnashing.
+                    </p>
+
+                    <form method="post" action="{% url 'create_team' %}" enctype="multipart/form-data" class="space-y-5">
+                        {% csrf_token %}
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Jamoa Nomi</label>
+                            <input type="text" name="name" required class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 focus:outline-none transition-colors placeholder:text-slate-700" placeholder="Jamoa nomi...">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Shior (Ixtiyoriy)</label>
+                            <input type="text" name="motto" class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-emerald-500 focus:outline-none transition-colors placeholder:text-slate-700" placeholder="Bizning maqsadimiz...">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Logo</label>
+                            <input type="file" name="avatar" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-emerald-500/10 file:text-emerald-500 hover:file:bg-emerald-500/20 cursor-pointer"/>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl mt-4 transition-all shadow-lg hover:shadow-emerald-500/25 flex items-center justify-center gap-2">
+                            <i class="fas fa-check"></i> YARATISH
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Join Team Card -->
+                <div class="cyber-card p-10 hover:border-cyan-500 transition-all duration-300 group" style="border-color: rgba(6, 182, 212, 0.4);">
+                    <div class="w-14 h-14 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500 text-2xl mb-6 group-hover:scale-110 transition-transform border border-cyan-500/20">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Qo'shilish</h2>
+                    <p class="text-slate-400 text-sm mb-8 leading-relaxed">
+                        Mavjud jamoaga taklif kodi orqali qo'shiling. Kapitaningizdan kodni so'rang.
+                    </p>
+
+                    <form method="post" action="{% url 'join_team' %}" class="space-y-5">
+                        {% csrf_token %}
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Taklif Kodi</label>
+                            <input type="text" name="token" required class="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white font-mono tracking-widest text-center text-lg focus:border-cyan-500 focus:outline-none transition-colors placeholder:text-slate-700 placeholder:normal-case placeholder:font-sans placeholder:text-sm placeholder:tracking-normal" placeholder="Masalan: A1B2C3D4">
+                        </div>
+                        
+                        <button type="submit" class="w-full py-4 bg-slate-800 hover:bg-cyan-600 hover:text-white text-slate-300 font-bold rounded-xl mt-4 transition-all border border-white/5 hover:border-cyan-500 shadow-lg flex items-center justify-center gap-2">
+                            JAMOAGA KIRISH <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('teamChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ stats_labels|safe }},
+                datasets: [{
+                    data: {{ stats_data|safe }},
+                    backgroundColor: [
+                        '#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                cutout: '75%',
+                plugins: { legend: { display: false } },
+                elements: { arc: { borderWidth: 0 } }
+            }
+        });
+    }
+</script>
+{% endblock %}

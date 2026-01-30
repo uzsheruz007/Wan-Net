@@ -1,0 +1,277 @@
+{% extends 'ctf/ctf_home.html' %}
+{% load static %}
+
+{% block title %}{{ tournament.title }} // Tournament Lobby{% endblock %}
+
+{% block content %}
+<div class="min-h-screen pt-32 pb-20 relative z-10 px-4">
+    
+    <!-- Lobby Container -->
+    <div class="max-w-6xl mx-auto">
+        
+        <!-- Header Card -->
+        <div class="bg-[#111827] border border-white/10 rounded-2xl overflow-hidden relative mb-8 shadow-2xl">
+            <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/20 to-transparent pointer-events-none"></div>
+            
+            <div class="p-8 md:p-12 relative z-10 text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-white/5 border border-white/10 text-[10px] font-mono text-emerald-400 mb-6 uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    {{ tournament.mode }} FORMAT
+                </div>
+                
+                <h1 class="text-4xl md:text-6xl font-black text-white font-display uppercase tracking-tight mb-4 drop-shadow-lg">
+                    {{ tournament.title }}
+                </h1>
+                
+                <p class="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-8">
+                    {{ tournament.description }}
+                </p>
+
+                <!-- Timer / Status -->
+                <div class="grid grid-cols-2 gap-4 max-w-sm mx-auto border-t border-white/10 pt-8">
+                    <div class="text-center">
+                        <div class="text-xs text-slate-500 font-mono uppercase mb-1">Status</div>
+                        <div class="text-white font-bold">
+                            {% if tournament.is_active %}LIVE{% else %}Upcoming{% endif %}
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-xs text-slate-500 font-mono uppercase mb-1">Participants</div>
+                        <div class="text-white font-bold">{{ tournament.registrations.count }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Area & Challenges -->
+        <div class="bg-[#111827] border border-white/10 rounded-2xl p-8 text-center relative overflow-hidden min-h-[300px] shadow-2xl">
+            <!-- Background effects -->
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50"></div>
+            
+            {% if is_registered %}
+                <div class="py-4">
+                    {% if not show_challenges %}
+                         <div class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4 text-emerald-500">
+                            <i class="fas fa-check text-2xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Siz ro'yxatdan o'tgansiz!</h2>
+                        <div class="font-mono text-3xl md:text-5xl text-white font-bold tracking-widest mt-6" id="countdown" data-target="{{ tournament.start_date|date:'U' }}">
+                            00:00:00
+                        </div>
+                        <div class="text-xs text-slate-500 mt-2 font-mono uppercase tracking-widest">Boshlanishiga qoldi</div>
+                        
+                        
+                    
+                    {% else %}
+                        <!-- CHALLENGE CARD STYLES -->
+                        <style>
+                            .chal-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+                            .chal-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
+                            
+                            .stamp-solved {
+                                border: 4px solid #10b981; color: #10b981; 
+                                padding: 8px 16px; font-weight: 900; 
+                                transform: rotate(-12deg); 
+                                text-transform: uppercase; letter-spacing: 2px;
+                                background: rgba(16, 185, 129, 0.1);
+                                box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+                                font-family: sans-serif;
+                            }
+
+                            .stamp-failed {
+                                border: 4px solid #ef4444; color: #ef4444; /* Red */
+                                padding: 8px 16px; font-weight: 900; 
+                                transform: rotate(12deg); 
+                                text-transform: uppercase; letter-spacing: 2px;
+                                background: rgba(239, 68, 68, 0.1);
+                                box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+                                font-family: sans-serif;
+                            }
+                        </style>
+
+                        <!-- ACTIVE TOURNAMENT CHALLENGES -->
+                        <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                                <i class="fas fa-layer-group text-emerald-500"></i> Missiyalar
+                            </h2>
+                            
+                            <!-- TUGASH VAQTI TAYMERI -->
+                            <div class="hidden md:flex items-center gap-3 px-4 py-2 bg-[#0f0f0f] border border-red-500/20 rounded shadow-[0_0_10px_rgba(220,38,38,0.1)]">
+                                <div class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                                <span class="text-xs text-slate-500 font-mono uppercase">Tugashiga:</span>
+                                <span class="countdown-timer font-mono font-bold text-red-500 text-lg" data-target="{{ tournament.end_date|date:'U' }}">
+                                    --:--:--
+                                </span>
+                            </div>
+
+                            <div class="flex items-center gap-4">
+                                <a href="{% url 'tournament_leaderboard' tournament.id %}" class="px-4 py-2 bg-white/5 hover:bg-white/10 text-white font-mono text-xs rounded border border-white/10 transition-colors flex items-center gap-2 group">
+                                    <i class="fas fa-trophy text-slate-500 group-hover:text-yellow-400 transition-colors"></i> 
+                                    <span>NATIJALAR</span>
+                                </a>
+                                <div class="text-sm font-mono text-slate-400 py-2">
+                                    {{ challenges|length }} ta
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-entry delay-200">
+                            {% for challenge in challenges %}
+                            <a href="{% url 'challenge_detail' challenge.id %}?from_tournament=true" class="block h-full group">
+                                <div class="chal-card h-full flex flex-col relative bg-[#1f2937] border border-white/10 rounded-xl overflow-hidden group-hover:border-emerald-500/50 transition-colors shadow-lg">
+                                    
+                                    <!-- Top Line -->
+                                    <div class="h-1 w-full bg-slate-800 group-hover:bg-emerald-500 transition-colors"></div>
+
+                                    <!-- Graphic -->
+                                    <div class="h-32 bg-black relative flex items-center justify-center overflow-hidden border-b border-white/5">
+                                         <!-- CTF Logo Box -->
+                                        <div class="border-2 border-emerald-500 px-6 py-2 bg-black z-10 shadow-[0_0_15px_rgba(16,185,129,0.3)] transform group-hover:scale-110 transition-transform duration-500">
+                                            <span class="text-4xl font-black text-emerald-500 font-mono tracking-widest drop-shadow-[0_0_5px_rgba(16,185,129,0.8)]">
+                                                CTF
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- PTS Badge -->
+                                        <div class="absolute top-4 right-4 z-10">
+                                            <span class="font-mono text-xs font-bold text-slate-300 bg-slate-900 border border-slate-700 px-2 py-1 rounded">
+                                                {{ challenge.points }} PTS
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div class="p-5 flex-grow flex flex-col">
+                                        <div class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest mb-1">{{ challenge.category }}</div>
+                                        <h3 class="text-white font-bold text-lg leading-tight mb-1 group-hover:text-emerald-400 transition-colors">
+                                            {{ challenge.title }}
+                                        </h3>
+                                        <div class="mt-auto pt-4 flex justify-between items-center">
+                                            <span class="text-xs text-slate-500 font-mono">#{{ forloop.counter }}</span>
+                                            <i class="fas fa-arrow-right text-slate-700 group-hover:text-emerald-500 transition-colors transform group-hover:translate-x-1"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- SOLVED OVERLAY -->
+                                    {% if challenge.is_solved %}
+                                    <div class="absolute inset-0 bg-black/80 backdrop-blur-[2px] z-20 flex items-center justify-center">
+                                        <div class="stamp-solved">YECHILGAN</div>
+                                    </div>
+                                    {% elif challenge.has_failed_attempt %}
+                                    <div class="absolute inset-0 bg-black/80 backdrop-blur-[2px] z-20 flex items-center justify-center">
+                                        <div class="stamp-failed">YECHILMAGAN</div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                            {% empty %}
+                                <div class="col-span-full py-20 text-center text-slate-500 border border-dashed border-white/10 rounded-xl">
+                                    <div class="text-4xl mb-4 opacity-50"><i class="fas fa-ghost"></i></div>
+                                    <p>Ushbu turnirda hali masalalar yo'q.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                    {% endif %}
+                </div>
+
+            {% else %}
+                <!-- REGISTRATION AREA -->
+                <div class="py-12">
+                    <div class="mb-6 animate-bounce">
+                        <i class="fas fa-user-astronaut text-6xl text-slate-700"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">Ishtirok etishga tayyormisiz?</h2>
+                    
+                    {% if tournament.mode == 'TEAM' %}
+                        <p class="text-slate-400 text-sm mb-8 max-w-md mx-auto">
+                            Bu <strong>Jamoaviy</strong> musobaqa. Faqat jamoa sardori ro'yxatdan o'ta oladi.
+                            Sizning jamoangiz bormi?
+                        </p>
+                        <div class="flex flex-col md:flex-row gap-4 justify-center">
+                            <form method="post" action="{% url 'register_tournament' tournament.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded flex items-center gap-2 transition-colors shadow-lg hover:shadow-emerald-500/20">
+                                    <i class="fas fa-users"></i> JAMOANI RO'YXATDAN O'TKAZISH
+                                </button>
+                            </form>
+                            <a href="{% url 'team_dashboard' %}" class="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded text-slate-300 font-mono text-sm flex items-center gap-2 justify-center transition-colors">
+                                JAMOA BOSHQARUVI
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-slate-400 text-sm mb-8">
+                            Yakka tartibdagi ishtirokchi sifatida ro'yxatdan o'ting.
+                        </p>
+                        <form method="post" action="{% url 'register_tournament' tournament.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="px-10 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded flex items-center gap-3 mx-auto shadow-xl hover:shadow-emerald-500/20 transition-all transform hover:scale-105">
+                                <i class="fas fa-user-plus"></i> RO'YXATDAN O'TISH
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- (Live Ranking moved to separate page) -->
+
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Universal Timer Function
+        function startTimer(el) {
+            const rawTarget = el.getAttribute('data-target');
+            const targetTimestamp = parseInt(rawTarget);
+            
+            if (!rawTarget || isNaN(targetTimestamp)) {
+                console.error("Invalid timer target", el);
+                return;
+            }
+
+            const targetTimeMs = targetTimestamp * 1000;
+
+            function tick() {
+                const now = Date.now();
+                const diff = targetTimeMs - now;
+
+                if (diff <= 0) {
+                    el.innerText = "00:00:00";
+                    // Agar bu "Boshlanish" taymeri bo'lsa (id="countdown"), reload qilamiz
+                    if (el.id === 'countdown') {
+                        setTimeout(() => window.location.reload(), 2000);
+                    }
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                let display = "";
+                if (days > 0) display += days + "d ";
+                display += String(hours).padStart(2, '0') + ":";
+                display += String(minutes).padStart(2, '0') + ":";
+                display += String(seconds).padStart(2, '0');
+
+                el.innerText = display;
+            }
+
+            setInterval(tick, 1000);
+            tick();
+        }
+
+        // 1. Asosiy Waiting Room Taymeri
+        const mainTimer = document.getElementById('countdown');
+        if (mainTimer) startTimer(mainTimer);
+
+        // 2. Boshqa barcha taymerlar (masalan: Tugash vaqti)
+        document.querySelectorAll('.countdown-timer').forEach(el => startTimer(el));
+
+    })();
+</script>
+{% endblock %}

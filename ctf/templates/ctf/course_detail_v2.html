@@ -4,21 +4,13 @@
 {% block title %}Dars Rejasi // {{ course.title }}{% endblock %}
 
 {% block content %}
-<!-- Cyberpunk Styles for Accordion -->
+<!-- Cyberpunk Styles -->
 <style>
-    /* --- SOZLAMALAR --- */
     :root {
         --primary: #10b981;
-        /* Emerald-500 */
-        --primary-glow: rgba(16, 185, 129, 0.4);
         --secondary: #06b6d4;
-        /* Cyan-500 */
-        --bg-dark: #050a14;
-        --card-bg: #0a0c10;
-        --item-bg: rgba(255, 255, 255, 0.02);
-        --text-light: #e0e6ed;
-        --text-gray: #64748b;
-        --border-color: rgba(255, 255, 255, 0.05);
+        --card-bg: #0b1120;
+        --border-color: rgba(16, 185, 129, 0.2);
     }
 
     .section-padding {
@@ -28,7 +20,7 @@
         position: relative;
     }
 
-    /* Background Effects */
+    /* Grid Overlay */
     .bg-grid-overlay {
         position: absolute;
         inset: 0;
@@ -36,484 +28,423 @@
         background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
             linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         background-size: 50px 50px;
-        mask-image: radial-gradient(circle at center, black, transparent 80%);
+        mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
     }
 
-    /* --- ACCORDION CONTAINER --- */
-    .accordion-container {
-        max-width: 900px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        position: relative;
-        z-index: 10;
-    }
-
-    /* --- ACCORDION ITEM (Yopiq holat) --- */
-    .accordion-item {
+    /* INFO CARD (Left Side) */
+    .info-card {
         background: var(--card-bg);
         border: 1px solid var(--border-color);
-        /* border-radius: 4px; No borders, Cyberpunk style */
-        position: relative;
-        transition: all 0.3s ease;
+        border-radius: 16px;
         overflow: hidden;
+        position: relative;
+        box-shadow: 0 0 30px rgba(0,0,0,0.5);
     }
-
-    .accordion-item:hover {
-        border-color: rgba(16, 185, 129, 0.3);
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+    
+    .course-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        aspect-ratio: 16/9;
     }
-
-    /* Corner Accents */
-    .corner-accents::before,
-    .corner-accents::after {
-        content: '';
-        position: absolute;
-        width: 6px;
-        height: 6px;
-        transition: 0.3s;
-    }
-
-    .corner-accents::before {
-        top: 0;
-        left: 0;
-        border-top: 1px solid var(--primary);
-        border-left: 1px solid var(--primary);
-    }
-
-    .corner-accents::after {
-        bottom: 0;
-        right: 0;
-        border-bottom: 1px solid var(--primary);
-        border-right: 1px solid var(--primary);
-    }
-
-    .accordion-item:hover .corner-accents::before,
-    .accordion-item:hover .corner-accents::after {
+    
+    .course-image-wrapper img {
         width: 100%;
         height: 100%;
-        opacity: 0.1;
-        background: var(--primary);
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .info-card:hover .course-image-wrapper img {
+        transform: scale(1.05);
     }
 
-    /* ACTIVE HOLAT */
-    .accordion-item.active {
-        border-color: var(--primary);
-        box-shadow: 0 0 30px rgba(16, 185, 129, 0.15);
-        background: #0d1117;
-    }
-
-    /* --- HEADER QISMI --- */
-    .accordion-header {
-        padding: 24px 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        position: relative;
-        z-index: 2;
-    }
-
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        width: 85%;
-    }
-
-    /* Modul raqami */
-    .module-number {
-        font-family: 'Courier New', monospace;
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-gray);
-        opacity: 0.3;
-        transition: 0.3s;
-    }
-
-    .accordion-item:hover .module-number {
-        opacity: 0.8;
-        color: var(--primary);
-    }
-
-    .accordion-item.active .module-number {
-        color: var(--primary);
-        opacity: 1;
-        text-shadow: 0 0 10px var(--primary-glow);
-    }
-
-    .header-text h3 {
-        font-family: 'Segoe UI', sans-serif;
-        /* Change to display font if available */
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #fff;
-        margin-bottom: 5px;
-        font-size: 1.1rem;
-    }
-
-    .lesson-count {
-        font-family: monospace;
-        font-size: 0.75rem;
-        color: var(--text-gray);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    /* Arrow Icon */
-    .arrow-icon {
-        width: 32px;
-        height: 32px;
-        border: 1px solid var(--border-color);
+    .play-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--text-gray);
-        transition: 0.4s;
+        opacity: 0;
+        transition: 0.3s;
+    }
+    
+    .info-card:hover .play-overlay {
+        opacity: 1;
     }
 
-    .accordion-item:hover .arrow-icon {
+    .play-btn {
+        width: 60px;
+        height: 60px;
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(5px);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        font-size: 20px;
+    }
+
+    /* ACCORDION (Right Side) */
+    .accordion-item {
+        background: #0f172a;
+        border: 1px solid rgba(255,255,255,0.05);
+        margin-bottom: 12px;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+
+    .accordion-item.active {
         border-color: var(--primary);
+        background: #0b1120;
+    }
+
+    .accordion-header {
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+    }
+
+    .accordion-header:hover {
+        background: rgba(255,255,255,0.02);
+    }
+
+    .module-num {
+        font-family: 'Orbitron', monospace;
+        color: #64748b;
+        font-size: 1.2rem;
+        margin-right: 20px;
+        font-weight: bold;
+    }
+    
+    .accordion-item.active .module-num {
         color: var(--primary);
+        text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
     }
 
-    .accordion-item.active .arrow-icon {
-        transform: rotate(180deg);
-        background: var(--primary);
-        color: #000;
-        border-color: var(--primary);
-        box-shadow: 0 0 15px var(--primary-glow);
-    }
-
-    /* --- CONTENT QISMI --- */
     .accordion-content {
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        background: rgba(0, 0, 0, 0.3);
-        border-top: 1px solid transparent;
-    }
-
-    .accordion-item.active .accordion-content {
-        border-top-color: var(--border-color);
-    }
-
-    .content-inner {
-        padding: 30px;
-    }
-
-    .topic-desc {
-        margin-bottom: 25px;
-        color: #94a3b8;
-        font-family: monospace;
-        font-size: 0.85rem;
-        line-height: 1.6;
-        padding: 15px;
-        border-left: 2px solid var(--secondary);
-        background: rgba(6, 182, 212, 0.05);
-    }
-
-    /* --- DARSLAR RO'YXATI --- */
-    .lesson-list-acc {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+        transition: max-height 0.3s ease-out;
+        background: rgba(0,0,0,0.2);
     }
 
     .lesson-row {
+        padding: 14px 24px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 14px 20px;
-        background: var(--item-bg);
-        border: 1px solid transparent;
-        transition: 0.3s;
-        cursor: pointer;
-        position: relative;
-        overflow: hidden;
+        justify-content: space-between;
+        border-top: 1px solid rgba(255,255,255,0.03);
+        transition: 0.2s;
     }
-
+    
     .lesson-row:hover {
         background: rgba(16, 185, 129, 0.05);
-        border-color: rgba(16, 185, 129, 0.2);
-        transform: translateX(5px);
+        border-left: 2px solid var(--primary);
+        padding-left: 22px; /* compensate border */
     }
 
-    .lesson-left {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        z-index: 2;
-    }
-
-    /* --- Icons & Badges --- */
-    .status-icon {
-        width: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .status-icon i {
-        font-size: 14px;
-        transition: 0.3s;
-    }
-
-    .fa-play-circle {
-        color: var(--secondary);
-        filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
-    }
-
-    .fa-check-circle {
-        color: var(--primary);
-        filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.6));
-    }
-
-    .fa-lock {
-        color: #475569;
-    }
-
-    .lesson-title {
-        color: var(--text-light);
-        font-size: 0.9rem;
-        font-family: 'Segoe UI', sans-serif;
-        transition: 0.3s;
-    }
-
-    .lesson-row:hover .lesson-title {
-        color: #fff;
-        letter-spacing: 0.5px;
-        text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-    }
-
-    .lesson-meta {
+    /* Badges */
+    .status-badge {
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.65rem;
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 4px;
         font-weight: 700;
-        padding: 4px 10px;
-        border-radius: 2px;
-        letter-spacing: 1px;
         text-transform: uppercase;
-        position: relative;
-        overflow: hidden;
-        transition: 0.3s;
     }
+    
+    .status-completed { color: #10b981; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .status-locked { color: #64748b; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.05); }
+    .status-open { color: #38bdf8; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); }
 
-    .completed-badge {
-        border: 1px solid var(--primary);
-        color: var(--primary);
-        background: rgba(16, 185, 129, 0.05);
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+    /* Purchase Panel */
+    .purchase-panel {
+        background: rgba(16, 185, 129, 0.03);
+        padding: 24px;
+        border-top: 1px solid var(--border-color);
     }
-
-    .free-badge {
-        border: 1px solid var(--secondary);
-        color: var(--secondary);
-        background: rgba(6, 182, 212, 0.05);
-        box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+    
+    .price {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: white;
     }
-
-    .pro-badge {
-        border: 1px solid #334155;
+    
+    .old-price {
+        text-decoration: line-through;
         color: #64748b;
-        background: rgba(15, 23, 42, 0.5);
+        font-size: 0.9rem;
+        margin-left: 10px;
     }
 
-    .lesson-row:hover .pro-badge {
-        border-color: #475569;
-        color: #94a3b8;
-    }
-
-    /* Glitch Animation for Title */
-    .glitch-text {
-        position: relative;
-        display: inline-block;
-    }
-
-    .glitch-text::before,
-    .glitch-text::after {
-        content: attr(data-text);
-        position: absolute;
-        top: 0;
-        left: 0;
+    .buy-btn {
         width: 100%;
-        height: 100%;
-        background: var(--bg-dark);
-        opacity: 0.5;
+        background: #10b981;
+        color: #000;
+        font-weight: 800;
+        padding: 14px;
+        border-radius: 8px;
+        margin-top: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        display: block;
+        text-align: center;
+    }
+    
+    .buy-btn:hover {
+        background: #34d399;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .payment-icons {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+        justify-content: center;
+        opacity: 0.6;
+    }
+    
+    .payment-icon {
+        background: #1e293b;
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        color: white;
     }
 </style>
 
-<section id="curriculum" class="section-padding">
-
-    <!-- Background Elements -->
+<section class="section-padding">
     <div class="bg-grid-overlay"></div>
-    <div
-        class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-emerald-900/10 to-transparent pointer-events-none">
-    </div>
-
-    <div class="max-w-6xl mx-auto px-4 relative z-10">
-
+    
+    <div class="max-w-7xl mx-auto px-4 relative z-10">
+        
         <!-- Top Nav -->
-        <div class="mb-12 flex items-center justify-between">
-            <a href="{% url 'courses_list' %}"
-                class="group flex items-center gap-3 text-slate-400 hover:text-emerald-400 transition-colors font-mono text-sm">
-                <span
-                    class="w-8 h-8 rounded border border-white/10 flex items-center justify-center group-hover:border-emerald-500/50 group-hover:bg-emerald-500/10 transition-all">
-                    <i class="fas fa-chevron-left text-xs"></i>
-                </span>
-                // KURSLARGA_QAYTISH
+        <div class="mb-8">
+            <a href="{% url 'courses_list' %}" class="inline-flex items-center text-slate-400 hover:text-emerald-400 font-mono text-sm transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> KURSLARGA QAYTISH
             </a>
-            <div class="text-right hidden md:block">
-                <span class="block text-xs font-mono text-slate-600">TIZIM.HOLATI</span>
-                <span class="block text-xs font-mono text-emerald-500">ONLINE</span>
-            </div>
         </div>
 
-        <!-- Course Title Header -->
-        <div class="text-center mb-16 relative">
-            <div
-                class="inline-block mb-4 p-2 px-4 border border-emerald-500/30 rounded-full bg-emerald-500/5 backdrop-blur-sm">
-                <span class="text-emerald-400 text-xs font-mono tracking-widest uppercase">Maxfiy Material</span>
-            </div>
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight font-display"
-                data-text="{{ course.title }}">
-                {{ course.title }} <span
-                    class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Markazi</span>
-            </h1>
-            <p class="text-slate-400 max-w-2xl mx-auto font-mono text-sm">
-                >> MODUL_DARAXTINI_YUKLASH(barchasi); <br>
-                >> MAZMUNNI_DESHIFRLASH... MUVAFFAQIYATLI
-            </p>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            
+            <!-- LEFT COLUMN: COURSE INFO CARD -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-24">
+                    <div class="info-card">
+                        <!-- Image -->
+                        <div class="course-image-wrapper">
+                            {% if course.image %}
+                                <img src="{{ course.image.url }}" alt="{{ course.title }}">
+                            {% else %}
+                                <div class="w-full h-full bg-slate-800 flex items-center justify-center">
+                                    <i class="{{ course.icon }} text-6xl text-slate-600"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Play Overlay (Visual only) -->
+                            <div class="play-overlay">
+                                <span class="play-btn"><i class="fas fa-play"></i></span>
+                            </div>
+                        </div>
 
-        <!-- Main Accordion -->
-        <div class="accordion-container">
+                        <!-- Content -->
+                        <div class="p-6">
+                            <h1 class="text-2xl font-bold text-white mb-2 leading-tight">{{ course.title }}</h1>
+                            <p class="text-slate-400 text-sm mb-4">{{ course.subtitle|default:"Ajoyib kurs sizni kutmoqda." }}</p>
+                            
+                            <div class="flex items-center gap-2 text-xs font-mono text-emerald-500 mb-6">
+                                <span class="px-2 py-1 bg-emerald-500/10 rounded border border-emerald-500/20">
+                                    <i class="fas fa-signal mr-1"></i> {{ course.level|default:"Boshlang'ich" }}
+                                </span>
+                                <span class="px-2 py-1 bg-cyan-500/10 rounded border border-cyan-500/20 text-cyan-400">
+                                    <i class="far fa-clock mr-1"></i> {{ course.duration|default:"1 oy" }}
+                                </span>
+                            </div>
+                            
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center overflow-hidden border border-white/10">
+                                    <i class="fas fa-user-astronaut text-slate-400 text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 uppercase font-mono">Mentor</p>
+                                    <p class="text-sm text-white font-bold">Admin</p>
+                                </div>
+                            </div>
+                        </div>
 
-            {% for module in modules %}
-            <div class="accordion-item group">
+                        <!-- Purchase Section -->
+                        <div class="purchase-panel">
+                            <div>
+                                <p class="text-xs text-slate-500 mb-1">Kurs narxi:</p>
+                                <div class="flex items-baseline">
+                                    <span class="price">BEPUL</span>
+                                    <span class="old-price">1 500 000 so'm</span>
+                                </div>
+                            </div>
 
-                <!-- Decorative Corner Accents -->
-                <div class="corner-accents"></div>
+                            <button class="buy-btn">
+                                <i class="fas fa-rocket mr-2"></i> BOSHLASH
+                            </button>
 
-                <!-- ACCORDION HEADER -->
-                <div class="accordion-header">
-                    <div class="header-left">
-                        <span class="module-number">
-                            {{ module.order|stringformat:"02d" }}
-                        </span>
-
-                        <div class="header-text">
-                            <h3>{{ module.title }}</h3>
-                            <span class="lesson-count">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                {{ module.lessons.count }} TA DARS
-                            </span>
+                            <!-- Payment Icons Mockup -->
+                            <div class="payment-icons">
+                                <span class="payment-icon">UZCARD</span>
+                                <span class="payment-icon">HUMO</span>
+                                <span class="payment-icon">VISA</span>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="arrow-icon">
-                        <i class="fas fa-chevron-down text-xs"></i>
+            <!-- RIGHT COLUMN: CURRICULUM ACCORDION -->
+            <div class="lg:col-span-2">
+                
+                <!-- Section Header -->
+                <div class="mb-6 p-6 bg-slate-900/50 border border-white/5 rounded-xl flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Darslar tarkibi</h2>
+                        <p class="text-slate-400 text-xs mt-1 font-mono">
+                            {{ modules|length }} ta modul • {{ completed_lessons_ids|length }} ta tugatilgan
+                        </p>
+                    </div>
+                    <div class="h-10 w-32 bg-slate-800 rounded-full overflow-hidden relative">
+                        <!-- Progress Bar -->
+                        <div class="absolute inset-0 bg-emerald-500/20"></div>
+                        <div class="absolute left-0 top-0 bottom-0 bg-emerald-500 transition-all duration-1000" style="width: {{ progress }}%"></div>
+                        <span class="absolute inset-0 flex items-center justify-center text-xs font-bold text-white font-mono z-10">
+                            {{ progress }}%
+                        </span>
                     </div>
                 </div>
 
-                <!-- ACCORDION CONTENT -->
-                <div class="accordion-content">
-                    <div class="content-inner">
+                <!-- MODULES LIST -->
+                <div id="accordion-container">
+                    {% for module in modules %}
+                    <div class="accordion-item {% if forloop.first %}active{% endif %}">
+                        <!-- HEADER -->
+                        <div class="accordion-header">
+                            <div class="flex items-center">
+                                <span class="module-num">{{ module.order|stringformat:"02d" }}</span>
+                                <div>
+                                    <h3 class="text-white font-bold text-lg">{{ module.title }}</h3>
+                                    <span class="text-slate-500 text-xs font-mono">{{ module.lessons.count }} ta dars</span>
+                                </div>
+                            </div>
+                            <!-- Arrow -->
+                             <span class="w-8 h-8 flex items-center justify-center rounded-full border border-white/10 text-slate-400 group-hover:bg-white/5 transition-colors">
+                                <i class="fas fa-chevron-down transform transition-transform duration-300"></i>
+                             </span>
+                        </div>
 
-                        {% if module.description %}
-                        <p class="topic-desc">
-                            <i class="fas fa-terminal mr-2 text-emerald-500"></i>
-                            {{ module.description }}
-                        </p>
-                        {% endif %}
+                        <!-- CONTENT -->
+                        <div class="accordion-content" {% if forloop.first %}style="max-height: 500px;"{% endif %}>
+                            {% if module.description %}
+                            <div class="px-6 pb-4 pt-2">
+                                <p class="text-sm text-slate-400 bg-slate-800/50 p-3 rounded border-l-2 border-cyan-500">
+                                    {{ module.description }}
+                                </p>
+                            </div>
+                            {% endif %}
 
-                        <!-- LESSON LIST -->
-                        <ul class="lesson-list-acc">
+                            <!-- LESSONS -->
+                            <div class="pb-2">
+                                {% for lesson in module.lessons.all %}
+                                
+                                {% if lesson.id in accessible_lessons_ids %}
+                                <a href="{% url 'lesson_detail_ctf' lesson.id %}" class="lesson-row group">
+                                {% else %}
+                                <div class="lesson-row group opacity-50 cursor-not-allowed">
+                                {% endif %}
 
-                            {% for lesson in module.lessons.all %}
-                            <li class="lesson-row group/lesson">
-
-                                <a href="{% url 'lesson_detail_ctf' lesson.id %}"
-                                    class="flex justify-between items-center w-full relative overflow-hidden">
-
-                                    <!-- Hover background -->
-                                    <div class="absolute inset-0 bg-emerald-500/5 
-                                        translate-x-[-100%] 
-                                        group-hover/lesson:translate-x-0 
-                                        transition-transform duration-500">
-                                    </div>
-
-                                    <!-- LEFT SIDE -->
-                                    <div class="lesson-left relative z-10">
-                                        <span class="status-icon">
-                                            {% if lesson.id in completed_lessons_ids %}
-                                            <i class="fas fa-check-circle text-emerald-400"></i>
-                                            {% elif lesson.is_free|default:False %}
-                                            <i class="fas fa-play-circle text-cyan-400"></i>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-6 h-6 flex items-center justify-center rounded bg-slate-800 text-slate-500 text-xs text-white">
+                                            {% if lesson.video_file %}
+                                                <i class="fas fa-play"></i>
                                             {% else %}
-                                            <i class="fas fa-lock text-slate-600"></i>
+                                                <i class="fas fa-file-alt"></i>
                                             {% endif %}
-                                        </span>
-
-                                        <span class="lesson-title font-mono text-sm">
-                                            <span class="text-slate-500 mr-2">
-                                                {{ lesson.order }}.
-                                            </span>
+                                        </div>
+                                        <span class="text-slate-300 text-sm group-hover:text-white transition-colors">
                                             {{ lesson.title }}
                                         </span>
                                     </div>
 
-                                    <!-- RIGHT SIDE -->
-                                    <div class="lesson-right relative z-10">
+                                    <div>
                                         {% if lesson.id in completed_lessons_ids %}
-                                        <span class="lesson-meta completed-badge">TUGATILDI</span>
-                                        {% elif lesson.is_free|default:False %}
-                                        <span class="lesson-meta free-badge">OCHIQ</span>
+                                            <span class="status-badge status-completed"><i class="fas fa-check mr-1"></i> TUGATILDI</span>
+                                        {% elif lesson.id in unlocked_lessons_ids %}
+                                            <span class="status-badge status-open"><i class="fas fa-lock-open mr-1"></i> OCHIQ</span>
                                         {% else %}
-                                        <span class="lesson-meta pro-badge">SHIFRLANGAN</span>
+                                            <span class="status-badge status-locked"><i class="fas fa-lock"></i> YOPIQ</span>
                                         {% endif %}
                                     </div>
 
+                                {% if lesson.id in accessible_lessons_ids %}
                                 </a>
-                            </li>
-                            {% endfor %}
+                                {% else %}
+                                </div>
+                                {% endif %}
 
-                        </ul>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
+                    {% endfor %}
                 </div>
-            </div>
-            {% endfor %}
 
+            </div>
         </div>
 
     </div>
 </section>
 
 <script>
-    const accordions = document.querySelectorAll('.accordion-item');
+    document.addEventListener('DOMContentLoaded', () => {
+        const items = document.querySelectorAll('.accordion-item');
 
-    accordions.forEach(item => {
-        const header = item.querySelector('.accordion-header');
+        items.forEach(item => {
+            const header = item.querySelector('.accordion-header');
+            const content = item.querySelector('.accordion-content');
+            const icon = header.querySelector('.fa-chevron-down');
 
-        header.addEventListener('click', () => {
-            accordions.forEach(otherItem => {
-                if (otherItem !== item) {
-                    otherItem.classList.remove('active');
-                    otherItem.querySelector('.accordion-content').style.maxHeight = null;
+            header.addEventListener('click', () => {
+                const isActive = item.classList.contains('active');
+
+                // Close all others
+                items.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                        otherItem.querySelector('.accordion-content').style.maxHeight = null;
+                        otherItem.querySelector('.fa-chevron-down').style.transform = 'rotate(0deg)';
+                    }
+                });
+
+                // Toggle current
+                if (isActive) {
+                    item.classList.remove('active');
+                    content.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    item.classList.add('active');
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.style.transform = 'rotate(180deg)';
                 }
             });
-
-            item.classList.toggle('active');
-            const content = item.querySelector('.accordion-content');
-
+            
+            // Set initial rotation for active item
             if (item.classList.contains('active')) {
-                content.style.maxHeight = content.scrollHeight + "px";
-            } else {
-                content.style.maxHeight = null;
+                const activeIcon = header.querySelector('.fa-chevron-down');
+                 if(activeIcon) activeIcon.style.transform = 'rotate(180deg)';
             }
         });
     });

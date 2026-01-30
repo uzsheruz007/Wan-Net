@@ -33,7 +33,6 @@
 
     /* Hero/Podium Cards */
     .hero-card {
-        background: rgba(10, 10, 10, 0.6);
         backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 16px;
@@ -59,19 +58,30 @@
 
     /* Rank Specific Styles */
     .card-rank-1 {
-        border-color: rgba(245, 158, 11, 0.3);
+        border-top: 3px solid rgba(16, 185, 129, 0.1);
         box-shadow: 0 0 30px rgba(245, 158, 11, 0.1);
         z-index: 10;
         transform: scale(1.05);
     }
     .card-rank-1:hover {
-        border-color: var(--neon-gold);
-        box-shadow: 0 0 50px rgba(245, 158, 11, 0.2);
+        border-color: #ffd700; /* Bright Gold */
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.3);
         transform: scale(1.05) translateY(-10px);
     }
+    
+    .card-rank-2 { border-top: 3px solid rgba(16, 185, 129, 0.1); }
+    .card-rank-2:hover {
+        border-color: var(--neon-silver);
+        box-shadow: 0 0 50px rgba(148, 163, 184, 0.2);
+        transform: translateY(-10px);
+    }
 
-    .card-rank-2 { border-top: 3px solid var(--neon-silver); order: 1; }
-    .card-rank-3 { border-top: 3px solid #b45309; order: 3; } /* Bronze darker fix */
+    .card-rank-3 { border-top: 3px solid rgba(16, 185, 129, 0.1); order: 3; }
+    .card-rank-3:hover {
+        border-color: #d97706;
+        box-shadow: 0 0 50px rgba(217, 119, 6, 0.2);
+        transform: translateY(-10px);
+    }
     
     /* Mobile Order Fix */
     @media (min-width: 768px) {
@@ -98,7 +108,7 @@
 
     /* Table Styling */
     .cyber-table-wrapper {
-        background: rgba(5, 5, 5, 0.6);
+        background: rgb(131 211 185 / 6%);
         border: 1px solid rgba(255, 255, 255, 0.05);
         border-radius: 12px;
         overflow: hidden;
@@ -227,8 +237,7 @@
             <div class="cyber-row group {% if user == profile.user %}user-highlight{% endif %}">
                 <!-- Rank -->
                 <div class="rank-num text-center group-hover:text-emerald-400 transition-colors">
-                    {% if page_obj.number == 1 %}{{ forloop.counter }}
-                    {% else %}{{ page_obj.start_index|add:forloop.counter0 }}{% endif %}
+                    {{ profile.rank }}
                 </div>
 
                 <!-- User -->
@@ -260,7 +269,7 @@
 
                 <!-- Active -->
                 <div class="text-right text-xs text-slate-600 font-mono hide-mobile group-hover:text-slate-500">
-                    {{ profile.last_activity|timesince }} ago
+                    {{ profile.last_solved|timesince }} ago
                 </div>
             </div>
             {% endif %}

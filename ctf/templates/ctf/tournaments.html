@@ -1,0 +1,245 @@
+{% extends 'ctf/ctf_home.html' %}
+{% load static %}
+
+{% block title %}Turnirlar // Wan-Net{% endblock %}
+
+{% block content %}
+<style>
+    /* Shared Cyber Card Style */
+    .cyber-card {
+        background: #0b1120; /* Midnight Blue */
+        border: 1px solid rgba(16, 185, 129, 0.3); /* Emerald Border */
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        /* Subtle glow initial */
+        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .cyber-card:hover {
+        transform: translateY(-8px) scale(1.01);
+        box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6), 0 0 30px rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
+    }
+
+    /* Tournament Specific Header */
+    .card-header {
+        height: 160px;
+        background: radial-gradient(circle at center, #1e293b, #020617);
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Moving Grid Animation */
+    @keyframes gridMove {
+        0% { background-position: 0 0; }
+        100% { background-position: 40px 40px; }
+    }
+
+    .card-header-pattern {
+        position: absolute;
+        inset: -50%;
+        width: 200%;
+        height: 200%;
+        background-image: 
+            linear-gradient(#10b981 1px, transparent 1px), 
+            linear-gradient(90deg, #10b981 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.1;
+        mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+        transform: perspective(500px) rotateX(60deg);
+        animation: gridMove 10s linear infinite;
+    }
+
+    /* Green Neon Box Text */
+    .neon-box {
+        border: 2px solid #10b981;
+        background: rgba(0,0,0,0.8);
+        padding: 8px 24px;
+        z-index: 10;
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        transition: all 0.3s;
+        backdrop-filter: blur(4px);
+        position: relative;
+    }
+    
+    .cyber-card:hover .neon-box {
+        background: rgba(16, 185, 129, 0.1);
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.5), inset 0 0 10px rgba(16, 185, 129, 0.2);
+        transform: scale(1.05);
+        border-color: #34d399;
+    }
+
+    /* Glitch Text Effect */
+    .neon-text {
+        font-family: 'Orbitron', sans-serif;
+        font-weight: 900;
+        color: #10b981;
+        font-size: 2rem;
+        letter-spacing: 0.25em;
+        text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+        position: relative;
+        transition: color 0.3s;
+    }
+
+    .cyber-card:hover .neon-text {
+        color: #fff;
+        text-shadow: 
+            2px 0 #ef4444, 
+            -2px 0 #3b82f6,
+            0 0 20px #fff;
+        animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+    }
+
+    @keyframes glitch-skew {
+        0% { transform: skew(0deg); }
+        20% { transform: skew(-10deg); }
+        40% { transform: skew(10deg); }
+        60% { transform: skew(-5deg); }
+        80% { transform: skew(5deg); }
+        100% { transform: skew(0deg); }
+    }
+
+    /* Status Badges */
+    .status-badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+    .status-live {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        animation: pulse-green 1.5s infinite;
+    }
+    .status-upcoming {
+        background: rgba(56, 189, 248, 0.1);
+        color: #38bdf8;
+        border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .status-ended {
+        background: rgba(239, 68, 68, 0.2) !important;
+        color: #ef4444 !important;
+        border: 1px solid rgba(239, 68, 68, 0.5) !important;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.2) !important;
+    }
+
+    @keyframes pulse-green {
+        0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+        70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* Description Line Clamp Fade */
+    .desc-fade {
+        position: relative;
+    }
+    .desc-fade::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 20px;
+        background: linear-gradient(to bottom, transparent, #0b1120);
+    }
+</style>
+
+<div class="max-w-7xl mx-auto px-4 py-8 pt-32 min-h-screen relative z-10">
+    
+    <!-- HEADER -->
+    <div class="mb-14 text-center animate-entry">
+        <h1 class="text-5xl md:text-7xl font-black text-white font-display uppercase tracking-tight mb-4 drop-shadow-2xl">
+            OFFICIAL <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 animate-pulse">TOURNAMENTS</span>
+        </h1>
+        <p class="text-slate-400 font-mono text-sm tracking-widest uppercase border-y border-emerald-500/20 py-2 inline-block px-8">
+            Global Competition Series
+        </p>
+    </div>
+
+    <!-- TOURNAMENT GRID -->
+    {% now "U" as current_timestamp %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for t in tournaments %}
+        <a href="{% url 'tournament_detail' t.id %}" class="block h-full animate-entry" style="animation-delay: {{ forloop.counter|add:'1' }}00ms">
+            <div class="cyber-card group">
+                
+                <!-- HEADER VISUAL -->
+                <div class="card-header">
+                    <div class="card-header-pattern"></div>
+                    
+                    <!-- NEON BOX -->
+                    <div class="neon-box">
+                        <span class="neon-text">ARENA</span>
+                    </div>
+
+                    <!-- Top Right Mode Badge -->
+                    <div class="absolute top-4 right-4 z-20">
+                         <span class="text-[10px] font-bold font-mono text-slate-300 bg-black/50 border border-white/10 px-2 py-1 rounded backdrop-blur-sm uppercase hover:bg-emerald-500/20 transition-colors">
+                            <i class="fas {% if t.mode == 'TEAM' %}fa-users{% else %}fa-user{% endif %} mr-1 text-emerald-500"></i> {{ t.mode }}
+                         </span>
+                    </div>
+                </div>
+
+                <!-- BODY CONTENT -->
+                <div class="p-8 flex-grow flex flex-col bg-[#0b1120] relative">
+                    <!-- Title -->
+                    <h2 class="text-2xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors leading-tight drop-shadow-lg">
+                        {{ t.title }}
+                    </h2>
+                    
+                    <!-- Date Info -->
+                    <div class="flex items-center gap-2 text-slate-500 text-xs font-mono mb-6 border-b border-white/5 pb-4">
+                        <i class="far fa-clock text-emerald-500"></i>
+                        <span>Start: <span class="text-slate-300 font-bold">{{ t.start_date|date:"d M, H:i" }}</span></span>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="text-slate-400 text-sm mb-8 line-clamp-3 leading-relaxed desc-fade">
+                        {{ t.description|default:"Tavsif yo'q" }}
+                    </p>
+
+                    <!-- Footer / Status -->
+                    <div class="mt-auto flex items-center justify-between">
+                        <div>
+                             {% if t.end_date and t.end_date|date:"U" < current_timestamp %}
+                                 <span class="status-badge status-ended"><i class="fas fa-flag-checkered mr-1"></i> TUGAGAN</span>
+                             {% elif t.is_active %}
+                                 <span class="status-badge status-live"><i class="fas fa-circle text-[8px] mr-1 blink"></i> LIVE</span>
+                             {% else %}
+                                 <span class="status-badge status-upcoming">KUTILMOQDA</span>
+                             {% endif %}
+                        </div>
+
+                        <div class="flex items-center gap-2 text-xs font-bold font-mono text-white group-hover:text-emerald-500 transition-colors">
+                            BOSHLASH <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full py-24 text-center border-2 border-dashed border-emerald-500/20 rounded-2xl bg-emerald-500/5">
+            <h3 class="text-emerald-500 font-bold text-xl mb-2">Hozircha turnirlar yo'q</h3>
+            <p class="text-slate-400 font-mono text-sm max-w-md mx-auto">
+                Yangi musobaqalar tez orada e'lon qilinadi.
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
