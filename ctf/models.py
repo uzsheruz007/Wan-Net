@@ -22,6 +22,11 @@ class Challenge(models.Model):
     is_active = models.BooleanField(default=True, verbose_name="Faolmi?")
     file = models.FileField(upload_to='ctf_files/', blank=True, null=True, help_text="Masala uchun fayl (ixtiyoriy)", verbose_name="Fayl")
     html_content = models.TextField(blank=True, null=True, verbose_name="HTML Kod (Web Challenge uchun)", help_text="Agar bu Web challenge bo'lsa, bu yerga HTML kodni yozing. U alohida sahifa bo'lib ochiladi.")
+    
+    # Docker Integration
+    docker_image_name = models.CharField(max_length=255, blank=True, null=True, help_text="Docker image name (e.g., wan-net/ping-rce:latest)", verbose_name="Docker Image")
+    docker_port = models.IntegerField(default=5000, help_text="Internal port exposed by the container", verbose_name="Docker Port")
+
     # Agar masala turnirga tegishli bo'lsa, uni shu yerda tanlaymiz. Agar bo'sh bo'lsa - bu oddiy mashq masalasi.
     tournament = models.ForeignKey('Tournament', on_delete=models.SET_NULL, null=True, blank=True, related_name='challenges', verbose_name="Turnir")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaratilgan vaqt")
@@ -95,6 +100,16 @@ class Tournament(models.Model):
     class Meta:
         verbose_name = "Turnir"
         verbose_name_plural = "Turnirlar"
+
+class ActiveContainer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='active_containers')
+    challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
+    container_id = models.CharField(max_length=255)
+    host_port = models.IntegerField(help_text="Port on the host machine")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user', 'challenge')
 
 class Team(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="Jamoa Nomi")

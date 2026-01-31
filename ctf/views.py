@@ -2,8 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import Challenge, SolvedChallenge, CTFProfile, ChallengeAttempt, Tournament, Team, TournamentRegistration
+from .models import Challenge, SolvedChallenge, CTFProfile, ChallengeAttempt, Tournament, Team, TournamentRegistration, ActiveContainer
 import hashlib
+from . import docker_utils
+import random
+import socket
 
 from django.http import HttpResponse
 
@@ -147,6 +150,20 @@ def challenge_detail(request, challenge_id):
     else:
         is_solved = SolvedChallenge.objects.filter(user=request.user, challenge=challenge).exists()
 
+    # 3. Docker Status (If Docker Challenge)
+    active_container = None
+    if challenge.docker_image_name:
+        active_container = ActiveContainer.objects.filter(user=request.user, challenge=challenge).first()
+        # Verify it's actually running
+        if active_container:
+            status = docker_utils.get_container_status(active_container.container_id)
+            if status != "running":
+                # Auto-clean ghost records
+                active_container.delete()
+                active_container = None
+            else:
+                active_container.url = f"http://127.0.0.1:{active_container.host_port}"
+
     if request.method == 'POST':
         # --- ANTI-BRUTE-FORCE ---
         # 5 attempts in last 1 minute
@@ -242,7 +259,11 @@ def challenge_detail(request, challenge_id):
         else:
             messages.error(request, "Flag noto'g'ri!")
 
-    return render(request, 'ctf/challenge_detail.html', {'challenge': challenge, 'is_solved': is_solved})
+    return render(request, 'ctf/challenge_detail.html', {
+        'challenge': challenge, 
+        'is_solved': is_solved,
+        'active_container': active_container
+    })
 
 def leaderboard(request):
     queryset = CTFProfile.objects.order_by('-total_points', 'last_solved')
@@ -798,6 +819,74 @@ def join_team(request):
     return redirect('team_dashboard')
 
 @login_required
+def start_container_view(request, challenge_id):
+    challenge = get_object_or_404(Challenge, id=challenge_id)
+    if not challenge.docker_image_name:
+        messages.error(request, "Bu masala uchun Docker muhiti mavjud emas.")
+        return redirect('challenge_detail', challenge_id=challenge.id)
+
+    # Check limit (1 container per user)
+    if ActiveContainer.objects.filter(user=request.user).exists():
+        # Check if it's the SAME challenge
+        existing = ActiveContainer.objects.filter(user=request.user, challenge=challenge).first()
+        if existing:
+             messages.info(request, "Sizda allaqachon aktiv laboratoriya mavjud.")
+             return redirect('challenge_detail', challenge_id=challenge.id)
+        else:
+             messages.error(request, "Sizda boshqa aktiv laboratoriya mavjud. Avval uni o'chiring!")
+             return redirect('challenges') # or back
+
+    # Pick random port
+    def is_port_in_use(port):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('localhost', port)) == 0
+
+    host_port = 0
+    for _ in range(10):
+        p = random.randint(20000, 30000)
+        if not is_port_in_use(p):
+            host_port = p
+            break
+    
+    if host_port == 0:
+        messages.error(request, "Bo'sh port topilmadi. Keyinroq urinib ko'ring.")
+        return redirect('challenge_detail', challenge_id=challenge.id)
+
+    # Start Container
+    container = docker_utils.start_container(
+        challenge.docker_image_name, 
+        {f"{challenge.docker_port}/tcp": host_port}
+    )
+
+    if container:
+        ActiveContainer.objects.create(
+            user=request.user,
+            challenge=challenge,
+            container_id=container.id,
+            host_port=host_port
+        )
+        messages.success(request, f"Laboratoriya ishga tushdi! Port: {host_port}")
+    else:
+        messages.error(request, "Konteynerni ishga tushirishda xatolik!")
+
+    return redirect('challenge_detail', challenge_id=challenge.id)
+
+@login_required
+def stop_container_view(request, challenge_id):
+    challenge = get_object_or_404(Challenge, id=challenge_id)
+    active_container = get_object_or_404(ActiveContainer, user=request.user, challenge=challenge)
+    
+    success = docker_utils.stop_container(active_container.container_id)
+    if success:
+        active_container.delete()
+        messages.success(request, "Laboratoriya o'chirildi.")
+    else:
+        # Force delete if docker fails (maybe already stopped manually)
+        active_container.delete() 
+        messages.warning(request, "Laboratoriya o'chirildi (lekin Docker javob bermadi).")
+
+    return redirect('challenge_detail', challenge_id=challenge.id)
+
 def kick_team_member(request, member_id):
     user_team = request.user.teams.first()
     if not user_team:
