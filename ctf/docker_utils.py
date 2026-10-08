@@ -31,8 +31,8 @@ def start_container(image_name, port_binding=None):
             key = str(k)
             if '/' not in key:
                 key = f"{key}/tcp"
-            # Explicitly bind to all interfaces to avoid localhost connection refused issues on some setups
-            safe_ports[key] = int(v)
+            # Faqat localhost'ga bog'lanadi — tashqariga nginx (/lab/<port>/) orqali chiqadi
+            safe_ports[key] = ('127.0.0.1', int(v))
 
     try:
         container = client.containers.run(
@@ -41,6 +41,11 @@ def start_container(image_name, port_binding=None):
             ports=safe_ports,
             mem_limit='128m',  # Security: Limit memory
             cpu_quota=50000,   # Security: Limit CPU (50%)
+            pids_limit=100,    # Security: fork-bomb himoyasi
+            cap_drop=['ALL'],
+            cap_add=['NET_RAW'],  # ping uchun
+            security_opt=['no-new-privileges:true'],
+            labels={'wan-net.lab': '1'},
             restart_policy={'Name': 'no'},
             remove=True # Auto remove when stopped
         )

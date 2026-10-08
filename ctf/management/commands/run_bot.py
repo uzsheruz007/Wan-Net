@@ -1,5 +1,5 @@
 import telebot
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from ctf.models import TelegramAuth
 import random
@@ -9,6 +9,8 @@ class Command(BaseCommand):
     help = 'Runs the Telegram Bot for Authentication'
 
     def handle(self, *args, **options):
+        if not settings.TELEGRAM_BOT_TOKEN:
+            raise CommandError("TELEGRAM_BOT_TOKEN .env faylida ko'rsatilmagan")
         bot = telebot.TeleBot(settings.TELEGRAM_BOT_TOKEN)
         self.stdout.write(self.style.SUCCESS('Bot started...'))
 
@@ -34,10 +36,10 @@ class Command(BaseCommand):
                 f"Foydalanuvchi: @{username}\n"
                 f"ID: {user_id}\n\n"
                 f"🔑 <b>KIRISH KODI:</b> <code>{code}</code>\n\n"
-                f"🔗 <b>KIRISH LINKI:</b> http://127.0.0.1:8000/login/\n\n"
+                f"🔗 <b>KIRISH LINKI:</b> {settings.SITE_URL}/login/\n\n"
                 f"<i>Bu kod vaqtincha kirish uchun amal qiladi. Uni hech kimga bermang.</i>"
             )
             
             bot.reply_to(message, response, parse_mode='HTML')
 
-        bot.infinity_polling()
+        bot.infinity_polling(timeout=30, long_polling_timeout=25)

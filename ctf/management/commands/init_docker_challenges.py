@@ -1,5 +1,8 @@
 from django.core.management.base import BaseCommand
 from ctf.models import Challenge
+import hashlib
+
+PING_RCE_FLAG = 'WanNet{RCE_byp4ss_m4st3r_3301}'
 
 class Command(BaseCommand):
     help = 'Initializes Docker-based Challenges'
@@ -19,7 +22,7 @@ class Command(BaseCommand):
                 ),
                 'category': 'Web',
                 'points': 500,
-                'flag_hash': 'WanNet{RCE_byp4ss_m4st3r_3301}', # In real app, hash this!
+                'flag_hash': hashlib.sha256(PING_RCE_FLAG.encode()).hexdigest(),
                 'docker_image_name': 'wan-net/ping-rce:latest',
                 'docker_port': 5000,
                 'is_active': True
@@ -30,6 +33,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Created challenge: {challenge.title}"))
         else:
             challenge.docker_image_name = 'wan-net/ping-rce:latest'
+            challenge.flag_hash = hashlib.sha256(PING_RCE_FLAG.encode()).hexdigest()
             challenge.save()
             self.stdout.write(self.style.WARNING(f"Updated challenge: {challenge.title}"))
         
