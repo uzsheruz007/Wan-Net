@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Challenge, SolvedChallenge, CTFProfile, ChallengeAttempt, Tournament, Team, TournamentRegistration, ActiveContainer
 import hashlib
+from django.conf import settings
 from . import docker_utils
 import random
 import socket
@@ -16,7 +17,6 @@ def ctf_home(request):
 from django.db.models import Q, Sum, Count
 from django.db import transaction
 from django.core.paginator import Paginator
-from kurs.models import Course, Lesson, LessonProgress # Import from 'kurs' app
 
 
 def challenges(request):
@@ -162,7 +162,8 @@ def challenge_detail(request, challenge_id):
                 active_container.delete()
                 active_container = None
             else:
-                active_container.url = f"http://127.0.0.1:{active_container.host_port}"
+                # Laboratoriya nginx orqali asosiy domen ichida beriladi (/lab/<port>/)
+                active_container.url = request.build_absolute_uri(f"/lab/{active_container.host_port}/")
 
     if request.method == 'POST':
         # --- ANTI-BRUTE-FORCE ---
@@ -323,138 +324,6 @@ def challenge_render_view(request, challenge_id):
         return HttpResponse("Bu masalada ko'rsatish uchun HTML kod yo'q.", status=404)
     return HttpResponse(challenge.html_content)
 
-@login_required
-def courses_list(request):
-    courses = Course.objects.all()
-    return render(request, 'ctf/courses_list.html', {'courses': courses})
-
-@login_required
-def course_detail_ctf(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
-
-    modules = (
-        course.modules
-        .prefetch_related("lessons")
-        .order_by("order")
-    )
-
-    # Auto-start course logic
-    has_progress = LessonProgress.objects.filter(
-        user=request.user,
-        lesson__module__course=course
-    ).exists()
-
-    if not has_progress:
-        first_lesson = Lesson.objects.filter(
-            module__course=course
-        ).order_by("module__order", "order").first()
-        if first_lesson:
-            LessonProgress.objects.create(user=request.user, lesson=first_lesson)
-
-    completed_lessons_ids = set(
-        LessonProgress.objects.filter(
-            user=request.user,
-            lesson__module__course=course,
-            is_completed=True
-        ).values_list("lesson_id", flat=True)
-    )
-
-    total_lessons = Lesson.objects.filter(module__course=course).count()
-    progress = int((len(completed_lessons_ids) / total_lessons) * 100) if total_lessons else 0
-
-    # UI uchun qaysi darslar ochiqligini hisoblash
-    all_lessons = list(Lesson.objects.filter(module__course=course).order_by("module__order", "order"))
-    unlocked_lessons_ids = set()
-    
-    for i, lesson in enumerate(all_lessons):
-        if lesson.is_open:
-            unlocked_lessons_ids.add(lesson.id)
-        # Progressiv ochilish O'CHIRILDI. Faqat admin ruxsat bergan darslar ochiq.
-
-    # UI uchun qulaylik: Hammasi bitta setda
-    accessible_lessons_ids = completed_lessons_ids | unlocked_lessons_ids
-
-    context = {
-        "course": course,
-        "modules": modules,
-        "completed_lessons_ids": completed_lessons_ids,
-        "unlocked_lessons_ids": unlocked_lessons_ids,
-        "accessible_lessons_ids": accessible_lessons_ids,
-        "progress": progress,
-    }
-    return render(request, "ctf/course_detail_v2.html", context)
-
-
-@login_required
-def lesson_detail_ctf(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    course = lesson.module.course
-
-    all_lessons = list(
-        Lesson.objects.filter(module__course=course)
-        .order_by("module__order", "order")
-    )
-
-    all_ids = [l.id for l in all_lessons]
-    if lesson.id not in all_ids:
-        messages.error(request, "Dars topilmadi.")
-        return redirect("course_detail_ctf", course_id=course.id)
-
-    current_index = all_ids.index(lesson.id)
-
-    # 🔐 ACCESS CONTROL (STRICT: ONLY IF OPEN)
-    # Endi oldingi dars tugatilgani ahamiyatsiz. Faqat is_open bo'lishi shart.
-    if not lesson.is_open:
-        messages.error(request, "� Bu dars yopiq (Admin tomonidan ochilmagan).")
-        return redirect("course_detail_ctf", course_id=course.id)
-
-    # ❗ FAQAT KO‘RISH UCHUN progress (completed emas!)
-    LessonProgress.objects.get_or_create(
-        user=request.user,
-        lesson=lesson,
-        defaults={"is_completed": False}
-    )
-
-    next_lesson = all_lessons[current_index + 1] if current_index + 1 < len(all_lessons) else None
-    prev_lesson = all_lessons[current_index - 1] if current_index > 0 else None
-
-    is_completed = LessonProgress.objects.filter(
-        user=request.user,
-        lesson=lesson,
-        is_completed=True
-    ).exists()
-
-    return render(request, "ctf/lesson_detail.html", {
-        "lesson": lesson,
-        "course": course,
-        "next_lesson": next_lesson,
-        "prev_lesson": prev_lesson,
-        "is_completed": is_completed,
-    })
-
-@login_required
-def mark_lesson_complete_ctf(request, lesson_id):
-    lesson = get_object_or_404(Lesson, id=lesson_id)
-    progress, created = LessonProgress.objects.get_or_create(user=request.user, lesson=lesson)
-    
-    progress.is_completed = True 
-    progress.save()
-    
-    messages.success(request, "Dars tugatildi! +XP")
-    
-    # Calculate next lesson to redirect to
-    all_lessons = list(
-        Lesson.objects.filter(module__course=lesson.module.course)
-        .order_by("module__order", "order")
-    )
-    try:
-        current_index = all_lessons.index(lesson)
-        if current_index + 1 < len(all_lessons):
-            return redirect('lesson_detail_ctf', lesson_id=all_lessons[current_index + 1].id)
-    except ValueError:
-        pass
-
-    return redirect('course_detail_ctf', course_id=lesson.module.course.id)
 
 # Telegram Authentication
 from django.contrib.auth import login

@@ -11,13 +11,6 @@ urlpatterns = [
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('profile/', views.profile, name='ctf_profile'),
     
-    # Academy Routes
-    path('academy/', views.courses_list, name='courses_list'),
-    path('academy/course/<int:course_id>/', views.course_detail_ctf, name='course_detail_ctf'),
-    path('academy/lesson/<int:lesson_id>/', views.lesson_detail_ctf, name='lesson_detail_ctf'),
-    path('academy/lesson/<int:lesson_id>/complete/', views.mark_lesson_complete_ctf, name='mark_lesson_complete_ctf'),
-    
-    
     # Tournament System
     path('tournaments/', views.tournament_list, name='tournaments'),
     path('tournament/<int:tournament_id>/', views.tournament_detail, name='tournament_detail'),
