@@ -243,3 +243,5 @@ SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000').rstrip('/')
 
 # Laboratoriya konteyneri necha daqiqadan keyin avtomatik o'chiriladi
 LAB_LIFETIME_MINUTES = int(os.getenv('LAB_LIFETIME_MINUTES', '60'))
+# Shuncha daqiqa ishlatilmasa (sahifa yopilgan, saytdan chiqib ketgan) — lab o'chiriladi
+LAB_IDLE_MINUTES = int(os.getenv('LAB_IDLE_MINUTES', '15'))

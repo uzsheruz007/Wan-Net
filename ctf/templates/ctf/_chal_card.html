@@ -1,0 +1,24 @@
+{# Yagona masala kartasi. Parametrlar: challenge, url #}
+<a href="{{ url }}" class="panel hud panel-interactive block">
+    <div class="chal-card">
+        <div class="chal-visual">
+            <span class="chal-cat chip {% if challenge.category == 'Web' %}{% elif challenge.category == 'Crypto' %}chip-violet{% elif challenge.category == 'OSINT' %}chip-cyan{% elif challenge.category == 'Forensics' %}chip-warn{% elif challenge.category == 'Reverse' %}chip-danger{% else %}chip-muted{% endif %}">{{ challenge.category }}</span>
+            <span class="chal-pts chip chip-muted">{{ challenge.points }} PTS</span>
+            <div class="chal-icon">
+                <i class="fas {% if challenge.docker_image_name %}fa-server{% elif challenge.category == 'Web' %}fa-globe{% elif challenge.category == 'Crypto' %}fa-key{% elif challenge.category == 'OSINT' %}fa-satellite-dish{% elif challenge.category == 'Forensics' %}fa-magnifying-glass{% elif challenge.category == 'Reverse' %}fa-microchip{% else %}fa-flag{% endif %}"></i>
+            </div>
+        </div>
+        <div class="chal-body">
+            <h3 class="chal-title">{{ challenge.title|truncatechars:48 }}</h3>
+            <div class="chal-foot">
+                <span>#{{ challenge.id|stringformat:"04d" }}{% if challenge.docker_image_name %} · <span class="text-acc2">LAB</span>{% endif %}</span>
+                <span class="text-acc">OCHISH <i class="fas fa-arrow-right ml-1"></i></span>
+            </div>
+        </div>
+    </div>
+    {% if challenge.is_solved %}
+    <div class="overlay"><div class="stamp stamp-ok">YECHILGAN</div></div>
+    {% elif challenge.has_failed_attempt %}
+    <div class="overlay"><div class="stamp stamp-fail">YECHILMAGAN</div></div>
+    {% endif %}
+</a>

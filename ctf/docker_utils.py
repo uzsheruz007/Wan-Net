@@ -45,6 +45,7 @@ def start_container(image_name, port_binding=None):
             cap_drop=['ALL'],
             cap_add=['NET_RAW'],  # ping uchun
             security_opt=['no-new-privileges:true'],
+            sysctls={'net.ipv6.conf.all.disable_ipv6': '1'},  # IPv6 xizmat paketlari faollikni buzmasin
             labels={'wan-net.lab': '1'},
             restart_policy={'Name': 'no'},
             remove=True # Auto remove when stopped
@@ -69,6 +70,24 @@ def stop_container(container_id):
     except Exception as e:
         logger.error(f"Error stopping container {container_id}: {e}")
         return False
+
+def get_traffic_bytes(container_id):
+    """Konteyner tarmoq trafigi (rx+tx, lo'dan tashqari) yoki None. Host'dagi /proc/<pid>/net/dev dan o'qiladi."""
+    if not client:
+        return None
+    try:
+        pid = client.containers.get(container_id).attrs['State']['Pid']
+        with open(f"/proc/{pid}/net/dev") as stats:
+            lines = stats.readlines()[2:]
+    except Exception:
+        return None
+    total = 0
+    for line in lines:
+        name, data = line.split(':', 1)
+        if name.strip() != 'lo':
+            fields = data.split()
+            total += int(fields[0]) + int(fields[8])
+    return total
 
 def get_container_status(container_id):
     if not client:

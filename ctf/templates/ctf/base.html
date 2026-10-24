@@ -1,0 +1,209 @@
+{% load static %}<!DOCTYPE html>
+<html lang="uz" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#04070a">
+    <title>{% block title %}Wan-Net // Kiberxavfsizlik Platformasi{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="{% static 'ctf/tw.css' %}?v=4">
+    <link rel="stylesheet" href="{% static 'ctf/cyber.css' %}?v=4">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Fon: barcha sahifalar uchun bitta -->
+    <div class="bg-stack" aria-hidden="true">
+        <div class="bg-glow"></div>
+        <div class="bg-grid"></div>
+        <canvas id="matrix-canvas"></canvas>
+        <div class="bg-scan"></div>
+        <div class="bg-vignette"></div>
+    </div>
+
+    {% with url_name=request.resolver_match.url_name %}
+    <nav class="nav">
+        <div class="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between gap-6">
+            <a href="{% url 'ctf_home' %}" class="brand">
+                <span class="brand-mark">W</span>
+                <span class="brand-name">WAN<span>-</span>NET</span>
+                <span class="hidden sm:inline text-[10px] tracking-[0.25em] text-muted">// CTF</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-7">
+                <a href="{% url 'challenges' %}" class="nav-link {% if url_name == 'challenges' or url_name == 'challenge_detail' %}active{% endif %}">MASHQLAR</a>
+                <a href="{% url 'tournaments' %}" class="nav-link {% if 'tournament' in url_name %}active{% endif %}">TURNIRLAR</a>
+                <a href="{% url 'leaderboard' %}" class="nav-link {% if url_name == 'leaderboard' %}active{% endif %}">REYTING</a>
+                <a href="{% url 'team_dashboard' %}" class="nav-link {% if url_name == 'team_dashboard' %}active{% endif %}">JAMOA</a>
+            </div>
+
+            <div class="flex items-center gap-3">
+                {% if user.is_authenticated %}
+                <a href="{% url 'ctf_profile' %}" class="group flex items-center gap-3 pl-3 pr-1 py-1 border border-transparent hover:border-[color:var(--line-strong)] transition-colors">
+                    <span class="hidden sm:flex flex-col items-end leading-tight">
+                        <span class="font-mono text-xs font-bold text-white group-hover:text-acc transition-colors">{{ user.username }}</span>
+                        <span class="font-mono text-[9px] tracking-[0.2em] text-acc/70">● ONLINE</span>
+                    </span>
+                    <span class="avatar w-9 h-9 text-sm">
+                        {% if user.ctf_profile.avatar %}<img src="{{ user.ctf_profile.avatar.url }}" alt="">{% else %}{{ user.username.0 }}{% endif %}
+                    </span>
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-sm">
+                    <i class="fab fa-telegram"></i> KIRISH
+                </a>
+                {% endif %}
+                <button type="button" class="md:hidden btn btn-ghost btn-icon" aria-label="Menyu" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu hidden md:hidden">
+            <a href="{% url 'challenges' %}" class="{% if url_name == 'challenges' or url_name == 'challenge_detail' %}active{% endif %}">&gt; MASHQLAR</a>
+            <a href="{% url 'tournaments' %}" class="{% if 'tournament' in url_name %}active{% endif %}">&gt; TURNIRLAR</a>
+            <a href="{% url 'leaderboard' %}" class="{% if url_name == 'leaderboard' %}active{% endif %}">&gt; REYTING</a>
+            <a href="{% url 'team_dashboard' %}" class="{% if url_name == 'team_dashboard' %}active{% endif %}">&gt; JAMOA</a>
+        </div>
+    </nav>
+    {% endwith %}
+
+    {% if messages %}
+    <div id="toasts" class="fixed top-20 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+        {% for message in messages %}
+        <div class="toast {{ message.tags }}">
+            <span class="flex-1">{{ message }}</span>
+            <button type="button" onclick="this.parentElement.remove()" class="text-muted hover:text-white">✕</button>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(() => document.querySelectorAll('#toasts .toast').forEach(t => {
+            t.style.opacity = '0'; t.style.transform = 'translateX(20px)';
+            setTimeout(() => t.remove(), 300);
+        }), 6000);
+    </script>
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="max-w-7xl mx-auto px-5 py-10 grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
+            <div>
+                <a href="{% url 'ctf_home' %}" class="brand mb-4">
+                    <span class="brand-mark">W</span>
+                    <span class="brand-name">WAN<span>-</span>NET</span>
+                </a>
+                <p class="font-mono text-xs leading-relaxed text-dim max-w-sm">
+                    Capture The Flag platformasi. Tizimlarni sinab, buzib va tushunib kiberxavfsizlikni amalda o'rganing.
+                </p>
+            </div>
+            <div>
+                <div class="label">// platforma</div>
+                <ul class="space-y-2 font-mono text-xs">
+                    <li><a href="{% url 'challenges' %}">./mashqlar</a></li>
+                    <li><a href="{% url 'tournaments' %}">./turnirlar</a></li>
+                    <li><a href="{% url 'leaderboard' %}">./reyting</a></li>
+                    <li><a href="{% url 'team_dashboard' %}">./jamoa</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="label">// aloqa</div>
+                <ul class="space-y-2 font-mono text-xs">
+                    <li><a href="https://t.me/Wan_Netbot" target="_blank" rel="noopener"><i class="fab fa-telegram mr-2"></i>@Wan_Netbot</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'ctf_profile' %}"><i class="fas fa-user-secret mr-2"></i>profil</a></li>
+                    {% else %}
+                    <li><a href="{% url 'login' %}"><i class="fas fa-right-to-bracket mr-2"></i>kirish</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-[color:var(--line-soft)]">
+            <div class="max-w-7xl mx-auto px-5 py-4 flex flex-col sm:flex-row gap-2 justify-between font-mono text-[10px] tracking-[0.15em] text-muted">
+                <span>© {% now "Y" %} WAN-NET // BARCHA HUQUQLAR HIMOYALANGAN</span>
+                <span><span class="text-acc">●</span> SYSTEM ONLINE</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Matritsa oqimi: har ustun o'z tezligida, yorqin bosh va so'nib boruvchi iz
+        (function () {
+            const c = document.getElementById('matrix-canvas');
+            if (!c) return;
+            const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const ctx = c.getContext('2d', { alpha: false });
+            const glyphs = ['0', '1'];
+            const pick = () => glyphs[(Math.random() * glyphs.length) | 0];
+            let size, cols, W, H;
+
+            function resize() {
+                W = window.innerWidth; H = window.innerHeight;
+                c.width = W; c.height = H;
+                size = W < 640 ? 14 : 17;
+                cols = Array.from({ length: Math.ceil(W / size) }, () => ({
+                    y: Math.random() * -H / size,
+                    speed: 0.35 + Math.random() * 0.75,
+                    color: Math.random() < 0.12 ? '#00d1ff' : '#00ff9c',
+                    prev: null,
+                }));
+                ctx.fillStyle = '#04070a';
+                ctx.fillRect(0, 0, W, H);
+            }
+            resize();
+            let rt;
+            window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(resize, 150); });
+
+            function draw() {
+                ctx.fillStyle = 'rgba(4, 7, 10, 0.085)';
+                ctx.fillRect(0, 0, W, H);
+                ctx.font = '600 ' + (size - 2) + 'px "JetBrains Mono", monospace';
+                ctx.textBaseline = 'top';
+                for (let i = 0; i < cols.length; i++) {
+                    const col = cols[i];
+                    const x = i * size;
+                    const row = Math.floor(col.y);
+                    // oldingi bosh endi iz rangida
+                    if (col.prev !== null && col.prev !== row) {
+                        ctx.fillStyle = col.color;
+                        ctx.fillText(pick(), x, col.prev * size);
+                    }
+                    if (col.prev !== row) {
+                        ctx.fillStyle = '#e6fff4';
+                        ctx.fillText(pick(), x, row * size);
+                        col.prev = row;
+                    }
+                    col.y += col.speed;
+                    if (row * size > H && Math.random() > 0.97) {
+                        col.y = Math.random() * -20;
+                        col.prev = null;
+                        col.speed = 0.35 + Math.random() * 0.75;
+                    }
+                }
+            }
+
+            let last = 0, raf;
+            function loop(ts) {
+                raf = requestAnimationFrame(loop);
+                if (ts - last < (calm ? 110 : 50)) return;   // ~20 kadr/s (animatsiya o'chiq tizimda ~9)
+                last = ts;
+                draw();
+            }
+            raf = requestAnimationFrame(loop);
+            document.addEventListener('visibilitychange', () => {
+                cancelAnimationFrame(raf);
+                if (!document.hidden) raf = requestAnimationFrame(loop);
+            });
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

@@ -1,86 +1,53 @@
-{% extends 'ctf/ctf_home.html' %}
-{% load static %}
+{% extends 'ctf/base.html' %}
 
 {% block title %}Natijalar // {{ tournament.title }}{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pt-32 pb-20 relative z-10 px-4">
-    <div class="max-w-4xl mx-auto">
-        
-        <!-- Header & Navigation -->
-        <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-white mb-1">Natijalar Jadvali</h1>
-                <p class="text-slate-400 text-sm">{{ tournament.title }}</p>
-            </div>
+<div class="page" style="max-width: 60rem;">
 
-            <a href="{% url 'tournament_detail' tournament.id %}" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded shadow-lg hover:shadow-emerald-500/20 transition-all flex items-center gap-2">
-                <i class="fas fa-layer-group"></i> MASALALARGA QAYTISH
-            </a>
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 rise">
+        <div>
+            <div class="eyebrow mb-4">scoreboard</div>
+            <h1 class="page-title" style="font-size: clamp(2rem, 4.5vw, 3.2rem);">Natijalar <span class="hl">jadvali</span></h1>
+            <p class="page-sub mt-2"><span class="p">&gt;</span> {{ tournament.title }}</p>
         </div>
+        <a href="{% url 'tournament_detail' tournament.id %}" class="btn"><i class="fas fa-layer-group"></i> MASALALARGA QAYTISH</a>
+    </header>
 
-        <!-- Clean Beautiful Table -->
-        <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden shadow-2xl">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-white/5 border-b border-white/5 text-xs font-mono text-slate-400 uppercase tracking-wider">
-                            <th class="px-6 py-4 text-center w-20">#</th>
-                            <th class="px-6 py-4">Ishtirokchi</th>
-                            <th class="px-6 py-4 text-right">Ball</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5 text-sm">
-                        {% for entry in leaderboard %}
-                        <tr class="group hover:bg-white/[0.02] transition-colors">
-                            <!-- Rank -->
-                            <td class="px-6 py-4 text-center">
-                                {% if forloop.counter == 1 %}
-                                    <span class="text-2xl">🥇</span>
-                                {% elif forloop.counter == 2 %}
-                                    <span class="text-2xl">🥈</span>
-                                {% elif forloop.counter == 3 %}
-                                    <span class="text-2xl">🥉</span>
-                                {% else %}
-                                    <span class="font-mono text-slate-400 font-bold">#{{ forloop.counter }}</span>
-                                {% endif %}
-                            </td>
-                            
-                            <!-- User/Team -->
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    {% if entry.avatar_url %}
-                                        <img src="{{ entry.avatar_url }}" class="w-10 h-10 rounded-full object-cover bg-slate-800 border-2 border-slate-700 group-hover:border-emerald-500/50 transition-colors">
-                                    {% else %}
-                                        <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-slate-300 border-2 border-white/10">
-                                            <i class="fas {% if entry.is_team %}fa-users{% else %}fa-user{% endif %}"></i>
-                                        </div>
-                                    {% endif %}
-                                    <div>
-                                        <div class="font-bold text-slate-200 group-hover:text-white text-base transition-colors">{{ entry.name }}</div>
-                                        <div class="text-xs text-slate-500">{% if entry.is_team %}Jamoa{% else %}Yakkalik{% endif %}</div>
-                                    </div>
+    <div class="panel hud rise d1">
+        <div class="term-head">
+            <div class="term-dots"><i></i><i></i><i></i></div>
+            <div class="term-title">scoreboard.live</div>
+            <span class="text-acc"><span class="live-dot inline-block"></span></span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="tbl">
+                <thead><tr><th class="w-20 text-center">#</th><th>Ishtirokchi</th><th class="text-right">Ball</th></tr></thead>
+                <tbody>
+                    {% for entry in leaderboard %}
+                    <tr>
+                        <td class="text-center font-mono font-bold {% if forloop.counter == 1 %}text-warn{% elif forloop.counter <= 3 %}text-acc{% else %}text-dim{% endif %}">
+                            {% if forloop.counter == 1 %}<i class="fas fa-crown"></i>{% else %}{{ forloop.counter|stringformat:"02d" }}{% endif %}
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-3">
+                                <span class="avatar w-9 h-9 text-sm">
+                                    {% if entry.avatar_url %}<img src="{{ entry.avatar_url }}" alt="">{% else %}<i class="fas {% if entry.is_team %}fa-users{% else %}fa-user{% endif %} text-xs"></i>{% endif %}
+                                </span>
+                                <div>
+                                    <div class="font-semibold text-white">{{ entry.name }}</div>
+                                    <div class="font-mono text-[10px] text-muted">{% if entry.is_team %}JAMOA{% else %}YAKKA{% endif %}</div>
                                 </div>
-                            </td>
-
-                            <!-- Score -->
-                            <td class="px-6 py-4 text-right">
-                                <span class="font-mono font-bold text-emerald-400 text-lg">{{ entry.score }}</span>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="px-6 py-12 text-center text-slate-500">
-                                <div class="mb-2 text-2xl"><i class="fas fa-search"></i></div>
-                                Hozircha natijalar yo'q.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </td>
+                        <td class="text-right font-mono font-bold text-acc text-lg">{{ entry.score }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="py-16 text-center font-mono text-muted"><i class="fas fa-magnifying-glass text-2xl mb-3 block"></i>Hozircha natijalar yo'q.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
     </div>
 </div>
 {% endblock %}

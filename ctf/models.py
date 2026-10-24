@@ -1,6 +1,8 @@
 from django.db import models
+from django.utils import timezone
 import secrets # Token generatsiya uchun
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_out
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
@@ -107,6 +109,10 @@ class ActiveContainer(models.Model):
     container_id = models.CharField(max_length=255)
     host_port = models.IntegerField(help_text="Port on the host machine")
     created_at = models.DateTimeField(auto_now_add=True)
+    # Faollik: konteyner tarmoq trafigi (rx+tx) oxirgi tekshiruvda va oxirgi faol payt
+    traffic_bytes = models.BigIntegerField(default=0)
+    checked_at = models.DateTimeField(default=timezone.now)
+    active_at = models.DateTimeField(default=timezone.now)
     
     class Meta:
         unique_together = ('user', 'challenge')
@@ -188,3 +194,15 @@ def subtract_points_on_delete(sender, instance, **kwargs):
     except Exception:
         # User o'chib ketgan bo'lsa yoki profil yo'q bo'lsa
         pass
+
+
+@receiver(user_logged_out)
+def stop_labs_on_logout(sender, request, user, **kwargs):
+    """Saytdan chiqqanda (sayt, allauth yoki admin orqali) laboratoriyalar darhol o'chadi."""
+    if user is None:
+        return
+    from . import docker_utils
+    for lab in ActiveContainer.objects.filter(user=user):
+        docker_utils.stop_container(lab.container_id)
+        lab.delete()
+
