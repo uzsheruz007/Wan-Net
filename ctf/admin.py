@@ -1,12 +1,25 @@
+from django.conf import settings
 from django.contrib import admin
 from django import forms
 from django.db import models
 from .models import Challenge, SolvedChallenge, CTFProfile, ChallengeAttempt, Tournament, Team, TournamentRegistration
+from .panel.forms import ChallengeForm
+
+admin.site.site_header = admin.site.site_title = 'Wan-Net boshqaruv'
+admin.site.index_title = 'Boshqaruv paneli'
+admin.site.site_url = settings.SITE_URL
+
 
 @admin.register(Challenge)
 class ChallengeAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'points', 'tournament', 'is_active', 'created_at')
-    list_filter = ('category', 'is_active', 'tournament')
+    # Flag ochiq matnda kiritiladi, bazaga faqat SHA256 xeshi yoziladi (ctf/panel/forms.py)
+    form = ChallengeForm
+    fieldsets = (
+        (None, {'fields': ('title', 'description', 'category', 'points', 'difficulty', 'flag', 'is_active', 'tournament')}),
+        ("Qo'shimcha: fayl, veb nishon, Docker lab", {'fields': ('file', 'html_content', 'docker_image_name', 'docker_port')}),
+    )
+    list_display = ('title', 'category', 'difficulty', 'points', 'tournament', 'is_active', 'created_at')
+    list_filter = ('category', 'difficulty', 'is_active', 'tournament')
     search_fields = ('title', 'description')
     
     # Textarea ni kattalashtirish va Monospace font berish

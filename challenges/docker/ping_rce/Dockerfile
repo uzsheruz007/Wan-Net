@@ -1,25 +1,15 @@
 FROM python:3.9-slim
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y iputils-ping && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends iputils-ping && rm -rf /var/lib/apt/lists/* \
+    && pip install --no-cache-dir flask==3.1.1 && useradd -m ctfuser
 
-# Install Python dependencies
-RUN pip install flask
-
-# Create a non-root user
-RUN useradd -m ctfuser
-
-# Setup App
 WORKDIR /app
 COPY app.py .
 
-# Setup Flag (The objective)
-RUN echo "WanNet{RCE_byp4ss_m4st3r_3301}" > /flag.txt
-RUN chmod 444 /flag.txt
+# Flag repoda saqlanmaydi: manage.py init_docker_challenges --build uni tasodifiy yaratib, shu yerga beradi
+ARG FLAG
+RUN test -n "$FLAG" && echo "$FLAG" > /flag.txt && chmod 444 /flag.txt
 
-# Switch to non-root user
 USER ctfuser
-
 EXPOSE 5000
-
 CMD ["python", "app.py"]

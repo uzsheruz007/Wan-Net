@@ -8,6 +8,7 @@ urlpatterns = [
     path('challenge/<int:challenge_id>/render/', views.challenge_render_view, name='challenge_render'),
     path('challenge/<int:challenge_id>/start/', views.start_container_view, name='start_container'),
     path('challenge/<int:challenge_id>/stop/', views.stop_container_view, name='stop_container'),
+    path('labs/', views.labs, name='labs'),
     path('leaderboard/', views.leaderboard, name='leaderboard'),
     path('profile/', views.profile, name='ctf_profile'),
     

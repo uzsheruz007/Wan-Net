@@ -44,38 +44,17 @@ USE_X_FORWARDED_HOST = True
 if not DEBUG:
     SESSION_COOKIE_SECURE = os.getenv('DJANGO_SECURE_COOKIES', 'True').lower() in ('1', 'true', 'yes')
     CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
-# settings.py faylining oxiriga:
-
-# Agar user login qilmagan bo'lsa, qaysi URL ga borsin?
-LOGIN_URL = 'login' 
-
-# Agar user login qilmagan bo'lsa, qaysi URL ga borsin?
-LOGIN_URL = 'login' 
-
-# Logout qilgandan keyin qayerga borsin?
-LOGOUT_REDIRECT_URL = 'login'
 
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'django_ckeditor_5',
-    'kurs',
     'ctf',
-    
-    # Allauth
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -86,9 +65,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
-    # Allauth middleware
-    "allauth.account.middleware.AccountMiddleware",
+    # Sahifalarni Next.js chizadi (frontend/): Django'dagi sahifa manzili frontend'ga yo'naltiriladi
+    'ctf.api.bridge.FrontendPagesMiddleware',
 ]
 
 
@@ -98,8 +76,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / 'templates',  # Asosiy template papkasi
-            BASE_DIR / 'kurs' / 'templates',  # App ichidagi template papkasi
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -166,79 +142,27 @@ USE_TZ = True
 # Statik fayllar uchun
 STATIC_URL = 'static/'
 
-# Allauth settings
-SITE_ID = 1
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        }
-    }
-}
-
-# Email settings (optional but recommended for allauth)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'  <-- Deprecated
-# ACCOUNT_EMAIL_REQUIRED = True            <-- Deprecated
-# ACCOUNT_USERNAME_REQUIRED = False        <-- Deprecated
-
-ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
-ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media fayllar uchun
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-CKEDITOR_5_CONFIGS = {
-    'default': {
-        'toolbar': [
-            'heading', '|',
-            'bold', 'italic', 'underline', 'strikethrough', '|',
-            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|',
-            'alignment', '|',
-            'numberedList', 'bulletedList', '|',
-            'insertTable', '|',
-            'link', 'imageUpload', '|',
-            'sourceEditing', '|',
-            'undo', 'redo'
-        ],
-        'table': {
-            'contentToolbar': [
-                'tableColumn',
-                'tableRow',
-                'mergeTableCells',
-                'tableCellProperties',
-                'tableProperties'
-            ]
-        }
-    }
-}
 
 LOGIN_URL = 'login'
-LOGIN_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = 'ctf_home'
 LOGOUT_REDIRECT_URL = '/login/'
 
 # Telegram Bot
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 
-# Saytning tashqi manzili (bot xabarlaridagi linklar uchun)
-SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:8000').rstrip('/')
+# Saytning tashqi manzili — Next.js frontend (bot xabarlaridagi linklar va Django'dan sahifaga yo'naltirish uchun)
+SITE_URL = os.getenv('SITE_URL', 'http://127.0.0.1:3000').rstrip('/')
+
+# Xabarlar (toast) sessiyada: Next.js serveri fetch qilganda javobdagi cookie brauzerga yetmaydi
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 
 # Laboratoriya konteyneri necha daqiqadan keyin avtomatik o'chiriladi

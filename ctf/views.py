@@ -1,15 +1,36 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django import forms
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.utils import timezone
 from .models import Challenge, SolvedChallenge, CTFProfile, ChallengeAttempt, Tournament, Team, TournamentRegistration, ActiveContainer
 import hashlib
 from django.conf import settings
 from . import docker_utils
+from .api.render import render
 import random
 import socket
 
 from django.http import HttpResponse
+
+AVATAR_MAX_BYTES = 2 * 1024 * 1024
+AVATAR_TYPES = {'JPEG', 'PNG', 'GIF', 'WEBP'}
+
+
+def clean_image(upload):
+    """Avatar/logo: haqiqiy rasm (Pillow tekshiradi), 2 MB gacha. (fayl, xato matni) qaytaradi."""
+    if upload.size > AVATAR_MAX_BYTES:
+        return None, "Rasm hajmi 2 MB dan oshmasligi kerak."
+    try:
+        image = forms.ImageField().clean(upload)
+    except forms.ValidationError:
+        return None, "Faqat rasm fayli (JPG, PNG, GIF, WEBP) yuklash mumkin."
+    if getattr(image.image, 'format', None) not in AVATAR_TYPES:
+        return None, "Faqat rasm fayli (JPG, PNG, GIF, WEBP) yuklash mumkin."
+    return image, None
+
 
 def ctf_home(request):
     return render(request, 'ctf/ctf_home.html')
@@ -151,19 +172,7 @@ def challenge_detail(request, challenge_id):
         is_solved = SolvedChallenge.objects.filter(user=request.user, challenge=challenge).exists()
 
     # 3. Docker Status (If Docker Challenge)
-    active_container = None
-    if challenge.docker_image_name:
-        active_container = ActiveContainer.objects.filter(user=request.user, challenge=challenge).first()
-        # Verify it's actually running
-        if active_container:
-            status = docker_utils.get_container_status(active_container.container_id)
-            if status != "running":
-                # Auto-clean ghost records
-                active_container.delete()
-                active_container = None
-            else:
-                # Laboratoriya nginx orqali asosiy domen ichida beriladi (/lab/<port>/)
-                active_container.url = request.build_absolute_uri(f"/lab/{active_container.host_port}/")
+    active_container = running_container(request.user, challenge) if challenge.docker_image_name else None
 
     if request.method == 'POST':
         # --- ANTI-BRUTE-FORCE ---
@@ -263,15 +272,16 @@ def challenge_detail(request, challenge_id):
     return render(request, 'ctf/challenge_detail.html', {
         'challenge': challenge, 
         'is_solved': is_solved,
-        'active_container': active_container
+        'active_container': active_container,
+        'lifetime': settings.LAB_LIFETIME_MINUTES,
     })
 
 def leaderboard(request):
     queryset = CTFProfile.objects.order_by('-total_points', 'last_solved')
 
     paginator = Paginator(queryset, 20)
-    page_number = int(request.GET.get('page', 1))
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    page_number = page_obj.number
 
     start_rank = page_obj.start_index()
     for i, profile in enumerate(page_obj):
@@ -294,14 +304,14 @@ def profile(request):
     user_profile, created = CTFProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        # Handle Avatar Upload
         if 'avatar' in request.FILES:
-            user_profile.avatar = request.FILES['avatar']
-            user_profile.save()
-            messages.success(request, "Profil rasmi muvaffaqiyatli yangilandi!")
-        
-
-
+            avatar, error = clean_image(request.FILES['avatar'])
+            if error:
+                messages.error(request, error)
+            else:
+                user_profile.avatar = avatar
+                user_profile.save()
+                messages.success(request, "Profil rasmi muvaffaqiyatli yangilandi!")
         return redirect('ctf_profile')
 
     solved_challenges = SolvedChallenge.objects.filter(user=request.user).select_related('challenge').order_by('-solved_at')
@@ -315,9 +325,6 @@ def profile(request):
         'rank': rank
     })
 
-def secret_view(request):
-    return render(request, 'ctf/secret_page.html')
-
 def challenge_render_view(request, challenge_id):
     challenge = get_object_or_404(Challenge, id=challenge_id)
     if not challenge.html_content:
@@ -330,7 +337,6 @@ from django.contrib.auth import login
 from django.contrib.auth.models import User
 from datetime import timedelta
 from .models import TelegramAuth
-import uuid
 
 def telegram_login(request):
     if request.user.is_authenticated:
@@ -405,6 +411,9 @@ def telegram_login(request):
                         # Cleanup only if successful
                         auth_entry.delete()
                         messages.success(request, f"Xush kelibsiz, {user.username}!")
+                        target = request.POST.get('next') or request.GET.get('next') or ''
+                        if url_has_allowed_host_and_scheme(target, allowed_hosts=None) and target.startswith('/'):
+                            return redirect(target)
                         return redirect('ctf_home')
                         
                 except Exception as e:
@@ -510,6 +519,7 @@ def tournament_detail(request, tournament_id):
     }
     return render(request, 'ctf/tournament_detail.html', context)
 
+@require_POST
 @login_required
 def register_tournament(request, tournament_id):
     tournament = get_object_or_404(Tournament, id=tournament_id)
@@ -639,12 +649,18 @@ def tournament_leaderboard(request, tournament_id):
         'leaderboard': leaderboard
     })
 
+@require_POST
 @login_required
 def create_team(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         motto = request.POST.get('motto')
         avatar = request.FILES.get('avatar')
+        if avatar:
+            avatar, error = clean_image(avatar)
+            if error:
+                messages.error(request, error)
+                return redirect('team_dashboard')
         
         if not name:
             messages.error(request, "Jamoa nomi bo'lishi shart.")
@@ -667,6 +683,7 @@ def create_team(request):
         return redirect('team_dashboard')
     return redirect('team_dashboard')
 
+@require_POST
 @login_required
 def join_team(request):
     if request.method == 'POST':
@@ -687,12 +704,67 @@ def join_team(request):
             
     return redirect('team_dashboard')
 
+def lab_redirect(request, challenge):
+    """Lab amalidan keyin: laboratoriyalar sahifasidan kelgan bo'lsa o'sha yerga, aks holda masala sahifasiga."""
+    if request.POST.get('next') == 'labs':
+        return redirect('labs')
+    return redirect('challenge_detail', challenge_id=challenge.id)
+
+
+def lab_url(container):
+    # Laboratoriya nginx orqali asosiy domen ichida beriladi (/lab/<port>/).
+    # So'rov Next.js serveridan keladi, shuning uchun tashqi manzil SITE_URL dan olinadi.
+    return f"{settings.SITE_URL}/lab/{container.host_port}/"
+
+
+def lab_expires_at(container):
+    return container.created_at + timedelta(minutes=settings.LAB_LIFETIME_MINUTES)
+
+
+def running_container(user, challenge=None):
+    """Foydalanuvchining ishlab turgan labi (o'chib qolgan yozuvlar tozalanadi)."""
+    qs = ActiveContainer.objects.filter(user=user).select_related('challenge')
+    if challenge is not None:
+        qs = qs.filter(challenge=challenge)
+    container = qs.first()
+    if container and docker_utils.get_container_status(container.container_id) != "running":
+        container.delete()
+        return None
+    if container:
+        container.url = lab_url(container)
+        container.expires_at = lab_expires_at(container)
+    return container
+
+
+def labs(request):
+    """Barcha Docker laboratoriyalar: qiyinlik, holat va joriy ishlab turgan lab."""
+    now = timezone.now()
+    queryset = Challenge.objects.filter(is_active=True, docker_image_name__isnull=False).exclude(docker_image_name='').filter(
+        Q(tournament__isnull=True) | Q(tournament__end_date__lt=now)
+    )
+    order = {'easy': 0, 'medium': 1, 'hard': 2}
+    items = sorted(queryset, key=lambda c: (order.get(c.difficulty, 3), c.points, c.id))
+    user = request.user if request.user.is_authenticated else None
+    solved_ids = set(SolvedChallenge.objects.filter(user=user).values_list('challenge_id', flat=True)) if user else set()
+    attempted_ids = set(ChallengeAttempt.objects.filter(user=user).values_list('challenge_id', flat=True)) if user else set()
+    for c in items:
+        c.is_solved = c.id in solved_ids
+        c.has_failed_attempt = not c.is_solved and c.id in attempted_ids
+    return render(request, 'ctf/labs.html', {
+        'labs': items,
+        'active': running_container(user) if user else None,
+        'lifetime': settings.LAB_LIFETIME_MINUTES,
+        'idle': settings.LAB_IDLE_MINUTES,
+    })
+
+
+@require_POST
 @login_required
 def start_container_view(request, challenge_id):
     challenge = get_object_or_404(Challenge, id=challenge_id)
     if not challenge.docker_image_name:
         messages.error(request, "Bu masala uchun Docker muhiti mavjud emas.")
-        return redirect('challenge_detail', challenge_id=challenge.id)
+        return lab_redirect(request, challenge)
 
     # Check limit (1 container per user)
     if ActiveContainer.objects.filter(user=request.user).exists():
@@ -700,10 +772,10 @@ def start_container_view(request, challenge_id):
         existing = ActiveContainer.objects.filter(user=request.user, challenge=challenge).first()
         if existing:
              messages.info(request, "Sizda allaqachon aktiv laboratoriya mavjud.")
-             return redirect('challenge_detail', challenge_id=challenge.id)
+             return lab_redirect(request, challenge)
         else:
              messages.error(request, "Sizda boshqa aktiv laboratoriya mavjud. Avval uni o'chiring!")
-             return redirect('challenges') # or back
+             return redirect('labs')
 
     # Pick random port
     def is_port_in_use(port):
@@ -719,7 +791,7 @@ def start_container_view(request, challenge_id):
     
     if host_port == 0:
         messages.error(request, "Bo'sh port topilmadi. Keyinroq urinib ko'ring.")
-        return redirect('challenge_detail', challenge_id=challenge.id)
+        return lab_redirect(request, challenge)
 
     # Start Container
     container = docker_utils.start_container(
@@ -738,8 +810,9 @@ def start_container_view(request, challenge_id):
     else:
         messages.error(request, "Konteynerni ishga tushirishda xatolik!")
 
-    return redirect('challenge_detail', challenge_id=challenge.id)
+    return lab_redirect(request, challenge)
 
+@require_POST
 @login_required
 def stop_container_view(request, challenge_id):
     challenge = get_object_or_404(Challenge, id=challenge_id)
@@ -754,8 +827,10 @@ def stop_container_view(request, challenge_id):
         active_container.delete() 
         messages.warning(request, "Laboratoriya o'chirildi (lekin Docker javob bermadi).")
 
-    return redirect('challenge_detail', challenge_id=challenge.id)
+    return lab_redirect(request, challenge)
 
+@require_POST
+@login_required
 def kick_team_member(request, member_id):
     user_team = request.user.teams.first()
     if not user_team:
@@ -779,6 +854,7 @@ def kick_team_member(request, member_id):
         
     return redirect('team_dashboard')
 
+@require_POST
 @login_required
 def leave_team(request):
     user_team = request.user.teams.first()

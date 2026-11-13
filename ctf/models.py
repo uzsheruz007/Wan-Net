@@ -19,7 +19,14 @@ class Challenge(models.Model):
     title = models.CharField(max_length=200, verbose_name="Sarlavha")
     description = models.TextField(verbose_name="Tavsif")
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="Kategoriya")
+    DIFFICULTY_CHOICES = (
+        ('easy', 'Oson'),
+        ('medium', "O'rta"),
+        ('hard', 'Qiyin'),
+    )
+
     points = models.IntegerField(default=10, verbose_name="Ball")
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, blank=True, default='', verbose_name="Qiyinlik")
     flag_hash = models.CharField(max_length=256, help_text="Flagning SHA256 хeshi", verbose_name="Flag Xeshi")
     is_active = models.BooleanField(default=True, verbose_name="Faolmi?")
     file = models.FileField(upload_to='ctf_files/', blank=True, null=True, help_text="Masala uchun fayl (ixtiyoriy)", verbose_name="Fayl")
@@ -198,7 +205,7 @@ def subtract_points_on_delete(sender, instance, **kwargs):
 
 @receiver(user_logged_out)
 def stop_labs_on_logout(sender, request, user, **kwargs):
-    """Saytdan chiqqanda (sayt, allauth yoki admin orqali) laboratoriyalar darhol o'chadi."""
+    """Saytdan chiqqanda (sayt yoki admin orqali) laboratoriyalar darhol o'chadi."""
     if user is None:
         return
     from . import docker_utils
