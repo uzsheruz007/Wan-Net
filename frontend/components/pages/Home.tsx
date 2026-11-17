@@ -67,7 +67,7 @@ export function Home() {
         <section className="grid lg:grid-cols-[1.05fr_1fr] gap-12 items-center mb-24">
           <div className="rise">
             <span className="chip mb-6">
-              <span className="live-dot"></span> TIZIM ONLINE // v3.0
+              WAN-NET // CTF PLATFORMASI
             </span>
             <h1 className="page-title mb-6" style={{ fontSize: 'clamp(2.6rem, 6.5vw, 5rem)' }}>
               Kiberhujum
@@ -151,7 +151,7 @@ export function Home() {
           <div className="card-grid">
             {VECTORS.map((v, i) => (
               <A key={v.tag} href="/challenges/" className={`panel hud panel-interactive block rise d${i + 1}`}>
-                <div className="chal-card">
+                <div className="chal-card chal-card--wrap">
                   <div className="chal-visual">
                     <span className={`chal-cat chip ${v.chip}`}>{v.tag}</span>
                     <div className="chal-icon">
@@ -226,7 +226,7 @@ export function Home() {
               </pre>
               <div className="mt-5 flex items-center gap-3 font-mono text-[10px]">
                 <div className="h-1.5 flex-1 bg-white/5 overflow-hidden">
-                  <div className="h-full w-3/4 bg-[color:var(--acc)] shadow-[0_0_12px_#00ff9c]"></div>
+                  <div className="h-full w-3/4 bg-[color:var(--acc)]"></div>
                 </div>
                 <span className="text-acc">75% BUZILDI</span>
               </div>

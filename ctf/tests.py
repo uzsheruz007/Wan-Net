@@ -93,7 +93,15 @@ class BridgeTests(TestCase):
         card = body['data']['challenges'][0]
         self.assertEqual(card['title'], 'Hidden')
         self.assertNotIn('flag_hash', card)
-        self.assertNotIn('Misc', [c['code'] for c in body['data']['categories']])
+        self.assertIn('Misc', [c['code'] for c in body['data']['categories']])
+
+    def test_difficulty_filter(self):
+        Challenge.objects.create(title='Qiyin', description='d', category='Crypto', difficulty='hard', flag_hash='x')
+        body = self.client.get(page('/challenges/?level=hard')).json()['data']
+        self.assertEqual(([c['title'] for c in body['challenges']], body['selected_level']), (['Qiyin'], 'hard'))
+        body = self.client.get(page('/challenges/?level=yomon')).json()['data']
+        self.assertEqual(body['selected_level'], '')
+        self.assertGreater(len(body['challenges']), 1)
 
     def test_detail_needs_login_and_hides_secrets(self):
         body = self.client.get(page(f'/challenge/{self.challenge.id}/')).json()

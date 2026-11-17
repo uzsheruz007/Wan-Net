@@ -138,7 +138,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
         <aside id="adm-side" className={`adm-side ${menuOpen ? 'open' : ''}`} aria-label="Panel menyusi">
           <div className="adm-brand">
             <A href="/admin/" className="brand">
-              <span className="brand-mark">W</span>
+              <img src="/brand/logo-mark.png" alt="" width={34} height={34} className="brand-logo" />
               <span>
                 <span className="brand-name">
                   WAN<span>-NET</span>

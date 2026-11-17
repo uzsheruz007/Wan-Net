@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QORASUV-1 // Yer Stansiyasi</title>
+<style>
+  :root{
+    --bg:#04070a; --bg2:#070c11; --acc:#00ff9c; --acc2:#00d1ff;
+    --danger:#ff3b5c; --warn:#ffc53d; --muted:#8495a0; --line:rgba(0,255,156,.16);
+    --line-strong:rgba(0,255,156,.36); --panel:rgba(8,16,20,.72);
+    --mono:'DM Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:#dfeef0;font-family:var(--mono);
+    -webkit-font-smoothing:antialiased}
+  body{min-height:100vh;
+    background:
+      radial-gradient(900px 500px at 80% -10%, rgba(0,209,255,.08), transparent 60%),
+      radial-gradient(700px 500px at 10% 110%, rgba(0,255,156,.06), transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+    padding:clamp(16px,4vw,40px)}
+  .wrap{max-width:860px;margin:0 auto}
+  .tag{display:inline-flex;gap:8px;align-items:center;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--acc);border:1px solid var(--line-strong);
+    padding:5px 12px;border-radius:999px;background:rgba(0,255,156,.06)}
+  h1{font-size:clamp(26px,5vw,40px);margin:18px 0 6px;letter-spacing:.04em;
+    text-shadow:0 0 24px rgba(0,255,156,.25)}
+  h1 span{color:var(--acc)}
+  .lede{color:var(--muted);max-width:60ch;line-height:1.6;font-size:14px}
+  .panel{border:1px solid var(--line);background:var(--panel);border-radius:14px;
+    padding:18px;margin-top:22px;position:relative;overflow:hidden}
+  .panel::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--acc),transparent);opacity:.6}
+  .ph{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .live{display:flex;gap:8px;align-items:center;color:var(--danger)}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--danger);
+    box-shadow:0 0 10px var(--danger);animation:pulse 1.1s infinite}
+  @keyframes pulse{50%{opacity:.25}}
+  canvas{width:100%;display:block;border-radius:10px;background:#02050a;
+    border:1px solid rgba(0,255,156,.1)}
+  .scopewrap{position:relative}
+  .beacon{position:absolute;top:14px;right:14px;width:18px;height:18px;border-radius:50%;
+    background:#0a1a14;border:1px solid var(--line-strong);transition:all .05s}
+  .beacon.on{background:var(--acc);box-shadow:0 0 22px var(--acc),0 0 6px #fff}
+  .readout{margin-top:14px;font-size:clamp(16px,4vw,24px);letter-spacing:.18em;
+    color:var(--acc2);min-height:1.4em;word-break:break-all}
+  .readout .live-sym{color:#fff;text-shadow:0 0 12px #fff}
+  .chart{display:grid;grid-template-columns:repeat(auto-fill,minmax(68px,1fr));gap:6px;
+    margin-top:6px}
+  .chart div{font-size:12px;color:var(--muted);border:1px solid var(--line-soft,
+    rgba(255,255,255,.08));border-radius:7px;padding:6px 8px;text-align:center}
+  .chart b{color:var(--acc);font-size:14px}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:center}
+  input[type=text]{flex:1;min-width:200px;background:#02060a;border:1px solid var(--line-strong);
+    color:#fff;font-family:var(--mono);font-size:15px;letter-spacing:.14em;padding:12px 14px;
+    border-radius:10px;text-transform:uppercase}
+  input[type=text]:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(0,255,156,.12)}
+  button{background:var(--acc);color:#02130c;border:none;font-family:var(--mono);font-weight:700;
+    letter-spacing:.08em;padding:12px 20px;border-radius:10px;cursor:pointer;font-size:14px;
+    text-transform:uppercase;transition:transform .1s, box-shadow .2s}
+  button:hover{box-shadow:0 0 22px rgba(0,255,156,.45)}
+  button:active{transform:translateY(1px)}
+  .result{margin-top:14px;font-size:14px;min-height:1.2em}
+  .flagbox{margin-top:14px;padding:16px;border:1px dashed var(--acc);border-radius:12px;
+    background:rgba(0,255,156,.07);display:none}
+  .flagbox.show{display:block;animation:rise .4s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}}
+  .flag{font-size:clamp(18px,4.5vw,26px);color:var(--acc);letter-spacing:.06em;
+    user-select:all;text-shadow:0 0 18px rgba(0,255,156,.35)}
+  .hint{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:10px}
+  .err{color:var(--danger)}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">● Yer Stansiyasi · Band G</span>
+  <h1>QORASUV-<span>1</span></h1>
+  <p class="lede">02:41. «Qorasuv-1» meteorologik sun'iy yo'ldoshi orbitadan chiqib ketmoqda.
+  Quvvat 4%. Lekin u hamon bir xil signalni takrorlab yubormoqda — qadimiy Morze teleriqida.
+  Antennani uladik. Ossillografda signal ko'rinib turibdi. Oxirgi xabarni dekodlang.</p>
+
+  <div class="panel">
+    <div class="ph"><span>OSSILLOGRAF // 408 MHz · telemetriya</span>
+      <span class="live"><span class="dot"></span> LIVE</span></div>
+    <div class="scopewrap">
+      <canvas id="scope" width="820" height="200"></canvas>
+      <div class="beacon" id="beacon"></div>
+    </div>
+    <div class="readout" id="readout"></div>
+    <div class="hint">Yashil impuls — signal yoqilgan. Qisqa impuls = nuqta (·), uzun = chiziq (−).
+      Harflar orasida pauza. Pastdagi jadval yordam beradi. Ikki so'z yashiringan.</div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><span>MORZE ABETI // ma'lumotnoma</span></div>
+    <div class="chart" id="chart"></div>
+  </div>
+
+  <div class="panel">
+    <div class="ph"><span>DEKODER // qo'lda kiritish</span></div>
+    <p class="hint" style="margin-top:0">Signaldan o'qigan ikki so'zni probel bilan yozing (masalan: <b>HELLO WORLD</b>).</p>
+    <div class="controls">
+      <input id="answer" type="text" placeholder="DEKODLANGAN MATN" autocomplete="off" spellcheck="false">
+      <button id="check">Tekshirish</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="flagbox" id="flagbox">
+      <div class="ph" style="margin-bottom:8px">SIGNAL TIKLANDI — FLAG:</div>
+      <div class="flag" id="flag"></div>
+      <div class="hint">Ushbu flagni masala sahifasiga qaytib kiriting.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MORSE={A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",
+J:".---",K:"-.-",L:".-..",M:"--",N:"-.",O:"---",P:".--.",Q:"--.-",R:".-.",S:"...",
+T:"-",U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--.."};
+
+// Yashirin xabar — faqat Morze ko'rinishida uzatiladi
+const MESSAGE="SIGNAL LOST";
+
+// Morze -> on/off birlik ketma-ketligi (1=yoq, 0=o'ch)
+function buildUnits(text){
+  const u=[];
+  const words=text.split(" ");
+  words.forEach((w,wi)=>{
+    [...w].forEach((ch,ci)=>{
+      const code=MORSE[ch]||"";
+      [...code].forEach((sym,si)=>{
+        u.push(...(sym==="."?[1]:[1,1,1]));       // nuqta=1, chiziq=3
+        if(si<code.length-1) u.push(0);           // belgi ichi pauza=1
+      });
+      if(ci<w.length-1) u.push(0,0,0);            // harflar orasi=3
+    });
+    if(wi<words.length-1) u.push(0,0,0,0,0,0,0);  // so'zlar orasi=7
+  });
+  return u;
+}
+const UNITS=buildUnits(MESSAGE);
+
+// Morze ma'lumotnoma jadvali
+const chart=document.getElementById("chart");
+Object.entries(MORSE).forEach(([k,v])=>{
+  const d=document.createElement("div");
+  d.innerHTML=`<b>${k}</b><br>${v.replace(/\./g,"·").replace(/-/g,"−")}`;
+  chart.appendChild(d);
+});
+
+const cv=document.getElementById("scope"), ctx=cv.getContext("2d");
+const beacon=document.getElementById("beacon"), readout=document.getElementById("readout");
+const UNIT_MS=140;            // bir birlik davomiyligi
+const PXPERMS=0.42;           // scroll tezligi
+let start=performance.now();
+const totalMs=UNITS.length*UNIT_MS;
+
+function sampleAt(ms){
+  const idx=Math.floor((ms%totalMs)/UNIT_MS);
+  return UNITS[((idx%UNITS.length)+UNITS.length)%UNITS.length];
+}
+
+// jonli dekoder: o'tgan belgilarni · − ga aylantirib ko'rsatadi
+function liveDecode(ms){
+  const pos=(ms%totalMs)/UNIT_MS;
+  let out="", run=0, gap=0;
+  for(let i=0;i<Math.floor(pos) && i<UNITS.length;i++){
+    if(UNITS[i]===1){ if(gap>=7)out+=" / "; else if(gap>=3)out+=" "; run++; gap=0; }
+    else { if(run>0){ out+= run>=3?"−":"·"; } run=0; gap++; }
+  }
+  if(run>0) out+= run>=3?"−":"·";
+  return out.trim();
+}
+
+function frame(now){
+  const ms=now-start;
+  const w=cv.width,h=cv.height,mid=h*0.62,amp=h*0.34;
+  ctx.clearRect(0,0,w,h);
+  // panjara
+  ctx.strokeStyle="rgba(0,255,156,.06)";ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  // kvadrat to'lqin (o'ngdan chapga scroll)
+  ctx.beginPath();
+  for(let px=0;px<=w;px++){
+    const tms=ms + (w-px)/PXPERMS;     // o'ng chet = hozir
+    const on=sampleAt(tms);
+    const y=on? mid-amp : mid;
+    if(px===0)ctx.moveTo(px,y); else ctx.lineTo(px,y);
+  }
+  const grad=ctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0,"rgba(0,255,156,.15)");grad.addColorStop(.85,"#00ff9c");
+  grad.addColorStop(1,"#fff");
+  ctx.strokeStyle=grad;ctx.lineWidth=2.4;ctx.shadowColor="#00ff9c";ctx.shadowBlur=12;
+  ctx.stroke();ctx.shadowBlur=0;
+  // skaner chizig'i (o'ng chet)
+  ctx.strokeStyle="rgba(255,255,255,.35)";ctx.beginPath();
+  ctx.moveTo(w-1,0);ctx.lineTo(w-1,h);ctx.stroke();
+  // beacon
+  const onNow=sampleAt(ms);
+  beacon.classList.toggle("on",!!onNow);
+  // readout
+  const dec=liveDecode(ms);
+  readout.innerHTML=dec.slice(-54).replace(/([·−])(?!.*[·−])/,'<span class="live-sym">$1</span>');
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// tekshirish
+const SOLUTION=MESSAGE.replace(/\s+/g," ").trim().toUpperCase();
+document.getElementById("check").addEventListener("click",verify);
+document.getElementById("answer").addEventListener("keydown",e=>{if(e.key==="Enter")verify();});
+function verify(){
+  const val=document.getElementById("answer").value.replace(/\s+/g," ").trim().toUpperCase();
+  const res=document.getElementById("result");
+  if(!val){res.innerHTML='<span class="err">Avval signalni dekodlang.</span>';return;}
+  if(val===SOLUTION){
+    res.innerHTML='<span style="color:var(--acc)">✓ Signal to\'g\'ri dekodlandi. Flag chiqarilmoqda…</span>';
+    const flag="flag{"+SOLUTION.toLowerCase().replace(/ /g,"_")+"}";
+    document.getElementById("flag").textContent=flag;
+    document.getElementById("flagbox").classList.add("show");
+  }else{
+    res.innerHTML='<span class="err">✗ Noto\'g\'ri. Impuls uzunligiga diqqat qiling: qisqa=·, uzun=−.</span>';
+  }
+}
+</script>
+</body>
+</html>

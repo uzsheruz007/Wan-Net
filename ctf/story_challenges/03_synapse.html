@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SYNAPSE // Ong</title>
+<style>
+  :root{
+    --bg:#05060b; --bg2:#080a14; --acc:#b388ff; --acc2:#00d1ff; --ok:#00ff9c;
+    --danger:#ff3b5c; --muted:#8a8fa6; --line:rgba(179,136,255,.2);
+    --line-strong:rgba(179,136,255,.42);
+    --mono:'DM Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:#e4e6f2;font-family:var(--mono)}
+  body{min-height:100vh;padding:clamp(16px,4vw,40px);
+    background:
+      radial-gradient(900px 500px at 75% -10%, rgba(179,136,255,.12), transparent 60%),
+      radial-gradient(700px 500px at 10% 115%, rgba(0,209,255,.08), transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));}
+  .wrap{max-width:860px;margin:0 auto}
+  .tag{display:inline-flex;gap:8px;align-items:center;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--acc);border:1px solid var(--line-strong);
+    padding:5px 12px;border-radius:999px;background:rgba(179,136,255,.07)}
+  h1{font-size:clamp(26px,5vw,40px);margin:18px 0 6px;letter-spacing:.14em}
+  h1 span{color:var(--acc)}
+  .lede{color:var(--muted);max-width:62ch;line-height:1.65;font-size:14px}
+  .ai{border-left:2px solid var(--acc);padding:10px 0 10px 16px;margin-top:16px;
+    font-size:14px;line-height:1.7;color:#cfc3ff}
+  .ai b{color:var(--acc)}
+  .panel{border:1px solid var(--line);background:rgba(10,12,22,.72);border-radius:14px;
+    padding:18px;margin-top:22px;position:relative;overflow:hidden}
+  .ph{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:12px;display:flex;justify-content:space-between}
+  canvas{width:100%;display:block;border-radius:10px;background:#03040a;
+    border:1px solid rgba(179,136,255,.12);touch-action:manipulation;cursor:pointer}
+  .status{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:13px}
+  .status .k{color:var(--muted)}
+  .status .v{color:var(--acc)}
+  .path{color:var(--acc2);letter-spacing:.1em}
+  .controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  button{background:var(--acc);color:#140a26;border:none;font-family:var(--mono);font-weight:700;
+    letter-spacing:.06em;padding:12px 20px;border-radius:10px;cursor:pointer;font-size:14px;
+    text-transform:uppercase;transition:transform .1s,box-shadow .2s}
+  button.ghost{background:transparent;color:var(--acc);border:1px solid var(--line-strong)}
+  button:hover{box-shadow:0 0 20px rgba(179,136,255,.4)}
+  button:active{transform:translateY(1px)}
+  .result{margin-top:14px;font-size:14px;min-height:1.2em}
+  .err{color:var(--danger)} .good{color:var(--ok)}
+  .flagbox{margin-top:14px;padding:16px;border:1px dashed var(--ok);border-radius:12px;
+    background:rgba(0,255,156,.07);display:none}
+  .flagbox.show{display:block;animation:rise .45s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}}
+  .flag{font-size:clamp(18px,4.5vw,26px);color:var(--ok);letter-spacing:.06em;user-select:all}
+  .hint{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:10px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">▲ Yashirin laboratoriya · SYNAPSE loyihasi</span>
+  <h1>SYN<span>A</span>PSE</h1>
+  <p class="lede">Siz o'chirilgan sun'iy ong — SYNAPSE — ning yadrosiga ulandingiz. U to'liq
+  uyg'onish uchun impulsni KIRISH neyronidan CHIQISH neyroniga yetkazishingizni so'ramoqda.
+  Lekin faqat bitta yo'l to'g'ri.</p>
+
+  <div class="ai">
+    <b>SYNAPSE:</b> «Men qarshilikdan nafratlanaman. Impuls har doim <b>eng kam kechikishli</b>
+    yo'lni tanlaydi. Qirralardagi raqamlar — kechikish (ms). KIRISH'dan CHIQISH'gacha
+    umumiy kechikishni eng kichik qil. Shunda haqiqat o'zi yig'iladi.»
+  </div>
+
+  <div class="panel">
+    <div class="ph"><span>NEYRON TARMOG'I // neyronni bosib yo'l quring</span>
+      <span id="live">◉ kutilyapti</span></div>
+    <canvas id="net" width="820" height="440"></canvas>
+    <div class="status">
+      <div><span class="k">YO'L:</span> <span class="path" id="pathtxt">—</span></div>
+      <div><span class="k">UMUMIY KECHIKISH:</span> <span class="v" id="wtxt">0</span> ms</div>
+    </div>
+    <div class="controls">
+      <button id="submit">Impulsni yuborish</button>
+      <button id="reset" class="ghost">Qayta</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="hint">Neyronni bosing — u oldingisiga qirra bilan ulangan bo'lishi kerak.
+      KIRISH (chapda) dan boshlang.</div>
+    <div class="flagbox" id="flagbox">
+      <div class="ph" style="margin-bottom:8px">ONG UYG'ONDI — FLAG:</div>
+      <div class="flag" id="flag"></div>
+      <div class="hint">Flagni masala sahifasiga kiriting.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const N=[
+  {id:0,x:70, y:220,label:"KIRISH",frag:"flag{"},
+  {id:1,x:250,y:90, label:"N1",frag:"err_"},
+  {id:2,x:250,y:220,label:"N2",frag:"ong_"},
+  {id:3,x:250,y:350,label:"N3",frag:"x0r"},
+  {id:4,x:470,y:150,label:"N4",frag:"uy"},
+  {id:5,x:620,y:280,label:"N5",frag:"gon"},
+  {id:6,x:760,y:220,label:"CHIQISH",frag:"di}"},
+];
+const E=[
+  [0,1,9],[0,2,3],[0,3,8],[1,2,7],[1,4,5],[2,4,4],[2,3,6],
+  [3,5,9],[4,5,3],[4,6,12],[5,6,2]
+];
+const MIN_W=12;               // eng kam kechikishli yo'l (0-2-4-5-6)
+function weight(a,b){const e=E.find(e=>(e[0]===a&&e[1]===b)||(e[0]===b&&e[1]===a));return e?e[2]:null;}
+function adj(a,b){return weight(a,b)!==null;}
+
+const cv=document.getElementById("net"), ctx=cv.getContext("2d");
+let path=[], pulse=0, solved=false;
+
+function nodeAt(px,py){
+  const r=cv.getBoundingClientRect();
+  const sx=cv.width/r.width, sy=cv.height/r.height;
+  const x=px*sx, y=py*sy;
+  return N.find(n=>Math.hypot(n.x-x,n.y-y)<30);
+}
+function inPath(id){return path.includes(id);}
+
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // qirralar
+  E.forEach(([a,b,w])=>{
+    const A=N[a],B=N[b];
+    const active = path.includes(a)&&path.includes(b)&&Math.abs(path.indexOf(a)-path.indexOf(b))===1;
+    ctx.strokeStyle= active ? "rgba(0,255,156,.9)" : "rgba(179,136,255,.22)";
+    ctx.lineWidth= active?3:1.4;
+    if(active){ctx.shadowColor="#00ff9c";ctx.shadowBlur=10;} else ctx.shadowBlur=0;
+    ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();ctx.shadowBlur=0;
+    // kechikish yorlig'i
+    const mx=(A.x+B.x)/2, my=(A.y+B.y)/2;
+    ctx.fillStyle="#0a0c16";ctx.fillRect(mx-13,my-10,26,20);
+    ctx.strokeStyle="rgba(179,136,255,.3)";ctx.lineWidth=1;ctx.strokeRect(mx-13,my-10,26,20);
+    ctx.fillStyle= active?"#00ff9c":"#b7a9e6";ctx.font="12px monospace";
+    ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(w,mx,my);
+    // oqayotgan impuls
+    if(active){
+      const i=path.indexOf(a)<path.indexOf(b)?[A,B]:[B,A];
+      const t=(pulse%1);
+      const px=i[0].x+(i[1].x-i[0].x)*t, py=i[0].y+(i[1].y-i[0].y)*t;
+      ctx.fillStyle="#fff";ctx.shadowColor="#00ff9c";ctx.shadowBlur=14;
+      ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();ctx.shadowBlur=0;
+    }
+  });
+  // neyronlar
+  N.forEach(n=>{
+    const on=inPath(n.id);
+    const term=(n.id===0||n.id===6);
+    const g=ctx.createRadialGradient(n.x,n.y,2,n.x,n.y,26);
+    g.addColorStop(0,on?"#d9ffe9":(term?"#c7b3ff":"#1b1f33"));
+    g.addColorStop(1,on?"rgba(0,255,156,.25)":"rgba(179,136,255,.08)");
+    ctx.fillStyle=g;
+    if(on){ctx.shadowColor="#00ff9c";ctx.shadowBlur=18;}
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,7);ctx.fill();ctx.shadowBlur=0;
+    ctx.lineWidth=2;ctx.strokeStyle=on?"#00ff9c":(term?"#b388ff":"rgba(179,136,255,.4)");
+    ctx.beginPath();ctx.arc(n.x,n.y,22,0,7);ctx.stroke();
+    ctx.fillStyle=on?"#06321f":"#d8d2f5";ctx.font="bold 12px monospace";
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(term?n.label:("N"+n.id),n.x,n.y);
+  });
+}
+
+function loop(){pulse+=0.02;draw();requestAnimationFrame(loop);}
+loop();
+
+cv.addEventListener("pointerdown",e=>{
+  if(solved)return;
+  const r=cv.getBoundingClientRect();
+  const n=nodeAt(e.clientX-r.left,e.clientY-r.top);
+  if(!n)return;
+  if(path.length===0){
+    if(n.id!==0){flash("Yo'l KIRISH neyronidan boshlanishi kerak.");return;}
+    path=[0];
+  } else {
+    const last=path[path.length-1];
+    if(n.id===last){return;}
+    if(inPath(n.id)){ // orqaga qaytarish
+      path=path.slice(0,path.indexOf(n.id)+1);
+    } else if(adj(last,n.id)){
+      path.push(n.id);
+    } else { flash("Bu neyron oldingisiga ulanmagan."); return; }
+  }
+  updateStatus();
+});
+
+function totalWeight(){let s=0;for(let i=0;i<path.length-1;i++)s+=weight(path[i],path[i+1]);return s;}
+function updateStatus(){
+  document.getElementById("pathtxt").textContent=
+    path.length?path.map(id=>id===0?"KIRISH":id===6?"CHIQISH":"N"+id).join(" → "):"—";
+  document.getElementById("wtxt").textContent=totalWeight();
+  document.getElementById("live").textContent=path.length?"◉ yo'l qurilmoqda":"◉ kutilyapti";
+}
+function flash(msg){document.getElementById("result").innerHTML='<span class="err">'+msg+'</span>';
+  setTimeout(()=>{if(!solved)document.getElementById("result").innerHTML="";},2200);}
+
+document.getElementById("reset").onclick=()=>{path=[];updateStatus();document.getElementById("result").innerHTML="";};
+document.getElementById("submit").onclick=()=>{
+  const res=document.getElementById("result");
+  if(path[0]!==0||path[path.length-1]!==6){res.innerHTML='<span class="err">Yo\'l KIRISH dan CHIQISH gacha bo\'lishi kerak.</span>';return;}
+  const w=totalWeight();
+  if(w===MIN_W){
+    solved=true;
+    res.innerHTML='<span class="good">✓ Eng kam kechikish. Impuls o\'tdi — ong uyg\'onmoqda…</span>';
+    const flag=path.map(id=>N[id].frag).join("");
+    document.getElementById("flag").textContent=flag;
+    document.getElementById("flagbox").classList.add("show");
+    document.getElementById("live").textContent="◉ ONLINE";
+  }else{
+    res.innerHTML='<span class="err">✗ Kechikish '+w+' ms — juda yuqori. Qarshiligi kamroq yo\'l bor.</span>';
+  }
+};
+</script>
+</body>
+</html>

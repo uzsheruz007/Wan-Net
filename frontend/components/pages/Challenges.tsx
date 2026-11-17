@@ -15,9 +15,20 @@ function Filter({ href, active, children }: { href: string; active: boolean; chi
 /** ctf/challenges.html */
 export function Challenges({ d, user }: { d: Data; user: PageUser }) {
   const selected: string = d.selected_category;
+  const level: string = d.selected_level ?? '';
   const params: Record<string, string> = {};
   if (selected) params.category = selected;
+  if (level) params.level = level;
   if (d.query) params.q = d.query;
+  // filtr havolasi: bitta qiymat almashadi, boshqasi saqlanadi
+  const link = (next: { category?: string; level?: string }) => {
+    const q = new URLSearchParams();
+    const cat = 'category' in next ? next.category : selected;
+    const lvl = 'level' in next ? next.level : level;
+    if (cat) q.set('category', cat);
+    if (lvl) q.set('level', lvl);
+    return `?${q.toString()}`;
+  };
 
   return (
     <div className="page">
@@ -40,33 +51,43 @@ export function Challenges({ d, user }: { d: Data; user: PageUser }) {
           <div className="stat-label">Ko'rsatilmoqda</div>
           <div className="stat-value">{d.displayed_count}</div>
         </div>
-        <div className="panel hud stat">
-          <div className="stat-label">Tizim holati</div>
-          <div className="stat-value text-acc flex items-center gap-3" style={{ fontSize: '1.4rem', paddingTop: 6 }}>
-            <span className="live-dot"></span> ONLINE
-          </div>
-        </div>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 mb-8 rise d2">
-        <Filter href="?" active={!selected}>
-          * BARCHASI
-        </Filter>
-        {user.authenticated && (
-          <>
-            <Filter href="?category=solved" active={selected === 'solved'}>
-              ✓ YECHILGAN
-            </Filter>
-            <Filter href="?category=failed" active={selected === 'failed'}>
-              ✕ YECHILMAGAN
-            </Filter>
-          </>
-        )}
-        {d.categories.map((cat: { code: string; name: string }) => (
-          <Filter key={cat.code} href={`?category=${encodeURIComponent(cat.code)}`} active={cat.code === selected}>
-            #{cat.name.toUpperCase()}
+      <div className="flex flex-col gap-3 mb-8 rise d2">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <span className="filter-label">Kategoriya</span>
+          <Filter href={link({ category: '' })} active={!selected}>
+            Barchasi
           </Filter>
-        ))}
+          {user.authenticated && (
+            <>
+              <Filter href={link({ category: 'solved' })} active={selected === 'solved'}>
+                ✓ Yechilgan
+              </Filter>
+              <Filter href={link({ category: 'failed' })} active={selected === 'failed'}>
+                Yechilmagan
+              </Filter>
+            </>
+          )}
+          {d.categories.map((cat: { code: string; name: string }) => (
+            <Filter key={cat.code} href={link({ category: cat.code })} active={cat.code === selected}>
+              {cat.name}
+            </Filter>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <span className="filter-label">Qiyinlik</span>
+          {[
+            ['', 'Hammasi'],
+            ['easy', 'Oson'],
+            ['medium', "O'rta"],
+            ['hard', 'Qiyin'],
+          ].map(([code, name]) => (
+            <Filter key={code || 'all'} href={link({ level: code })} active={level === code}>
+              {name}
+            </Filter>
+          ))}
+        </div>
       </div>
 
       <div className="card-grid rise d3">

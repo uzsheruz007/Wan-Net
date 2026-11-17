@@ -13,10 +13,10 @@ export function Difficulty({ level }: { level: string }) {
   const item = LEVELS[level as Level];
   if (!item) return null;
   return (
-    <span className="inline-flex items-center gap-2 font-mono text-[10px] tracking-[0.18em]" style={{ color: item.color }}>
+    <span className="inline-flex items-center gap-2 font-mono text-xs font-bold tracking-[0.06em]" style={{ color: item.color }}>
       <span className="flex gap-[3px]" aria-hidden="true">
         {[1, 2, 3].map((n) => (
-          <i key={n} className="block w-3 h-1.5" style={{ background: n <= item.bars ? item.color : 'rgba(255,255,255,.1)' }}></i>
+          <i key={n} className="block w-3 h-1.5" style={{ background: n <= item.bars ? item.color : 'var(--track)' }}></i>
         ))}
       </span>
       {item.label}

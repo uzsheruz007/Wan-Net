@@ -60,7 +60,7 @@ export function PanelLogin() {
       <div className="adm-login-card panel hud">
         <div className="pad">
           <div className="brand" style={{ marginBottom: 28 }}>
-            <span className="brand-mark">W</span>
+            <img src="/brand/logo-mark.png" alt="" width={34} height={34} className="brand-logo" />
             <span>
               <span className="brand-name">
                 WAN<span>-NET</span>

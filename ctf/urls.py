@@ -1,7 +1,11 @@
 from django.urls import path
 from . import views
+from . import lab3d
+from . import scada
 
 urlpatterns = [
+    path('api/lab3d/', lab3d.lab3d_api_dispatch, name='lab3d_api'),
+    path('api/scada/', scada.scada_api_dispatch, name='scada_api'),
     path('', views.ctf_home, name='ctf_home'),
     path('challenges/', views.challenges, name='challenges'),
     path('challenge/<int:challenge_id>/', views.challenge_detail, name='challenge_detail'),

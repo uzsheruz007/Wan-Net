@@ -6,6 +6,7 @@ import { A, Avatar } from '@/components/ui';
 import type { PageMessage, PageUser } from '@/lib/types';
 
 import { MatrixCanvas } from './MatrixCanvas';
+import { ThemeToggle } from './ThemeToggle';
 
 export type NavKey = 'challenges' | 'labs' | 'tournaments' | 'leaderboard' | 'team' | 'profile' | null;
 
@@ -67,11 +68,13 @@ interface Props {
   year: number;
   messages: PageMessage[];
   nav: NavKey;
+  /** Harakatlanuvchi fon (matritsa) — faqat bosh sahifa va kirish; ish sahifalarida chalg'itmasin */
+  ambient?: boolean;
   children: ReactNode;
 }
 
 /** ctf/base.html: fon, menyu, xabarlar va pastki qism */
-export function SiteLayout({ user, year, messages, nav, children }: Props) {
+export function SiteLayout({ user, year, messages, nav, ambient = false, children }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [seenNav, setSeenNav] = useState(nav);
   // Boshqa bo'limga o'tilganda mobil menyu yopiladi
@@ -85,7 +88,7 @@ export function SiteLayout({ user, year, messages, nav, children }: Props) {
       <div className="bg-stack" aria-hidden="true">
         <div className="bg-glow"></div>
         <div className="bg-grid"></div>
-        <MatrixCanvas />
+        {ambient && <MatrixCanvas />}
         <div className="bg-scan"></div>
         <div className="bg-vignette"></div>
       </div>
@@ -93,11 +96,11 @@ export function SiteLayout({ user, year, messages, nav, children }: Props) {
       <nav className="nav">
         <div className="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between gap-6">
           <A href="/" className="brand">
-            <span className="brand-mark">W</span>
+            <img src="/brand/logo-mark.png" alt="" width={34} height={34} className="brand-logo" />
             <span className="brand-name">
               WAN<span>-</span>NET
             </span>
-            <span className="hidden sm:inline text-[10px] tracking-[0.25em] text-muted">// CTF</span>
+            <span className="hidden sm:inline text-[11px] tracking-[0.16em] text-muted">// CTF</span>
           </A>
 
           <div className="hidden lg:flex items-center gap-7">
@@ -114,6 +117,7 @@ export function SiteLayout({ user, year, messages, nav, children }: Props) {
           </div>
 
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             {user.authenticated ? (
               <A
                 href="/profile/"
@@ -161,7 +165,7 @@ export function SiteLayout({ user, year, messages, nav, children }: Props) {
         <div className="max-w-7xl mx-auto px-5 py-10 grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <A href="/" className="brand mb-4">
-              <span className="brand-mark">W</span>
+              <img src="/brand/logo-mark.png" alt="" width={34} height={34} className="brand-logo" />
               <span className="brand-name">
                 WAN<span>-</span>NET
               </span>

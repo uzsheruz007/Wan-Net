@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SARDOBA // Maqbara Qulfi</title>
+<style>
+  :root{
+    --bg:#0a0705; --bg2:#0f0a06; --acc:#e8b760; --acc2:#00d1ff; --stone:#2a2118;
+    --danger:#ff6b4a; --muted:#9a8b76; --line:rgba(232,183,96,.18);
+    --line-strong:rgba(232,183,96,.4);
+    --mono:'DM Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:#e9ddc8;font-family:var(--mono)}
+  body{min-height:100vh;padding:clamp(16px,4vw,40px);
+    background:
+      radial-gradient(800px 600px at 50% -10%, rgba(232,183,96,.1), transparent 55%),
+      radial-gradient(500px 400px at 50% 120%, rgba(255,120,40,.07), transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));}
+  .wrap{max-width:760px;margin:0 auto}
+  .tag{display:inline-flex;gap:8px;align-items:center;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--acc);border:1px solid var(--line-strong);
+    padding:5px 12px;border-radius:999px;background:rgba(232,183,96,.06)}
+  h1{font-size:clamp(26px,5vw,40px);margin:18px 0 6px;letter-spacing:.08em}
+  h1 span{color:var(--acc)}
+  .lede{color:var(--muted);max-width:60ch;line-height:1.65;font-size:14px}
+  .panel{border:1px solid var(--line);background:rgba(18,13,8,.72);border-radius:14px;
+    padding:20px;margin-top:22px;position:relative;overflow:hidden}
+  .ph{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:14px}
+  .dialwrap{display:flex;justify-content:center;position:relative}
+  canvas{max-width:100%;touch-action:none;cursor:grab}
+  canvas:active{cursor:grabbing}
+  .torch{position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;
+    background:radial-gradient(260px 260px at 50% 42%, rgba(255,170,60,.18), transparent 70%);
+    animation:flick 2.6s infinite}
+  @keyframes flick{0%,100%{opacity:.75}30%{opacity:1}55%{opacity:.6}80%{opacity:.9}}
+  .controls{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+  button{background:var(--stone);color:var(--acc);border:1px solid var(--line-strong);
+    font-family:var(--mono);font-weight:700;letter-spacing:.06em;padding:12px 20px;
+    border-radius:10px;cursor:pointer;font-size:15px;transition:transform .1s,box-shadow .2s}
+  button:hover{box-shadow:0 0 18px rgba(232,183,96,.35)}
+  button:active{transform:translateY(1px)}
+  .shiftlabel{align-self:center;color:var(--muted);font-size:13px;letter-spacing:.1em}
+  .shiftlabel b{color:var(--acc);font-size:16px}
+  .wall{margin-top:8px;text-align:center;font-size:clamp(20px,5.5vw,32px);letter-spacing:.3em;
+    color:#b9a988;text-shadow:0 1px 0 #000, 0 0 10px rgba(232,183,96,.15);
+    word-break:break-word;line-height:1.5}
+  .wall.readable{color:var(--acc);text-shadow:0 0 18px rgba(232,183,96,.45)}
+  .hint{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:12px}
+  .flagbox{margin-top:16px;padding:16px;border:1px dashed var(--acc);border-radius:12px;
+    background:rgba(232,183,96,.07);display:none}
+  .flagbox.show{display:block;animation:rise .5s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}}
+  .flag{font-size:clamp(18px,4.5vw,26px);color:var(--acc);letter-spacing:.06em;user-select:all}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">⛏ Arxeologik ekspeditsiya · 1987</span>
+  <h1>SARD<span>O</span>BA</h1>
+  <p class="lede">Ikki ming yillik yer osti suv omborining markazida tosh eshik. Uning ustida
+  aylanadigan tosh disk — qadimgi shifrlagich. Yon devorda esa mash'al yorug'ida arang
+  ko'rinadigan yozuv o'yilgan. Diskni burab, harflarni to'g'ri siljishga keltiring —
+  shunda yozuv o'qiladigan bo'ladi.</p>
+
+  <div class="panel">
+    <div class="ph">TOSH DISK // shifr halqasi — burab siljiting</div>
+    <div class="dialwrap">
+      <canvas id="dial" width="440" height="440"></canvas>
+      <div class="torch"></div>
+    </div>
+    <div class="controls">
+      <button id="left">◄ burash</button>
+      <span class="shiftlabel">SILJISH: <b id="shift">0</b></span>
+      <button id="right">burash ►</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ph">DEVORDAGI YOZUV // jonli dekodlash</div>
+    <div class="wall" id="wall"></div>
+    <div class="hint">Disk har bir pog'onada butun alifboni bir harfga suradi.
+      Ma'noli uch so'z paydo bo'lganda eshik ochiladi. (Ipucha: so'z «NUR» bilan boshlanadi.)</div>
+    <div class="flagbox" id="flagbox">
+      <div class="ph" style="margin-bottom:8px">ESHIK OCHILDI — FLAG:</div>
+      <div class="flag" id="flag"></div>
+      <div class="hint">Flagni masala sahifasiga kiriting.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CIPHER="RYV LEUMUEXRM SGLHM";       // devorga o'yilgan shifrlangan matn
+const TARGET_HASH="d9192825a002a8f1489f0c303640e76f2dd1d1e5512a6f553ed4f36d878fb3a6";
+const AB="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let shift=0, solved=false;
+
+function decode(text,d){
+  return [...text].map(c=>{
+    const i=AB.indexOf(c);
+    return i<0?c:AB[(i-d+26)%26];
+  }).join("");
+}
+
+const cv=document.getElementById("dial"), ctx=cv.getContext("2d");
+const R=cv.width/2;
+function drawDial(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.save();ctx.translate(R,R);
+  // tosh disk tanasi
+  const g=ctx.createRadialGradient(0,-40,20,0,0,R);
+  g.addColorStop(0,"#3a2e20");g.addColorStop(.7,"#241b12");g.addColorStop(1,"#120c07");
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,R-6,0,7);ctx.fill();
+  ctx.strokeStyle="rgba(232,183,96,.35)";ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(0,0,R-10,0,7);ctx.stroke();
+  ctx.beginPath();ctx.arc(0,0,R-54,0,7);ctx.stroke();
+  // ichki o'yiq
+  ctx.fillStyle="#0c0805";ctx.beginPath();ctx.arc(0,0,58,0,7);ctx.fill();
+  ctx.fillStyle="var(--acc)";ctx.fillStyle="#e8b760";ctx.font="bold 20px monospace";
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText("☼",0,-2);
+  // 26 harf aylana bo'ylab, "shift"ga qarab burilgan
+  for(let i=0;i<26;i++){
+    const ang=(i/26)*Math.PI*2 - Math.PI/2 + (shift/26)*Math.PI*2;
+    const rr=R-32;
+    const x=Math.cos(ang)*rr, y=Math.sin(ang)*rr;
+    ctx.save();ctx.translate(x,y);ctx.rotate(ang+Math.PI/2);
+    ctx.fillStyle = i===0 ? "#fff" : "rgba(232,183,96,.82)";
+    ctx.font=(i===0?"bold ":"")+"18px monospace";
+    ctx.fillText(AB[i],0,0);
+    ctx.restore();
+  }
+  ctx.restore();
+  // yuqori ko'rsatkich (belgilovchi)
+  ctx.fillStyle="#ff8a3a";ctx.beginPath();
+  ctx.moveTo(R,6);ctx.lineTo(R-10,-10);ctx.lineTo(R+10,-10);ctx.closePath();ctx.fill();
+}
+
+async function sha256hex(str){
+  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+async function render(){
+  document.getElementById("shift").textContent=shift;
+  drawDial();
+  const dec=decode(CIPHER,shift);
+  const wall=document.getElementById("wall");
+  wall.textContent=dec;
+  const norm=dec.toLowerCase().replace(/\s+/g," ").trim();
+  const h=await sha256hex(norm);
+  if(h===TARGET_HASH && !solved){
+    solved=true;
+    wall.classList.add("readable");
+    document.getElementById("flag").textContent="flag{"+norm.replace(/ /g,"_")+"}";
+    document.getElementById("flagbox").classList.add("show");
+  }
+}
+
+function rotate(d){ shift=(shift+d+26)%26; render(); }
+document.getElementById("left").onclick=()=>rotate(-1);
+document.getElementById("right").onclick=()=>rotate(1);
+
+// sudrab burash
+let dragging=false, lastAng=0;
+function angleFromEvent(e){
+  const r=cv.getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  const p=e.touches?e.touches[0]:e;
+  return Math.atan2(p.clientY-cy,p.clientX-cx);
+}
+cv.addEventListener("pointerdown",e=>{dragging=true;lastAng=angleFromEvent(e);cv.setPointerCapture(e.pointerId);});
+cv.addEventListener("pointermove",e=>{
+  if(!dragging)return;
+  const a=angleFromEvent(e), diff=a-lastAng;
+  if(Math.abs(diff)>(Math.PI*2/26)){ rotate(diff>0?1:-1); lastAng=a; }
+});
+cv.addEventListener("pointerup",()=>dragging=false);
+cv.addEventListener("pointercancel",()=>dragging=false);
+
+render();
+</script>
+</body>
+</html>

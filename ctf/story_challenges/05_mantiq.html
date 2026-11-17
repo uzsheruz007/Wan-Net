@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MANTIQ ESHIGI // Kvant Qulfi</title>
+<style>
+  :root{
+    --bg:#04070a; --bg2:#070c11; --acc:#00ff9c; --acc2:#00d1ff; --red:#ff3b5c;
+    --warn:#ffc53d; --muted:#8495a0; --line:rgba(0,255,156,.16);
+    --line-strong:rgba(0,255,156,.38);
+    --mono:'DM Mono',ui-monospace,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:#dfeef0;font-family:var(--mono)}
+  body{min-height:100vh;padding:clamp(16px,4vw,40px);
+    background:
+      radial-gradient(900px 500px at 80% -10%, rgba(0,255,156,.08), transparent 60%),
+      radial-gradient(700px 500px at 8% 115%, rgba(0,209,255,.07), transparent 60%),
+      linear-gradient(180deg,var(--bg),var(--bg2));}
+  .wrap{max-width:900px;margin:0 auto}
+  .tag{display:inline-flex;gap:8px;align-items:center;font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--acc);border:1px solid var(--line-strong);
+    padding:5px 12px;border-radius:999px;background:rgba(0,255,156,.06)}
+  h1{font-size:clamp(24px,5vw,38px);margin:18px 0 6px;letter-spacing:.1em}
+  h1 span{color:var(--acc)}
+  .lede{color:var(--muted);max-width:64ch;line-height:1.65;font-size:14px}
+  .panel{border:1px solid var(--line);background:rgba(8,16,20,.72);border-radius:14px;
+    padding:18px;margin-top:22px;position:relative;overflow:hidden}
+  .ph{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:12px;display:flex;justify-content:space-between}
+  canvas{width:100%;display:block;border-radius:10px;background:#02050a;
+    border:1px solid rgba(0,255,156,.1);touch-action:manipulation;cursor:pointer}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+  .legend span b{color:var(--acc)}
+  .status{margin-top:14px;font-size:14px}
+  .status .n{color:var(--acc)} .status .bad{color:var(--red)}
+  .hint{color:var(--muted);font-size:12.5px;line-height:1.6;margin-top:10px}
+  .flagbox{margin-top:14px;padding:16px;border:1px dashed var(--acc);border-radius:12px;
+    background:rgba(0,255,156,.07);display:none}
+  .flagbox.show{display:block;animation:rise .45s ease}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}}
+  .flag{font-size:clamp(18px,4.5vw,26px);color:var(--acc);letter-spacing:.06em;user-select:all}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="tag">⚛ Kvant xazina · 7-sath</span>
+  <h1>MANTIQ ESH<span>I</span>GI</h1>
+  <p class="lede">Xazina eshigi kvant qulf bilan himoyalangan. Chapdagi besh tumbler
+  (A–E) ni bosib yoqib-o'chirasiz. Ular mantiqiy darvozalar (AND, OR, XOR, NOT) orqali
+  to'rtta chiroqqa ulangan. Barcha to'rtta chiroq bir vaqtda yonsa — eshik ochiladi.
+  Sxemani o'qing, kombinatsiyani <b>mantiq bilan</b> toping.</p>
+
+  <div class="panel">
+    <div class="ph"><span>MANTIQIY SXEMA // tumblerni bosing</span>
+      <span id="count">0 / 4 chiroq</span></div>
+    <canvas id="c" width="880" height="420"></canvas>
+    <div class="legend">
+      <span><b>yashil sim</b> = 1 (signal bor)</span>
+      <span>kulrang sim = 0</span>
+      <span>tumblerni bosib yoqing/o'chiring</span>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="hint">Darvozalar: AND (ikkalasi 1), OR (kamida biri 1), XOR (faqat biri 1),
+      NOT (teskari). Bir chiroq ikki shartni birdan talab qilishi mumkin.</div>
+    <div class="flagbox" id="flagbox">
+      <div class="ph" style="margin-bottom:8px">ESHIK OCHILDI — FLAG:</div>
+      <div class="flag" id="flag"></div>
+      <div class="hint">Flagni masala sahifasiga kiriting.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Tumblerlar
+const SW={
+  A:{x:70,y:70,v:0}, B:{x:70,y:140,v:0}, C:{x:70,y:210,v:0},
+  D:{x:70,y:280,v:0}, E:{x:70,y:350,v:0}
+};
+// Darvozalar (DAG). in: tumbler harfi yoki darvoza id
+const G={
+  gOR:  {type:"OR",  in:["A","B"], x:360,y:150},
+  gNE:  {type:"NOT", in:["E"],     x:360,y:350},
+  gND:  {type:"NOT", in:["D"],     x:360,y:255},
+  O1:   {type:"AND", in:["A","C"], x:600,y:70,  led:true},
+  O2:   {type:"XOR", in:["B","D"], x:600,y:160, led:true},
+  O3:   {type:"AND", in:["gOR","gNE"], x:600,y:255, led:true},
+  O4:   {type:"AND", in:["B","gND"],   x:600,y:350, led:true},
+};
+const OUTPUTS=["O1","O2","O3","O4"];
+
+function val(ref){
+  if(SW[ref]!==undefined) return SW[ref].v;
+  const g=G[ref]; const ins=g.in.map(val);
+  switch(g.type){
+    case "AND": return ins[0]&&ins[1]?1:0;
+    case "OR":  return ins[0]||ins[1]?1:0;
+    case "XOR": return ins[0]^ins[1];
+    case "NOT": return ins[0]?0:1;
+  }
+  return 0;
+}
+
+const cv=document.getElementById("c"), ctx=cv.getContext("2d");
+let solved=false, t=0;
+
+function srcPoint(ref){            // chiqish nuqtasi (o'ng-markaz)
+  if(SW[ref]!==undefined) return {x:SW[ref].x+56,y:SW[ref].y};
+  const g=G[ref]; return {x:g.x+54,y:g.y};
+}
+function gateInPoint(g,i){ return {x:g.x-54, y:g.y+(i===0?-12:12)}; }
+
+function wire(a,b,on){
+  ctx.strokeStyle=on?"rgba(0,255,156,.95)":"rgba(140,160,170,.3)";
+  ctx.lineWidth=on?2.6:1.4;
+  if(on){ctx.shadowColor="#00ff9c";ctx.shadowBlur=8;}else ctx.shadowBlur=0;
+  const mx=(a.x+b.x)/2;
+  ctx.beginPath();ctx.moveTo(a.x,a.y);
+  ctx.bezierCurveTo(mx,a.y,mx,b.y,b.x,b.y);ctx.stroke();ctx.shadowBlur=0;
+  if(on){ // oqayotgan nuqta
+    const tt=(t*0.5)%1;
+    const x=cubic(a.x,mx,mx,b.x,tt), y=cubic(a.y,a.y,b.y,b.y,tt);
+    ctx.fillStyle="#fff";ctx.shadowColor="#00ff9c";ctx.shadowBlur=10;
+    ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();ctx.shadowBlur=0;
+  }
+}
+function cubic(p0,p1,p2,p3,t){const u=1-t;return u*u*u*p0+3*u*u*t*p1+3*u*t*t*p2+t*t*t*p3;}
+
+function drawSwitch(name,s){
+  const on=s.v;
+  ctx.fillStyle="#0a141a";ctx.strokeStyle=on?"var(--acc)":"rgba(0,255,156,.3)";
+  ctx.strokeStyle=on?"#00ff9c":"rgba(0,255,156,.3)";ctx.lineWidth=1.5;
+  roundRect(s.x-32,s.y-18,64,36,10);ctx.fill();ctx.stroke();
+  // rocker
+  ctx.fillStyle=on?"#00ff9c":"#3a4750";
+  if(on){ctx.shadowColor="#00ff9c";ctx.shadowBlur=14;}
+  ctx.beginPath();ctx.arc(s.x+(on?14:-14),s.y,12,0,7);ctx.fill();ctx.shadowBlur=0;
+  ctx.fillStyle=on?"#06321f":"#c3d0d6";ctx.font="bold 13px monospace";
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText(name,s.x+(on?-14:14),s.y);
+}
+function drawGate(id,g){
+  const out=val(id);
+  ctx.fillStyle="#0c1820";ctx.strokeStyle=out?"#00ff9c":"rgba(0,255,156,.35)";
+  ctx.lineWidth=1.6;
+  if(out){ctx.shadowColor="rgba(0,255,156,.5)";ctx.shadowBlur=10;}
+  roundRect(g.x-54,g.y-26,108,52,10);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  ctx.fillStyle=out?"#00ff9c":"#9fb0b8";ctx.font="bold 16px monospace";
+  ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(g.type,g.x,g.y-3);
+  ctx.fillStyle="var(--muted)";ctx.fillStyle="#7d8c95";ctx.font="10px monospace";
+  ctx.fillText(id,g.x,g.y+13);
+  if(g.led){
+    const p={x:g.x+54,y:g.y}, led={x:g.x+120,y:g.y};
+    wire(p,{x:led.x-14,y:led.y},out);
+    ctx.fillStyle=out?"#00ff9c":"#14201a";
+    if(out){ctx.shadowColor="#00ff9c";ctx.shadowBlur=20;}
+    ctx.beginPath();ctx.arc(led.x,led.y,13,0,7);ctx.fill();ctx.shadowBlur=0;
+    ctx.strokeStyle=out?"#aeffdc":"rgba(0,255,156,.3)";ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(led.x,led.y,13,0,7);ctx.stroke();
+  }
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function render(){
+  t+=0.03;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // simlar
+  Object.entries(G).forEach(([id,g])=>{
+    g.in.forEach((ref,i)=>{ wire(srcPoint(ref),gateInPoint(g,i),val(ref)); });
+  });
+  // darvozalar va tumblerlar
+  Object.entries(G).forEach(([id,g])=>drawGate(id,g));
+  Object.entries(SW).forEach(([n,s])=>drawSwitch(n,s));
+  // holat
+  const lit=OUTPUTS.filter(o=>val(o)).length;
+  document.getElementById("count").textContent=lit+" / 4 chiroq";
+  const st=document.getElementById("status");
+  if(lit===4 && !solved){
+    solved=true;
+    st.innerHTML='<span class="n">✓ Barcha chiroq yondi. Kvant qulf ochildi.</span>';
+    document.getElementById("flag").textContent=atob("ZmxhZ3ttYW50aXFfb2NoaWxkaX0=");
+    document.getElementById("flagbox").classList.add("show");
+  }else if(!solved){
+    st.innerHTML='Yonganlar: <span class="n">'+lit+'</span> / 4';
+  }
+  requestAnimationFrame(render);
+}
+render();
+
+cv.addEventListener("pointerdown",e=>{
+  if(solved)return;
+  const r=cv.getBoundingClientRect();
+  const x=(e.clientX-r.left)*(cv.width/r.width);
+  const y=(e.clientY-r.top)*(cv.height/r.height);
+  Object.values(SW).forEach(s=>{
+    if(Math.abs(x-s.x)<40 && Math.abs(y-s.y)<24) s.v=s.v?0:1;
+  });
+});
+</script>
+</body>
+</html>

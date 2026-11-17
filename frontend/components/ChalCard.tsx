@@ -1,3 +1,4 @@
+import { Difficulty } from '@/components/Difficulty';
 import { A, pad4 } from '@/components/ui';
 import type { ChallengeCard } from '@/lib/types';
 
@@ -17,48 +18,43 @@ const ICON: Record<string, string> = {
   Reverse: 'fa-microchip',
 };
 
-/** ctf/_chal_card.html: yagona masala kartasi */
+/** Masala kartasi: kategoriya, nom, qiyinlik va ball — holat yozuv bilan, kartani yopmaydi */
 export function ChalCard({ challenge: c, href }: { challenge: ChallengeCard; href: string }) {
   const icon = c.is_lab ? 'fa-server' : (ICON[c.category] ?? 'fa-flag');
   return (
-    <A href={href} className="panel hud panel-interactive block">
+    <A href={href} className={`panel hud panel-interactive block ${c.is_solved ? 'is-solved' : ''}`}>
       <div className="chal-card">
-        <div className="chal-visual">
-          <span className={`chal-cat chip ${CHIP[c.category] ?? 'chip-muted'}`}>{c.category}</span>
-          <span className="chal-pts chip chip-muted">{c.points} PTS</span>
-          <div className="chal-icon">
+        <div className="chal-head">
+          <span className={`chip ${CHIP[c.category] ?? 'chip-muted'}`}>
+            {c.category}
+            {c.is_lab && ' · LAB'}
+          </span>
+          <span className="chal-icon" aria-hidden="true">
             <i className={`fas ${icon}`}></i>
-          </div>
+          </span>
         </div>
-        <div className="chal-body">
-          <h3 className="chal-title">{c.title}</h3>
-          <div className="chal-foot">
-            <span>
-              #{pad4(c.id)}
-              {c.is_lab && (
-                <>
-                  {' · '}
-                  <span className="text-acc2">LAB</span>
-                </>
-              )}
-            </span>
+        <h3 className="chal-title">{c.title}</h3>
+        <div className="chal-meta">
+          {c.difficulty ? <Difficulty level={c.difficulty} /> : <span className="text-muted font-mono text-xs">—</span>}
+          <span className="chal-pts">{c.points} ball</span>
+        </div>
+        <div className="chal-foot">
+          {c.is_solved ? (
             <span className="text-acc">
-              OCHISH <i className="fas fa-arrow-right ml-1"></i>
+              <i className="fas fa-check mr-1"></i> Yechilgan
             </span>
-          </div>
+          ) : c.has_failed_attempt ? (
+            <span className="text-warn">
+              <i className="fas fa-rotate-right mr-1"></i> Urinib ko'rilgan
+            </span>
+          ) : (
+            <span>#{pad4(c.id)}</span>
+          )}
+          <span className="text-acc">
+            Ochish <i className="fas fa-arrow-right ml-1"></i>
+          </span>
         </div>
       </div>
-      {c.is_solved ? (
-        <div className="overlay">
-          <div className="stamp stamp-ok">YECHILGAN</div>
-        </div>
-      ) : (
-        c.has_failed_attempt && (
-          <div className="overlay">
-            <div className="stamp stamp-fail">YECHILMAGAN</div>
-          </div>
-        )
-      )}
     </A>
   );
 }

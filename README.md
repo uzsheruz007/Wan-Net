@@ -44,10 +44,15 @@ cd frontend && npm install && npm run dev          # http://127.0.0.1:3000
 ```
 `.env`: `SITE_URL=http://127.0.0.1:3000`, `DJANGO_CSRF_TRUSTED_ORIGINS=http://127.0.0.1:3000`.
 
+Fayl masalalari (Docker kerak emas): `manage.py init_file_challenges` — tasodifiy flag bilan fayllarni yaratadi (`--regen` — yangi flag).
+
 Tekshiruv: `manage.py test ctf`, `cd frontend && npm run typecheck && npm run lint && npm run build`.
 
 ## Prod (nginx)
 - Next: `DJANGO_URL=http://127.0.0.1:8000 npm run build && npx next start -p 3100` (`DJANGO_URL` build paytida ham kerak — rewrite'lar build'ga yoziladi).
+- SEO (build paytida): `NEXT_PUBLIC_SITE_URL=https://<domen>` — canonical, Open Graph, `robots.txt`, `sitemap.xml` shu manzil bilan
+  (standart `https://wan-net.uz`). Ixtiyoriy: `GOOGLE_SITE_VERIFICATION`, `YANDEX_VERIFICATION` — Search Console / Yandex Webmaster kodi.
+  Sarlavha va tavsiflar `frontend/lib/seo.ts` da; logotip va ikonkalar `frontend/public/brand/`.
 - `.env`: `SITE_URL=https://<domen>` (frontend manzili), `DJANGO_ALLOWED_HOSTS` ga `127.0.0.1` qo'shilsin (Next serveri Django'ga shu manzil bilan murojaat qiladi).
 - nginx: `/api/`, `/django-admin/`, `/logout/`, `/secret/`, `~ ^/challenge/\d+/render/$`, `/static/`, `/media/` → Django;
   `/lab/<port>/` → mavjud lab proksi (o'zgarmagan); qolgan hammasi → Next (`127.0.0.1:3100`).

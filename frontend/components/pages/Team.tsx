@@ -7,7 +7,8 @@ import { Avatar, TermHead } from '@/components/ui';
 import type { Data } from '@/lib/types';
 
 const MAX_MEMBERS = 5;
-const COLORS = ['#00ff9c', '#00d1ff', '#b388ff', '#ffc53d', '#ff3b5c', '#5dffc0', '#7dd3fc'];
+// CSS tokenlari: rang tungi va kunduzgi rejimda o'zi almashadi
+const COLORS = ['var(--acc)', 'var(--acc-2)', 'var(--violet)', 'var(--warn)', 'var(--danger)'];
 
 interface Member {
   id: number;
@@ -36,7 +37,7 @@ function Donut({ stats, points }: { stats: Stat[]; points: number }) {
     <div className="grid gap-4">
       <div className="relative h-48 grid place-items-center">
         <svg viewBox="0 0 100 100" className="h-48 w-48 -rotate-90" aria-hidden="true">
-          <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,.06)" strokeWidth="7" />
+          <circle cx="50" cy="50" r={r} fill="none" style={{ stroke: 'var(--track)' }} strokeWidth="7" />
           {arcs.map((a) => (
             <circle
               key={a.label}
@@ -44,7 +45,7 @@ function Donut({ stats, points }: { stats: Stat[]; points: number }) {
               cy="50"
               r={r}
               fill="none"
-              stroke={a.color}
+              style={{ stroke: a.color }}
               strokeWidth="7"
               strokeDasharray={`${Math.max(a.dash - 0.8, 0)} ${length}`}
               strokeDashoffset={-a.offset}
@@ -83,7 +84,7 @@ function TokenButton({ token }: { token: string }) {
       style={{ borderStyle: 'dashed', borderColor: 'var(--line-strong)' }}
       onClick={() => navigator.clipboard?.writeText(token).then(() => setCopied(true))}
     >
-      <code className="block font-mono text-2xl font-bold text-acc tracking-[0.2em]" style={{ textShadow: '0 0 14px rgba(0,255,156,.4)' }}>
+      <code className="block font-mono text-2xl font-bold text-acc tracking-[0.2em]">
         {token}
       </code>
       <span className="block font-mono text-[10px] text-muted mt-2 group-hover:text-acc" aria-live="polite">

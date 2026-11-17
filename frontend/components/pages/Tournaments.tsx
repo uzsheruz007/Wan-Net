@@ -53,7 +53,7 @@ export function Tournaments({ d }: { d: Data }) {
       <div className="card-grid rise d1">
         {items.map((t) => (
           <A key={t.id} href={`/tournament/${t.id}/`} className="panel hud panel-interactive block">
-            <div className="chal-card">
+            <div className="chal-card chal-card--wrap">
               <div className="chal-visual">
                 <span className="chal-cat chip chip-muted">
                   <i className={`fas ${t.mode === 'TEAM' ? 'fa-users' : 'fa-user'}`}></i> {t.mode}
@@ -138,7 +138,6 @@ export function TournamentDetail({ d }: { d: Data }) {
               </span>
               <div
                 className="font-mono text-4xl md:text-6xl font-bold text-white tracking-widest my-4"
-                style={{ textShadow: '0 0 24px rgba(0,255,156,.3)' }}
                 role="timer"
               >
                 <Countdown target={t.start_ms} empty="00:00:00" onDone={() => router.refresh()} />

@@ -83,6 +83,13 @@ def challenges(request):
         else:
             queryset = queryset.filter(category=category_filter)
 
+    # 4. Filter by Difficulty
+    level_filter = request.GET.get('level', '').strip()
+    if level_filter in dict(Challenge.DIFFICULTY_CHOICES):
+        queryset = queryset.filter(difficulty=level_filter)
+    else:
+        level_filter = ''
+
     # 5. Pagination
     paginator = Paginator(queryset, 12) # Show 12 items per page
     page_number = request.GET.get('page')
@@ -105,9 +112,6 @@ def challenges(request):
     # Get all categories defined in the Model
     all_categories = []
     for code, name in Challenge.CATEGORY_CHOICES:
-        if code in ['Other', 'Boshqa', 'Misc']:
-            continue
-            
         all_categories.append({
             'code': code,
             'name': name,
@@ -118,6 +122,7 @@ def challenges(request):
         'challenges': page_obj, 
         'query': query,
         'selected_category': category_filter,
+        'selected_level': level_filter,
         'all_categories': all_categories,
         'total_challenges': Challenge.objects.filter(is_active=True).count(),
         'displayed_count': queryset.count()
@@ -196,6 +201,36 @@ def challenge_detail(request, challenge_id):
         flag_input = request.POST.get('flag', '').strip()
         hashed_input = hashlib.sha256(flag_input.encode()).hexdigest()
         is_correct = (hashed_input == challenge.flag_hash)
+
+        # 3D Kiber-poligon (masala #51) dinamik server-side flagini tekshirish
+        if not is_correct and challenge.id == 51:
+            try:
+                from . import lab3d
+                for sc in ('web', 'ad', 'ransomware'):
+                    for md in ('red', 'blue'):
+                        flg = lab3d.get_dynamic_lab_flag(request, md, sc, challenge.id)
+                        if flag_input == flg:
+                            is_correct = True
+                            break
+                    if is_correct:
+                        break
+            except Exception:
+                pass
+
+        # SCADA / ICS Kiber-Fizik poligon (masala #52) dinamik server-side flagini tekshirish
+        if not is_correct and challenge.id == 52:
+            try:
+                from . import scada
+                for sc in ('water', 'grid', 'reactor'):
+                    for md in ('red', 'blue'):
+                        flg = scada.get_dynamic_scada_flag(request, md, sc, challenge.id)
+                        if flag_input == flg:
+                            is_correct = True
+                            break
+                    if is_correct:
+                        break
+            except Exception:
+                pass
         
         # Log attempt
         try:

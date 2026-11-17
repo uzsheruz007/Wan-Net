@@ -7,3 +7,4 @@ venv/
 staticfiles/
 .venv-win/
 node_modules/
+media/ctf_files/tasks/
